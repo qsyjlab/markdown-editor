@@ -4,6 +4,7 @@
   </div>
 </template>
 <script setup lang="ts">
+
 import { createParser } from "@markdown-editor/parser";
 
 import "@markdown-editor/theme/style.scss";
@@ -18,7 +19,7 @@ onMounted(()=> {
 })
 async function initMarkdown() {
   const parser = await createParser({
-    
+    enableLineNumber: true
   });
   html.value = parser.parse(text)
 }

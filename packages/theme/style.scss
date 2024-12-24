@@ -1,4 +1,5 @@
 @use "./var.scss";
+@use './custom-block.scss';
 
 .md-render-container {
   font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
@@ -27,7 +28,7 @@
 
     code {
       position: relative;
-      
+
       span {
         color: var(--shiki-light, inherit);
         line-height: 1.7;
@@ -41,17 +42,16 @@
 
   [class*="language-"] code {
     display: block;
- 
+
     padding: 0 20px;
     box-sizing: border-box;
     width: fit-content;
     min-width: 100%;
     line-height: 1.7;
-    font-size: .875em;
+    font-size: 0.875em;
     color: #67676c;
     transition: color 0.5s;
   }
-
 
   [class*="language-"] pre {
     position: relative;
@@ -61,7 +61,6 @@
     background: transparent;
     overflow-x: auto;
   }
-
 
   p {
     line-height: 28px;
@@ -124,7 +123,6 @@
     border-top: 1px solid var(--md-table-th-border);
   }
 
-
   // 代码变更
   [class*="language-"] code .diff.remove {
     background-color: var(--md-code-line-diff-remove-color);
@@ -163,7 +161,7 @@
   }
 
   [class*="language-"] code .highlighted.error {
-    background-color: var(--md-theme-danger-dark-color);
+    background-color: var(--md-theme-danger-color-soft);
   }
 
   [class*="language-"] code .highlighted.warning {
@@ -217,5 +215,35 @@
     z-index: 3;
     text-align: center;
     overflow: hidden;
+  }
+
+  /** 自定义代码块 */
+
+  .custom-block {
+    margin: 16px 0;
+  }
+
+  .custom-block p {
+    margin: 8px 0;
+    line-height: 24px;
+  }
+
+  .custom-block p:first-child {
+    margin: 0;
+  }
+
+  .custom-block div[class*="language-"] {
+    margin: 8px 0;
+    border-radius: 8px;
+  }
+
+  .custom-block div[class*="language-"] code {
+    font-weight: 400;
+    background-color: transparent;
+  }
+
+  .custom-block .vp-code-group .tabs {
+    margin: 0;
+    border-radius: 8px 8px 0 0;
   }
 }
