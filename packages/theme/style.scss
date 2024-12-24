@@ -1,0 +1,152 @@
+@use "./var.scss";
+
+.md-render-container {
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
+    Liberation Mono, monospace;
+
+  font-size: 14px;
+  line-height: 24px;
+
+  .code {
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 16px 0;
+    // margin: 16px -24px;
+    background-color: var(--md-code-block-bg);
+    overflow-x: auto;
+    transition: background-color 0.5s;
+
+    pre {
+      margin: 0;
+    }
+
+    code {
+      span {
+        color: var(--shiki-light, inherit);
+      }
+    }
+
+    .lang {
+      text-align: right;
+    }
+
+
+  }
+
+  a {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--md-theme-primary-color);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.25s, opacity 0.25s;
+    margin: 0;
+  }
+
+  table {
+    display: block;
+    border-collapse: collapse;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+
+  tr {
+    background-color: var(--md-table-th-bg);
+    border-top: 1px solid var(--md-table-th-border);
+    transition: background-color 0.5s;
+  }
+
+  tr:nth-child(2n) {
+    background-color: var(--md-table-soft-bg);
+  }
+
+  th,
+  td {
+    border: 1px solid var(--md-table-th-border);
+    padding: 8px 16px;
+  }
+
+  th {
+    font-size: 14px;
+    font-weight: 600;
+    background-color: var(--md-table-soft-bg);
+  }
+
+  :where([dir="ltr"]) th {
+    text-align: left;
+  }
+
+  :where([dir="rtl"]) th {
+    text-align: right;
+  }
+
+  td {
+    font-size: 14px;
+  }
+
+  hr {
+    margin: 16px 0;
+    border: none;
+    border-top: 1px solid var(--md-table-th-border);
+  }
+
+
+
+    // 代码变更
+
+    [class*="language-"] code .diff.remove {
+      background-color: var(--md-code-line-diff-remove-color);
+      opacity: 0.7;
+    }
+
+    [class*="language-"] code .diff.remove::before {
+      content: "-";
+      color: var(--md-code-line-diff-remove-symbol-color);
+    }
+
+    [class*="language-"] code .diff.add {
+      background-color: var(--md-code-line-diff-add-color);
+    }
+
+    [class*="language-"] code .diff.add::before {
+      content: "+";
+      color: var(--md-code-line-diff-add-symbol-color);
+    }
+
+    [class*="language-"] code .diff {
+      transition: background-color 0.5s;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      display: inline-block;
+    }
+
+    [class*="language-"] code .highlighted {
+      background-color: var(--md-code-line-highlight-color);
+      transition: background-color 0.5s;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      display: inline-block;
+    }
+
+    [class*="language-"] code .highlighted.error {
+      background-color: var(--md-theme-danger-dark-color);
+    }
+
+    [class*="language-"] code .highlighted.warning {
+      background-color: var(--md-code-line-warning-color);
+    }
+
+    .highlighted-word {
+      background-color: var(--md-code-block-bg);
+      border: 1px solid var(--md-code-block-border);
+      padding: 1px 3px;
+      margin: -1px -3px;
+      border-radius: 4px;
+    }
+
+}

@@ -1,0 +1,36 @@
+:root {
+
+  --md--theme-warning-rgb: 237, 178, 83;
+
+  --md-theme-primary-color: #3451b2;
+
+
+  --md-theme-success-color: #18794e;
+  --md-theme-success-dark-color: rgba(16, 185, 129, 0.14);
+
+  --md-theme-danger-color: #b8272c;
+  --md-theme-danger-dark-color: rgba(244, 63, 94, 0.14);
+
+
+  --md-theme-warning-color: rgba(var(--md--theme-warning-rgb), 1);
+  --md-code-line-warning-color: rgba(var(--md--theme-warning-rgb), .14);
+
+
+  --md-code-block-bg: #f6f6f7;
+  --md-code-block-border: #c2c2c4;
+
+  --md-table-th-bg: #ffffff;
+  --md-table-th-border: #e6e6e6;
+  --md-table-soft-bg: #f6f6f7;
+  --md-table-th-text: #67676c;
+
+  // 代码比较
+  --md-code-line-diff-add-color: var(--md-theme-success-dark-color);
+  --md-code-line-diff-add-symbol-color: var(--md-theme-success-color);
+
+  --md-code-line-diff-remove-color: var(--md-theme-danger-dark-color);
+  --md-code-line-diff-remove-symbol-color: var(--md-theme-danger-color);
+
+  /** shiki */
+  --md-code-line-highlight-color: rgba(142, 150, 170, 0.14);
+}

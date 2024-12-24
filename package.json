@@ -1,0 +1,17 @@
+{
+  "name": "markdown-editor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "devDependencies": {
+    "sass": "^1.83.0",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@markdown-editor/parser": "workspace:^",
+    "@markdown-editor/theme": "workspace:^"
+  }
+}
