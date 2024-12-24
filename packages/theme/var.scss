@@ -1,9 +1,7 @@
 :root {
-
   --md--theme-warning-rgb: 237, 178, 83;
 
   --md-theme-primary-color: #3451b2;
-
 
   --md-theme-success-color: #18794e;
   --md-theme-success-dark-color: rgba(16, 185, 129, 0.14);
@@ -11,13 +9,13 @@
   --md-theme-danger-color: #b8272c;
   --md-theme-danger-dark-color: rgba(244, 63, 94, 0.14);
 
-
   --md-theme-warning-color: rgba(var(--md--theme-warning-rgb), 1);
-  --md-code-line-warning-color: rgba(var(--md--theme-warning-rgb), .14);
-
+  --md-code-line-warning-color: rgba(var(--md--theme-warning-rgb), 0.14);
 
   --md-code-block-bg: #f6f6f7;
   --md-code-block-border: #c2c2c4;
+
+  --md-code-sg-color: rgba(142, 150, 170, 0.14);
 
   --md-table-th-bg: #ffffff;
   --md-table-th-border: #e6e6e6;
@@ -33,4 +31,7 @@
 
   /** shiki */
   --md-code-line-highlight-color: rgba(142, 150, 170, 0.14);
+
+  /** lang */
+  --md-code-lang-color: #929295;
 }

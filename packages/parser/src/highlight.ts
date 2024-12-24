@@ -4,9 +4,9 @@ import {
   transformerNotationDiff,
   transformerNotationHighlight,
   transformerNotationWordHighlight,
-  transformerNotationErrorLevel
-} from '@shikijs/transformers'
-
+  transformerNotationErrorLevel,
+  transformerMetaHighlight,
+} from "@shikijs/transformers";
 
 interface HighlighterProps {
   theme?: any;
@@ -30,12 +30,17 @@ export async function createHighlighter(options?: HighlighterProps) {
 
   const highlighter = await createShikiHighlighter({
     themes,
-    langs: ["html", "css", "js", "bash", "typescript", "python"],
+    langs: ["html", "css", "js", "bash", "typescript", "python", "md", "yaml"],
 
     langAlias: options?.languageAlias,
   });
 
   function highlight(str: string, lang: string, attrs: string) {
+
+    lang = getRealLang(lang);
+
+    console.log("lang",lang)
+
     const highlighted = highlighter.codeToHtml(str, {
       lang: lang,
       meta: { __raw: attrs },
@@ -43,7 +48,8 @@ export async function createHighlighter(options?: HighlighterProps) {
         transformerNotationDiff(),
         transformerNotationHighlight(),
         transformerNotationWordHighlight(),
-        transformerNotationErrorLevel()
+        transformerNotationErrorLevel(),
+        transformerMetaHighlight(),
       ],
       ...(typeof theme === "object" && "light" in theme && "dark" in theme
         ? { themes: theme, defaultColor: false }
@@ -57,4 +63,19 @@ export async function createHighlighter(options?: HighlighterProps) {
     highlight,
     dispose: highlighter.dispose,
   };
+}
+
+function getRealLang(lang: string) {
+  const vueRE = /-vue(?=:|$)/;
+  const lineNoStartRE = /=(\d*)/;
+  const lineNoRE = /:(no-)?line-numbers(=\d*)?$/;
+  // const mustacheRE = /\{\{.*?\}\}/g;
+
+  return (
+    lang
+      .replace(lineNoStartRE, "")
+      .replace(lineNoRE, "")
+      .replace(vueRE, "")
+      .toLowerCase()
+  );
 }

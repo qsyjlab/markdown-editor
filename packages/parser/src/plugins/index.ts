@@ -14,7 +14,7 @@ export function preWrapperPlugin(md: MarkdownIt, options: Options) {
     token.info = token.info.replace(/ active$/, "").replace(/ active /, " ");
 
     const lang = extractLang(token.info);
-
+    
     // `<button title="${options.codeCopyButtonTitle}" class="copy"></button>` +
     return (
       `<div class="code language-${lang}${active}">` +
@@ -34,3 +34,6 @@ function extractLang(info: string) {
     .replace(/^vue-html$/, "template")
     .replace(/^ansi$/, "");
 }
+
+export { linkPlugin } from './link'
+export * from './line-number'

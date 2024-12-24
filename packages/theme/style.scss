@@ -7,6 +7,14 @@
   font-size: 14px;
   line-height: 24px;
 
+  :not(pre) > code {
+    border-radius: 4px;
+    padding: 3px 6px;
+    background-color: var(--md-code-sg-color);
+    transition: color 0.25s, background-color 0.5s;
+    color: var(--md-theme-primary-color);
+  }
+
   .code {
     width: 100%;
     box-sizing: border-box;
@@ -21,9 +29,11 @@
 
     pre {
       margin: 0;
+      position: relative;
     }
 
     code {
+      position: relative;
       span {
         color: var(--shiki-light, inherit);
       }
@@ -32,8 +42,10 @@
     .lang {
       text-align: right;
     }
+  }
 
-
+  p {
+    line-height: 28px;
   }
 
   a {
@@ -93,60 +105,96 @@
     border-top: 1px solid var(--md-table-th-border);
   }
 
+  // 代码变更
 
+  [class*="language-"] code .diff.remove {
+    background-color: var(--md-code-line-diff-remove-color);
+    opacity: 0.7;
+  }
 
-    // 代码变更
+  [class*="language-"] code .diff.remove::before {
+    content: "-";
+    color: var(--md-code-line-diff-remove-symbol-color);
+  }
 
-    [class*="language-"] code .diff.remove {
-      background-color: var(--md-code-line-diff-remove-color);
-      opacity: 0.7;
-    }
+  [class*="language-"] code .diff.add {
+    background-color: var(--md-code-line-diff-add-color);
+  }
 
-    [class*="language-"] code .diff.remove::before {
-      content: "-";
-      color: var(--md-code-line-diff-remove-symbol-color);
-    }
+  [class*="language-"] code .diff.add::before {
+    content: "+";
+    color: var(--md-code-line-diff-add-symbol-color);
+  }
 
-    [class*="language-"] code .diff.add {
-      background-color: var(--md-code-line-diff-add-color);
-    }
+  [class*="language-"] code .diff {
+    transition: background-color 0.5s;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    display: inline-block;
+  }
 
-    [class*="language-"] code .diff.add::before {
-      content: "+";
-      color: var(--md-code-line-diff-add-symbol-color);
-    }
+  [class*="language-"] code .highlighted {
+    background-color: var(--md-code-line-highlight-color);
+    transition: background-color 0.5s;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    display: inline-block;
+  }
 
-    [class*="language-"] code .diff {
-      transition: background-color 0.5s;
-      padding: 0;
-      margin: 0;
-      width: 100%;
-      display: inline-block;
-    }
+  [class*="language-"] code .highlighted.error {
+    background-color: var(--md-theme-danger-dark-color);
+  }
 
-    [class*="language-"] code .highlighted {
-      background-color: var(--md-code-line-highlight-color);
-      transition: background-color 0.5s;
-      padding: 0;
-      margin: 0;
-      width: 100%;
-      display: inline-block;
-    }
+  [class*="language-"] code .highlighted.warning {
+    background-color: var(--md-code-line-warning-color);
+  }
 
-    [class*="language-"] code .highlighted.error {
-      background-color: var(--md-theme-danger-dark-color);
-    }
+  .highlighted-word {
+    background-color: var(--md-code-block-bg);
+    border: 1px solid var(--md-code-block-border);
+    padding: 1px 3px;
+    margin: -1px -3px;
+    border-radius: 4px;
+  }
 
-    [class*="language-"] code .highlighted.warning {
-      background-color: var(--md-code-line-warning-color);
-    }
+  // 语言
 
-    .highlighted-word {
-      background-color: var(--md-code-block-bg);
-      border: 1px solid var(--md-code-block-border);
-      padding: 1px 3px;
-      margin: -1px -3px;
-      border-radius: 4px;
-    }
+  [class*="language-"] > span.lang {
+    position: absolute;
+    top: 2px;
+    right: 8px;
+    z-index: 2;
+    font-size: 12px;
+    font-weight: 500;
+    -webkit-user-select: none;
+    user-select: none;
+    color: var(--md-code-lang-color);
+    transition: color 0.4s, opacity 0.4s;
+  }
 
+  // div[class*="language-"].line-numbers-mode {
+  //   /*rtl:ignore*/
+  //   padding-left: 50px;
+  // }
+
+  // .line-numbers-wrapper {
+  //   position: absolute;
+  //   top: 0;
+  //   bottom: 0;
+  //   /*rtl:ignore*/
+  //   left: 0;
+  //   z-index: 3;
+  //   /*rtl:ignore*/
+  //   border-right: 1px solid var(--vp-code-block-divider-color);
+  //   padding-top: 20px;
+  //   width: 17px;
+  //   text-align: center;
+  //   font-family: var(--vp-font-family-mono);
+  //   line-height: 24px;
+  //   font-size: 0.875em;
+  //   color: #67676c;
+  //   transition: border-color 0.5s, color 0.5s;
+  // }
 }
