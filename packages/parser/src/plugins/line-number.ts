@@ -40,7 +40,6 @@ export function lineNumberPlugin (md: MarkdownIt, enable = false) {
       const finalCode = rawCode
         .replace(/<\/div>$/, `${lineNumbersWrapperCode}</div>`)
         .replace(/"(language-[^"]*?)"/, '"$1 line-numbers-mode"')
-  
       return finalCode
     }
   }

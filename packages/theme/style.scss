@@ -5,7 +5,7 @@
     Liberation Mono, monospace;
 
   font-size: 14px;
-  line-height: 24px;
+  // line-height: 24px;
 
   :not(pre) > code {
     border-radius: 4px;
@@ -19,23 +19,18 @@
     width: 100%;
     box-sizing: border-box;
     position: relative;
-    padding: 10px;
     border-radius: 10px;
-    margin: 16px 0;
-    // margin: 16px -24px;
     background-color: var(--md-code-block-bg);
     overflow-x: auto;
     transition: background-color 0.5s;
-
-    pre {
-      margin: 0;
-      position: relative;
-    }
+    margin: 16px 0;
 
     code {
       position: relative;
+      
       span {
         color: var(--shiki-light, inherit);
+        line-height: 1.7;
       }
     }
 
@@ -43,6 +38,30 @@
       text-align: right;
     }
   }
+
+  [class*="language-"] code {
+    display: block;
+ 
+    padding: 0 20px;
+    box-sizing: border-box;
+    width: fit-content;
+    min-width: 100%;
+    line-height: 1.7;
+    font-size: .875em;
+    color: #67676c;
+    transition: color 0.5s;
+  }
+
+
+  [class*="language-"] pre {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    padding: 20px 0;
+    background: transparent;
+    overflow-x: auto;
+  }
+
 
   p {
     line-height: 28px;
@@ -105,8 +124,8 @@
     border-top: 1px solid var(--md-table-th-border);
   }
 
-  // 代码变更
 
+  // 代码变更
   [class*="language-"] code .diff.remove {
     background-color: var(--md-code-line-diff-remove-color);
     opacity: 0.7;
@@ -174,27 +193,29 @@
     transition: color 0.4s, opacity 0.4s;
   }
 
-  // div[class*="language-"].line-numbers-mode {
-  //   /*rtl:ignore*/
-  //   padding-left: 50px;
-  // }
+  div[class*="language-"].line-numbers-mode {
+    /*rtl:ignore*/
+    padding-left: 50px;
+    code {
+      padding: 0;
+      padding-right: 20px;
+    }
+  }
 
-  // .line-numbers-wrapper {
-  //   position: absolute;
-  //   top: 0;
-  //   bottom: 0;
-  //   /*rtl:ignore*/
-  //   left: 0;
-  //   z-index: 3;
-  //   /*rtl:ignore*/
-  //   border-right: 1px solid var(--vp-code-block-divider-color);
-  //   padding-top: 20px;
-  //   width: 17px;
-  //   text-align: center;
-  //   font-family: var(--vp-font-family-mono);
-  //   line-height: 24px;
-  //   font-size: 0.875em;
-  //   color: #67676c;
-  //   transition: border-color 0.5s, color 0.5s;
-  // }
+  .line-numbers-wrapper {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    line-height: 1.7;
+    font-size: 0.875em;
+    color: #67676c;
+    transition: border-color 0.5s, color 0.5s;
+    padding-top: 20px;
+    width: 32px;
+    border-right: 1px solid #e2e2;
+    z-index: 3;
+    text-align: center;
+    overflow: hidden;
+  }
 }

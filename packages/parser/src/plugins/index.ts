@@ -17,7 +17,7 @@ export function preWrapperPlugin(md: MarkdownIt, options: Options) {
     
     // `<button title="${options.codeCopyButtonTitle}" class="copy"></button>` +
     return (
-      `<div class="code language-${lang}${active}">` +
+      `<div class="language-${lang}${active} code ">` +
       `<span class="lang">${lang}</span>` +
       fence(...args) +
       "</div>"

@@ -1,11 +1,11 @@
 import MarkdownIt from "markdown-it";
 
 import { createHighlighter } from "./highlight";
-import { preWrapperPlugin, linkPlugin,lineNumberPlugin } from "./plugins";
+import { preWrapperPlugin, linkPlugin, lineNumberPlugin } from "./plugins";
 
 export interface MarkdownParserProps {
   languages?: string[];
-  loadLanguage?: (language: string) => Promise<void>;
+  enableLineNumber?: boolean;
 }
 
 export async function createMarkdownParser(props?: MarkdownParserProps) {
@@ -18,7 +18,7 @@ export async function createMarkdownParser(props?: MarkdownParserProps) {
   instance.use(preWrapperPlugin);
   instance.use(linkPlugin);
   // 行号
-  instance.use(lineNumberPlugin,false)
+  instance.use(lineNumberPlugin, props?.enableLineNumber);
 
   function parse(text: string) {
     return instance.render(text);
