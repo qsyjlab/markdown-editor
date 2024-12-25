@@ -20,13 +20,15 @@
   --md-theme-danger-color-3: #e0575b;
   --md-theme-danger-soft: rgba(244, 63, 94, 0.14);
 
-
+  --md-theme-important-color: #6f42c1;
+  --md-theme-important-color-2: #7e4cc9;
+  --md-theme-important-color-3: #8e5cd9;
+  --md-theme-important-soft: rgba(159, 122, 234, 0.14);
 
   --md-theme-info-color: #dddde3;
   --md-theme-info-color-2: #e4e4e9;
   --md-theme-info-color-3: #ebebef;
   --md-theme-info-soft: rgba(142, 150, 170, 0.14);
-
 
   --md-theme-warning-color: rgba(var(--md--theme-warning-rgb), 1);
   --md-theme-warning-color-2: #946300;
@@ -36,8 +38,14 @@
 
   --md-theme-info-color: #b8272c;
 
+
+  
+
+  /** code block */
   --md-code-block-bg: #f6f6f7;
   --md-code-block-border: #c2c2c4;
+  --md-code-block-gutter: #e2e2e3;
+
 
   --md-code-sg-color: rgba(142, 150, 170, 0.14);
 
@@ -50,7 +58,7 @@
   --md-code-line-diff-add-color: var(--md-theme-success-dark-color);
   --md-code-line-diff-add-symbol-color: var(--md-theme-success-color);
 
-  --md-code-line-diff-remove-color: var(--md-theme-danger-color-soft);
+  --md-code-line-diff-remove-color: var(--md-theme-danger-soft);
   --md-code-line-diff-remove-symbol-color: var(--md-theme-danger-color);
 
   /** shiki */

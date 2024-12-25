@@ -5,10 +5,10 @@
 </template>
 <script setup lang="ts">
 
-import { createParser } from "@markdown-editor/parser";
+import { createParser, bindCodeGroupsEvent } from "@markdown-editor/parser";
 
 import "@markdown-editor/theme/style.scss";
-import { onMounted, ref } from "vue";
+import { nextTick, onMounted, ref } from "vue";
 import { text } from './markdown'
 
 
@@ -19,9 +19,12 @@ onMounted(()=> {
 })
 async function initMarkdown() {
   const parser = await createParser({
-    enableLineNumber: true
+    enableLineNumber: false
   });
   html.value = parser.parse(text)
+  nextTick(()=> {
+    bindCodeGroupsEvent()
+  })
 }
 </script>
 <style scoped></style>

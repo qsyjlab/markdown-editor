@@ -1,16 +1,18 @@
 import MarkdownIt, { Options } from "markdown-it";
 import container from "markdown-it-container";
 import type { RenderRule } from "markdown-it/lib/renderer.mjs";
+import { nanoid } from "nanoid";
+import { extractTitle } from "./utils";
 
 export interface ContainerOptions {
   infoLabel?: string;
-  // noteLabel?: string;
+  noteLabel?: string;
   tipLabel?: string;
   warningLabel?: string;
   dangerLabel?: string;
   detailsLabel?: string;
-  // importantLabel?: string;
-  // cautionLabel?: string;
+  importantLabel?: string;
+  cautionLabel?: string;
 }
 
 export function createContainerPlugin(
@@ -18,7 +20,6 @@ export function createContainerPlugin(
   options: Options,
   containerOptions?: ContainerOptions
 ) {
-  debugger
   md.use(...createContainer("tip", containerOptions?.tipLabel || "TIP", md))
     .use(...createContainer("info", containerOptions?.infoLabel || "INFO", md))
     .use(
@@ -41,7 +42,29 @@ export function createContainerPlugin(
         containerOptions?.detailsLabel || "Details",
         md
       )
-    );
+    )
+    .use(
+      ...createContainer(
+        "important",
+        containerOptions?.importantLabel || "Important",
+        md
+      )
+    ).use(
+      ...createContainer(
+        "note",
+        containerOptions?.noteLabel || "Note",
+        md
+      )
+    ).use(
+      ...createContainer(
+        "caution",
+        containerOptions?.cautionLabel || "Caution",
+        md
+      )
+    ).use(...createCodeGroup(md))
+
+
+    
 }
 
 type ContainerArgs = [typeof container, string, { render: RenderRule }];
@@ -68,4 +91,55 @@ function createContainer(
       },
     },
   ];
+}
+
+
+
+
+function createCodeGroup(md: MarkdownIt): ContainerArgs {
+  return [
+    container,
+    'code-group',
+    {
+      render(tokens, idx) {
+        if (tokens[idx].nesting === 1) {
+          const name = nanoid(5)
+          let tabs = ''
+          let checked = 'checked'
+
+          for (
+            let i = idx + 1;
+            !(
+              tokens[i].nesting === -1 &&
+              tokens[i].type === 'container_code-group_close'
+            );
+            ++i
+          ) {
+            const isHtml = tokens[i].type === 'html_block'
+
+            if (
+              (tokens[i].type === 'fence' && tokens[i].tag === 'code') ||
+              isHtml
+            ) {
+              const title = extractTitle(
+                isHtml ? tokens[i].content : tokens[i].info,
+                isHtml
+              )
+
+              if (title) {
+                const id = nanoid(7)
+                tabs += `<input type="radio" name="group-${name}" id="tab-${id}" ${checked}><label data-title="${md.utils.escapeHtml(title)}" for="tab-${id}">${title}</label>`
+
+                if (checked && !isHtml) tokens[i].info += ' active'
+                checked = ''
+              }
+            }
+          }
+
+          return `<div class="md-code-group"><div class="tabs">${tabs}</div><div class="blocks">\n`
+        }
+        return `</div></div>\n`
+      }
+    }
+  ]
 }

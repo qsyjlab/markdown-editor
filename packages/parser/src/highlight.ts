@@ -39,7 +39,6 @@ export async function createHighlighter(options?: HighlighterProps) {
 
     lang = getRealLang(lang);
 
-    console.log("lang",lang)
 
     const highlighted = highlighter.codeToHtml(str, {
       lang: lang,
@@ -66,6 +65,7 @@ export async function createHighlighter(options?: HighlighterProps) {
 }
 
 function getRealLang(lang: string) {
+
   const vueRE = /-vue(?=:|$)/;
   const lineNoStartRE = /=(\d*)/;
   const lineNoRE = /:(no-)?line-numbers(=\d*)?$/;

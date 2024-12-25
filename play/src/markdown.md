@@ -135,8 +135,6 @@ lang: en-US
 ```md
 ::: info
 This is an info box.
-
-
 :::
 
 ::: tip
@@ -160,19 +158,10 @@ This is a details block.
 
 ::: info
 This is an info box.
-``` js
-const a= 1
-```
-
-[GitHub 风格的警报](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts)
-
-
 :::
 
 ::: tip
 This is a tip.
-
-
 :::
 
 ::: warning
@@ -361,7 +350,7 @@ export default {
 **输入**
 
 ````
-```javascript
+```js{4}
 export default {
   data () {
     return {
@@ -374,7 +363,7 @@ export default {
 
 **输出**
 
-```
+```js
 export default {
   data () {
     return {
@@ -393,7 +382,7 @@ export default {
 **输入**
 
 ````
-``` javascript
+```js
 export default { // Highlighted
   data () {
     return {
@@ -410,7 +399,7 @@ export default { // Highlighted
 
 **输出**
 
-``` javascript
+```js
 export default { // Highlighted
   data () {
     return {
@@ -429,7 +418,7 @@ export default { // Highlighted
 **输入**
 
 ````
-``` javascript
+```js
 export default {
   data () {
     return {
@@ -569,7 +558,7 @@ export default {
 **输入**
 
 ````md
-``` typescript
+```ts {1}
 // 默认禁用行号
 const line2 = 'This is line 2'
 const line3 = 'This is line 3'
@@ -846,10 +835,6 @@ Can be created using `.foorc.json`.
 所选行范围的格式可以是： `{3,}`、 `{,10}`、`{1,10}`
 
 ::: warning
-如果指定的文件不存在，这将不会产生错误。因此，在使用这个功能的时候请保证内容按预期呈现。
-:::
-
-::: tip
 如果指定的文件不存在，这将不会产生错误。因此，在使用这个功能的时候请保证内容按预期呈现。
 :::
 
