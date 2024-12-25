@@ -28,6 +28,11 @@ export interface MarkdownParserProps {
    * 自定义文本块配置
    */
   container?: ContainerOptions;
+
+  /**
+   *  codeCopyButtonTitle
+   */
+  codeCopyButtonTitle:string
 }
 
 export async function createMarkdownParser(props?: MarkdownParserProps) {
@@ -37,7 +42,11 @@ export async function createMarkdownParser(props?: MarkdownParserProps) {
     highlight,
   });
 
-  instance.use(preWrapperPlugin);
+  instance.use(preWrapperPlugin, {
+    codeCopyButtonTitle: 'copy'
+  });
+
+
   instance.use(linkPlugin);
   // 行号
   instance.use(lineNumberPlugin, props?.enableLineNumber);

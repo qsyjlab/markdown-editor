@@ -4,14 +4,13 @@
 @use "./code-group.scss";
 @use './table.scss';
 @use './head.scss';
+@use './copy.scss';
 
 .md-render-container {
   font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
     Liberation Mono, monospace;
 
-  font-size: 14px;
-  // line-height: 24px;
-
+  font-size: 16px;
   .code {
     width: 100%;
     box-sizing: border-box;

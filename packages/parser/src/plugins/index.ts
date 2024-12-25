@@ -1,7 +1,9 @@
 import MarkdownIt, { Options } from "markdown-it";
 
-
-export function preWrapperPlugin(md: MarkdownIt, options: Options) {
+export function preWrapperPlugin(
+  md: MarkdownIt,
+  options: Options & { codeCopyButtonTitle: string }
+) {
   const fence = md.renderer.rules.fence!;
   md.renderer.rules.fence = (...args) => {
     const [tokens, idx] = args;
@@ -14,10 +16,10 @@ export function preWrapperPlugin(md: MarkdownIt, options: Options) {
     token.info = token.info.replace(/ active$/, "").replace(/ active /, " ");
 
     const lang = extractLang(token.info);
-    
-    // `<button title="${options.codeCopyButtonTitle}" class="copy"></button>` +
+
     return (
       `<div class="language-${lang}${active} code ">` +
+      `<button title="${options.codeCopyButtonTitle}" class="copy"></button>` +
       `<span class="lang">${lang}</span>` +
       fence(...args) +
       "</div>"
@@ -35,8 +37,8 @@ function extractLang(info: string) {
     .replace(/^ansi$/, "");
 }
 
-export { linkPlugin } from './link'
-export * from './line-number'
-export * from './container'
-export * from './math'
-export * from './anchor'
+export { linkPlugin } from "./link";
+export * from "./line-number";
+export * from "./container";
+export * from "./math";
+export * from "./anchor";
