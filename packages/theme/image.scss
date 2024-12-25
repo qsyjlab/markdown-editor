@@ -1,0 +1,20 @@
+.md-image {
+  display: inline-block;
+  width: 100%;
+  height: 200px;
+  background: #f0f0f0;
+
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+  border-radius: 10px;
+
+  img[loading="lazy"]:not([src]) {
+    display: none;
+    opacity: 0.5; /* 默认为半透明 */
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  img[loading="lazy"] {
+    display: none;
+  }
+}

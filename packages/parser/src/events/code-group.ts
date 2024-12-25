@@ -6,7 +6,7 @@ export function bindCodeGroupsEvent() {
     el.children[0].classList.add("active");
 
   });
-
+  
   window.addEventListener("click", (e) => {
     const el = e.target as HTMLInputElement;
 

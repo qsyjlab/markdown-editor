@@ -2,6 +2,11 @@
 
 VitePress 带有内置的 Markdown 扩展。
 
+
+## 图片
+
+![alt text](https://api.qsyjlab.club/file//uploads/cover/20240712/d64b5b1a-6847-46e7-99be-88ddf4e283ed.jpeg)
+
 ## 标题锚点 {#header-anchors}
 
 标题会自动应用锚点。可以使用 `markdown.anchor` 选项配置锚点的渲染。

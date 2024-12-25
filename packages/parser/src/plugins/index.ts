@@ -42,3 +42,4 @@ export * from "./line-number";
 export * from "./container";
 export * from "./math";
 export * from "./anchor";
+export * from './image'

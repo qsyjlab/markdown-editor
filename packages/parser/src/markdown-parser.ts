@@ -9,6 +9,7 @@ import {
   createContainerPlugin,
   createMathPlugin,
   createAnchorPlugin,
+  imagePlugin
 } from "./plugins";
 
 import {
@@ -70,6 +71,8 @@ export async function createMarkdownParser(props?: MarkdownParserProps) {
     level: anchorLevel,
     slugify
   } as HeadersPluginOptions);
+
+  instance.use(imagePlugin)
 
   function parse(text: string) {
     return instance.render(text);
