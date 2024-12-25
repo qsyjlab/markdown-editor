@@ -1,0 +1,56 @@
+:root {
+  --md-table-row-bg: #ffffff;
+  --md-table-row-stripe-bg: var(--md-code-block-bg);
+  --md-table-border-color: #e6e6e6;
+  --md-table-cell-text-color: var(--md-text-color-2);
+}
+
+.md-render-container {
+  table {
+    display: block;
+    border-collapse: collapse;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+
+  tr {
+    background-color: var(--md-table-row-bg);
+    border-top: 1px solid var(--md-table-border-color);
+    transition: background-color 0.5s;
+  }
+
+  tr:nth-child(2n) {
+    background-color: var(--md-table-row-stripe-bg);
+  }
+
+  th,
+  td {
+    border: 1px solid var(--md-table-border-color);
+    padding: 8px 16px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--md-table-cell-text-color);
+    background-color: var(--md-table-row-stripe-bg);
+  }
+
+  td {
+    font-size: 14px;
+  }
+
+  :where([dir="ltr"]) th {
+    text-align: left;
+  }
+
+  :where([dir="rtl"]) th {
+    text-align: right;
+  }
+  hr {
+    margin: 16px 0;
+    border: none;
+    border-top: 1px solid var(--md-table-row-stripe-bg);
+  }
+}

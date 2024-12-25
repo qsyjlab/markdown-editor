@@ -1,6 +1,9 @@
 @use "./var.scss";
+@use './base.scss';
 @use "./custom-block.scss";
 @use "./code-group.scss";
+@use './table.scss';
+@use './head.scss';
 
 .md-render-container {
   font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
@@ -141,7 +144,7 @@
   :not(pre) > code {
     border-radius: 4px;
     padding: 3px 6px;
-    background-color: var(--md-code-sg-color);
+    background-color: var(--md-code-block-bg-soft);
     transition: color 0.25s, background-color 0.5s;
     color: var(--md-theme-primary-color);
   }
@@ -159,7 +162,7 @@
     line-height: 28px;
   }
 
-  a {
+  a.externa-link {
     font-size: 16px;
     font-weight: bold;
     color: var(--md-theme-primary-color);
@@ -169,52 +172,6 @@
     margin: 0;
   }
 
-  table {
-    display: block;
-    border-collapse: collapse;
-    margin: 20px 0;
-    overflow-x: auto;
-  }
-
-  tr {
-    background-color: var(--md-table-th-bg);
-    border-top: 1px solid var(--md-table-th-border);
-    transition: background-color 0.5s;
-  }
-
-  tr:nth-child(2n) {
-    background-color: var(--md-table-soft-bg);
-  }
-
-  th,
-  td {
-    border: 1px solid var(--md-table-th-border);
-    padding: 8px 16px;
-  }
-
-  th {
-    font-size: 14px;
-    font-weight: 600;
-    background-color: var(--md-table-soft-bg);
-  }
-
-  :where([dir="ltr"]) th {
-    text-align: left;
-  }
-
-  :where([dir="rtl"]) th {
-    text-align: right;
-  }
-
-  td {
-    font-size: 14px;
-  }
-
-  hr {
-    margin: 16px 0;
-    border: none;
-    border-top: 1px solid var(--md-table-th-border);
-  }
 
   /** 自定义代码块 */
 

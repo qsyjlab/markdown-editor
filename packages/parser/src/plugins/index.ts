@@ -38,3 +38,5 @@ function extractLang(info: string) {
 export { linkPlugin } from './link'
 export * from './line-number'
 export * from './container'
+export * from './math'
+export * from './anchor'

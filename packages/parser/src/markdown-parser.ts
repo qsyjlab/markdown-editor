@@ -1,4 +1,5 @@
 import MarkdownIt from "markdown-it";
+import attrsPlugin from "markdown-it-attrs";
 
 import { createHighlighter } from "./highlight";
 import {
@@ -6,8 +7,18 @@ import {
   linkPlugin,
   lineNumberPlugin,
   createContainerPlugin,
+  createMathPlugin,
+  createAnchorPlugin,
 } from "./plugins";
+
+import {
+  headersPlugin,
+  type HeadersPluginOptions,
+} from "@mdit-vue/plugin-headers";
+
 import { ContainerOptions } from "./plugins/container";
+import { slugify } from "./plugins/utils";
+import { anchorLevel } from "./constant";
 
 export interface MarkdownParserProps {
   languages?: string[];
@@ -42,6 +53,14 @@ export async function createMarkdownParser(props?: MarkdownParserProps) {
       detailsLabel: "详细信息",
     }
   );
+
+  instance.use(createMathPlugin);
+  instance.use(attrsPlugin);
+  instance.use(...createAnchorPlugin());
+  instance.use(headersPlugin, {
+    level: anchorLevel,
+    slugify
+  } as HeadersPluginOptions);
 
   function parse(text: string) {
     return instance.render(text);

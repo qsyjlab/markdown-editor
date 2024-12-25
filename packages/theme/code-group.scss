@@ -82,8 +82,8 @@
   background-color: var(--md-code-tab-active-bar-color);
 }
 
-.md-code-group div[class*='language-'],
-.code {
+.md-code-group .blocks div[class*='language-'],
+.md-code-group .blocks div[class*='language-'] .code {
   display: none;
   margin-top: 0 !important;
   border-top-left-radius: 0 !important;
@@ -93,8 +93,4 @@
 .md-code-group div[class*='language-'].active,
 .code.active {
   display: block;
-}
-
-.code {
-  padding: 20px 24px;
 }
