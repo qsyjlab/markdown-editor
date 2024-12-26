@@ -9,7 +9,7 @@ import {
   createContainerPlugin,
   createMathPlugin,
   createAnchorPlugin,
-  imagePlugin
+  imagePlugin,
 } from "./plugins";
 
 import {
@@ -33,7 +33,7 @@ export interface MarkdownParserProps {
   /**
    *  codeCopyButtonTitle
    */
-  codeCopyButtonTitle:string
+  codeCopyButtonTitle?: string;
 }
 
 export async function createMarkdownParser(props?: MarkdownParserProps) {
@@ -44,9 +44,8 @@ export async function createMarkdownParser(props?: MarkdownParserProps) {
   });
 
   instance.use(preWrapperPlugin, {
-    codeCopyButtonTitle: 'copy'
+    codeCopyButtonTitle: "copy",
   });
-
 
   instance.use(linkPlugin);
   // 行号
@@ -69,10 +68,9 @@ export async function createMarkdownParser(props?: MarkdownParserProps) {
   instance.use(...createAnchorPlugin());
   instance.use(headersPlugin, {
     level: anchorLevel,
-    slugify
+    slugify,
   } as HeadersPluginOptions);
-
-  instance.use(imagePlugin)
+  instance.use(imagePlugin);
 
   function parse(text: string) {
     return instance.render(text);

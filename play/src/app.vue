@@ -8,6 +8,7 @@ import {
   createParser,
   bindCodeGroupsEvent,
   bindCopyCodeEvent,
+  bindLazyLoadImageEvent
 } from "@markdown-editor/parser";
 
 import "@markdown-editor/theme/style.scss";
@@ -27,6 +28,12 @@ async function initMarkdown() {
   nextTick(() => {
     bindCodeGroupsEvent();
     bindCopyCodeEvent();
+    bindLazyLoadImageEvent({
+      onClick: (src)=> {
+        console.log("src", src)
+      }
+    });
+
   });
 }
 </script>
