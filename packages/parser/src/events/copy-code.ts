@@ -1,4 +1,6 @@
 interface BindCopyCodeEventParams {
+  $el?: HTMLElement | Document;
+
   /**
    * Custom copy handler
    */
@@ -20,6 +22,7 @@ export function bindCopyCodeEvent(params?: BindCopyCodeEventParams) {
   const {
     successDelay = 1000,
     ignoredNodes = [".md-copy-ignore", ".diff.remove"],
+    $el = document,
   } = params || {};
 
   const timeoutIdMap: WeakMap<HTMLElement, NodeJS.Timeout> = new WeakMap();
@@ -69,7 +72,9 @@ export function bindCopyCodeEvent(params?: BindCopyCodeEventParams) {
     }
   }
 
-  window.addEventListener("click", eventHandler);
+  $el.addEventListener("click", (e) => {
+    eventHandler(e as MouseEvent);
+  });
 
   function stopEventListener() {
     window.removeEventListener("click", eventHandler);

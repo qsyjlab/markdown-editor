@@ -10,7 +10,7 @@ VitePress 带有内置的 Markdown 扩展。
 
 ## 标题锚点 {#header-anchors}
 
-标题会自动应用锚点。可以使用 `markdown.anchor` 选项配置锚点的渲染。
+标题会自动应用锚点。可以使用 `markdown.anchor` 选配置锚点的渲染。
 
 ### 自定义锚点 {#custom-anchors}
 

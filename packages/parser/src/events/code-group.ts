@@ -1,5 +1,8 @@
-export function bindCodeGroupsEvent() {
-  document.querySelectorAll(".md-code-group > .blocks").forEach((el) => {
+export function bindCodeGroupsEvent(container?:HTMLElement | Document) {
+
+  const target = container || document
+
+  target.querySelectorAll(".md-code-group > .blocks").forEach((el) => {
     Array.from(el.children).forEach((child) => {
       child.classList.remove("active");
     });

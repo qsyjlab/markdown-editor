@@ -1,25 +1,43 @@
 <template>
-  <div class="md-render-container">
-    <div v-html="html"></div>
-  </div>
+  <div id="container"></div>
 </template>
 <script setup lang="ts">
 import {
   createParser,
   bindCodeGroupsEvent,
   bindCopyCodeEvent,
-  bindLazyLoadImageEvent
+  bindLazyLoadImageEvent,
 } from "@markdown-editor/parser";
 
+import { MarkdownEditor } from "@markdown-editor/editor";
+
 import "@markdown-editor/theme/style.scss";
+import "@markdown-editor/theme/editor/editor.scss";
+
 import { nextTick, onMounted, ref } from "vue";
 import { text } from "./markdown";
 
 const html = ref("");
 
+let markdownEditor: MarkdownEditor | null;
+// const content = ref("");
+
 onMounted(() => {
-  initMarkdown();
+  initMarkdownEditor()
+  // initMarkdown();
 });
+
+function initMarkdownEditor() {
+  markdownEditor = new MarkdownEditor({
+    container: document.getElementById("container") as HTMLElement,
+    height: '800px',
+    setup: ()=> {
+      markdownEditor?.setContent(text)
+    }
+  });
+
+}
+
 async function initMarkdown() {
   const parser = await createParser({
     enableLineNumber: false,
@@ -29,12 +47,15 @@ async function initMarkdown() {
     bindCodeGroupsEvent();
     bindCopyCodeEvent();
     bindLazyLoadImageEvent({
-      onClick: (src)=> {
-        console.log("src", src)
-      }
+      onClick: (src) => {
+        console.log("src", src);
+      },
     });
-
   });
 }
 </script>
-<style scoped></style>
+<style lang="scss" scoped>
+#container {
+  padding: 20px;
+}
+</style>

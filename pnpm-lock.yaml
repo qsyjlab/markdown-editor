@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@markdown-editor/editor':
+        specifier: workspace:^
+        version: link:packages/editor
       '@markdown-editor/parser':
         specifier: workspace:^
         version: link:packages/parser
@@ -25,7 +28,11 @@ importers:
         specifier: ^5.7.2
         version: 5.7.2
 
-  packages/editor: {}
+  packages/editor:
+    dependencies:
+      '@markdown-editor/parser':
+        specifier: workspace:^
+        version: link:../parser
 
   packages/parser:
     dependencies:

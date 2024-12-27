@@ -1,4 +1,7 @@
 interface BindLazyLoadImageParams {
+
+  $el?: HTMLElement | Document;
+
   /**
    * image load display mode
    * @default loaded
@@ -14,9 +17,9 @@ interface BindLazyLoadImageParams {
  * handle lazy load image
  */
 export function bindLazyLoadImageEvent(params: BindLazyLoadImageParams = {}) {
-  const { display = "loaded" } = params;
+  const { display = "loaded", $el = document } = params;
 
-  const imageBlocks = document.querySelectorAll<HTMLElement>(".image-block");
+  const imageBlocks = $el.querySelectorAll<HTMLElement>(".image-block");
 
   const observer = new IntersectionObserver((entries, observer) => {
     entries.forEach((entry) => {
