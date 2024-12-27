@@ -1,0 +1,22 @@
+ul,
+ol {
+  padding-left: 1.25rem;
+  margin: 16px 0;
+}
+
+ul {
+  list-style: disc;
+}
+
+ol {
+  list-style: decimal;
+}
+
+li + li {
+  margin-top: 8px;
+}
+
+li > ol,
+li > ul {
+  margin: 8px 0 0;
+}
