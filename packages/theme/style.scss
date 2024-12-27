@@ -1,11 +1,11 @@
 @use "./var.scss";
-@use './base.scss';
+@use "./base.scss";
 @use "./custom-block.scss";
 @use "./code-group.scss";
-@use './table.scss';
-@use './head.scss';
-@use './copy.scss';
-@use './image.scss';
+@use "./table.scss";
+@use "./head.scss";
+@use "./copy.scss";
+@use "./image.scss";
 
 .md-render-container {
   font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
@@ -83,7 +83,7 @@
     transition: background-color 0.5s;
     margin: 0px -24px;
     padding: 0 24px;
-    width: calc(100%  + 48px);
+    width: calc(100% + 48px);
     display: inline-block;
     box-sizing: border-box;
   }
@@ -162,6 +162,29 @@
     line-height: 28px;
   }
 
+  p,
+  summary {
+    margin: 16px 0;
+  }
+
+  p {
+    line-height: 28px;
+  }
+
+  blockquote {
+    margin: 16px 0;
+    border-left: 2px solid var(--md-code-block-border);
+    padding-left: 16px;
+    transition: border-color 0.5s;
+    color: var(--md-text-color-2);
+  }
+
+  blockquote > p {
+    margin: 0;
+    font-size: 16px;
+    transition: color 0.5s;
+  }
+
   a.externa-link {
     font-size: 16px;
     font-weight: bold;
@@ -171,7 +194,6 @@
     transition: color 0.25s, opacity 0.25s;
     margin: 0;
   }
-
 
   /** 自定义代码块 */
 
