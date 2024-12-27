@@ -5,9 +5,8 @@
   --md-table-cell-text-color: var(--md-text-color-2);
 }
 
-.md-render-container {
+.md-editor {
   table {
-    display: block;
     border-collapse: collapse;
     margin: 20px 0;
     overflow-x: auto;
