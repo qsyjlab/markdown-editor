@@ -1,6 +1,8 @@
+import { IconManager } from "./icon-manager";
 import { _EditorPlugin, EditorPluginManager } from "./plugin";
 import { LazyImagePlugin } from "./plugins";
 import { MarkdownEditorPreview } from "./preview";
+import { MarkdownEditorToolbar } from "./toolbar";
 
 interface MarkdownOptions {
   container: HTMLElement;
@@ -18,8 +20,11 @@ export class MarkdownEditor {
   public content: string;
   public editorContainer?: HTMLElement;
   public preview?: MarkdownEditorPreview;
+  public toolbar?: MarkdownEditorToolbar;
 
   private pluginManager: EditorPluginManager;
+
+  public iconManager = new IconManager();
 
   private editable?: HTMLTextAreaElement;
 
@@ -47,7 +52,11 @@ export class MarkdownEditor {
     this.editorContainer.classList.add("md-editor");
     this.editorContainer.style.height = this.options.height || "auto";
 
-    this.editorContainer.appendChild(this.createToolbar());
+    const toolbar = new MarkdownEditorToolbar(this);
+
+    if (toolbar.$el) {
+      this.editorContainer.appendChild(toolbar.$el);
+    }
 
     // 创建 body
     const editorBody = document.createElement("div");
@@ -65,7 +74,7 @@ export class MarkdownEditor {
 
     this.container.append(this.editorContainer);
 
-    this.createdEditorAfter()
+    this.createdEditorAfter();
   }
 
   createdEditorAfter() {
@@ -81,13 +90,6 @@ export class MarkdownEditor {
 
     this.options?.setup?.();
   }
-
-  createToolbar() {
-    const toolbar = document.createElement("div");
-    toolbar.classList.add("md-editor-toolbar");
-    return toolbar;
-  }
-
   createEditorTextArea() {
     const editable = document.createElement("textarea");
 
@@ -108,4 +110,5 @@ export class MarkdownEditor {
 
     return wrap;
   }
+  
 }

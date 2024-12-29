@@ -1,5 +1,4 @@
 interface BindLazyLoadImageParams {
-
   $el?: HTMLElement | Document;
 
   /**
@@ -12,6 +11,11 @@ interface BindLazyLoadImageParams {
    */
   onClick?: (src: string, e: MouseEvent) => void;
 }
+
+/**
+ * log image load status
+ */
+const loadedImageSets = new Set<string>();
 
 /**
  * handle lazy load image
@@ -35,26 +39,25 @@ export function bindLazyLoadImageEvent(params: BindLazyLoadImageParams = {}) {
         if (src) {
           if (display === "immediate") {
             img.src = src;
-            img.removeAttribute("data-src");
-            img.removeAttribute("loading");
-            bindClickEvent();
+            loaded(false);
           } else if (display === "loaded") {
             img.src = src;
             img.removeAttribute("data-src");
-          
-            img.onload = () => {
-              requestAnimationFrame(()=> {
-                img.classList.add("loaded");
-              })
-              img.removeAttribute("loading");
-              bindClickEvent();
-            };
-            img.onerror = () => {
-              img.classList.add("loaded error");
-              img.removeAttribute("loading");
-            };
+
+            if (loadedImageSets.has(src)) {
+              loaded(false);
+            } else {
+              img.onload = () => {
+                loaded();
+              };
+
+              img.onerror = () => {
+                img.classList.add("loaded error");
+                img.removeAttribute("loading");
+              };
+            }
           }
-        }else {
+        } else {
           img.classList.add("loaded error");
         }
 
@@ -64,6 +67,21 @@ export function bindLazyLoadImageEvent(params: BindLazyLoadImageParams = {}) {
               params.onClick?.(src || "", e);
             });
           }
+        }
+        function loaded(anima = true) {
+          if (!img || !src) return;
+          loadedImageSets.add(src);
+
+          if (anima) {
+            requestAnimationFrame(() => {
+              img.classList.add("loaded");
+            });
+          } else {
+            img.classList.add("loaded");
+          }
+
+          img.removeAttribute("loading");
+          bindClickEvent();
         }
       }
     });

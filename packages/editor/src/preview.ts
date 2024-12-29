@@ -36,6 +36,8 @@ export class MarkdownEditorPreview {
   render() {
     if (!this.$el) return;
     this.$el.innerHTML = this.parserdHtmlText;
+
+    bindPreviewEvent(this.$el);
   }
 }
 
