@@ -36,6 +36,8 @@ function initMarkdownEditor() {
     }
   });
 
+  console.log("markdownEditor",markdownEditor)
+
 }
 
 async function initMarkdown() {

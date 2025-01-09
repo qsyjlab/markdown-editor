@@ -1,46 +1,51 @@
 import { MarkdownEditor } from "./editor";
 
-export class EditorPluginManager {
-  public editor: MarkdownEditor;
+export function createEditorPluginManager(
+  editor: MarkdownEditor
+): EditorPluginManager {
+  const plugins: Record<string, EditorPlugin> = {};
 
-  public plugins: EditorPlugin[];
-
-  constructor(editor: MarkdownEditor) {
-    this.editor = editor;
-    this.plugins = [];
-  }
-
-  registerPlugins(plugins: _EditorPlugin[]) {
-    plugins.forEach((PluginClass) => {
-      const plugin = new PluginClass(this.editor);
-      plugin.init();
-      this.plugins.push(plugin);
-    });
-  }
-
-  update() {
-    this.plugins.forEach((plugin) => {
-      plugin.update();
-    });
-  }
+  return {
+    plugins,
+    add: (name, api) => {
+      plugins[name] = api;
+    },
+    update: () => {
+      Object.values(plugins).forEach((plugin) => {
+        plugin?.update?.();
+      });
+    },
+    registerPlugins(plugins: EditorPluginFn[]) {
+      plugins.forEach((plugin) => {
+        const pluginResult = plugin(editor)
+        this.add(pluginResult.name, pluginResult)
+        pluginResult.init?.()
+    
+      });
+    }
+  };
 }
 
-export class EditorPlugin {
-  editor: MarkdownEditor;
-  constructor(editor: MarkdownEditor) {
-    this.editor = editor; // 插件需要访问编辑器实例
-  }
 
-  /**
-   * 初始化插件
-   */
-  init() {}
+export interface EditorPluginManager {
+  update: () => void;
 
-  onClick() {}
+  plugins: Record<string, EditorPlugin>;
 
-  update() {}
+  add: (name: string, api: EditorPlugin) => void;
 
-  destroy() {}
+  registerPlugins: (plugins: EditorPluginFn[]) => void;
+}
+export interface EditorPlugin extends Record<string, any> {
+
+  name:string
+  init?: () => void;
+
+  onClick?: () => void;
+  update?: () => void;
+
+  destroy?: () => void;
 }
 
-export type _EditorPlugin = new (editor: MarkdownEditor) => EditorPlugin
+
+export type EditorPluginFn=  (editor: MarkdownEditor) => EditorPlugin

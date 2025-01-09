@@ -1,8 +1,19 @@
-import { IconManager } from "./icon-manager";
-import { _EditorPlugin, EditorPluginManager } from "./plugin";
-import { LazyImagePlugin } from "./plugins";
+// import { EventManager } from "./event-manager";
+import { createIconManager } from "./icon-manager";
+import {
+  EditorPlugin,
+  EditorPluginFn,
+  EditorPluginManager,
+  createEditorPluginManager,
+} from "./plugin";
+import { boldPlugin, clearPlugin, LazyImagePlugin } from "./plugins";
 import { MarkdownEditorPreview } from "./preview";
-import { MarkdownEditorToolbar } from "./toolbar";
+import {
+  createEditorToolbarManager,
+  MarkdownEditorToolbarManager,
+} from "./toolbar";
+
+import { debounce } from "lodash-es";
 
 interface MarkdownOptions {
   container: HTMLElement;
@@ -11,7 +22,7 @@ interface MarkdownOptions {
 
   setup?: () => void;
 
-  plugins?: _EditorPlugin[];
+  plugins?: (() => (editor: MarkdownEditor) => EditorPlugin)[];
 }
 
 export class MarkdownEditor {
@@ -20,19 +31,21 @@ export class MarkdownEditor {
   public content: string;
   public editorContainer?: HTMLElement;
   public preview?: MarkdownEditorPreview;
-  public toolbar?: MarkdownEditorToolbar;
+  public toolbarManager?: MarkdownEditorToolbarManager;
 
   private pluginManager: EditorPluginManager;
 
-  public iconManager = new IconManager();
+  public iconManager = createIconManager();
 
-  private editable?: HTMLTextAreaElement;
+  public editable?: HTMLTextAreaElement;
 
   constructor(public options: MarkdownOptions) {
     this.container = options.container;
 
     this.content = "";
-    this.pluginManager = new EditorPluginManager(this);
+    this.pluginManager = createEditorPluginManager(this);
+    this.toolbarManager = createEditorToolbarManager(this);
+
     this.createEditor();
   }
 
@@ -52,10 +65,16 @@ export class MarkdownEditor {
     this.editorContainer.classList.add("md-editor");
     this.editorContainer.style.height = this.options.height || "auto";
 
-    const toolbar = new MarkdownEditorToolbar(this);
+    const plugins: EditorPluginFn[] = [
+      LazyImagePlugin,
+      clearPlugin,
+      boldPlugin,
+    ];
+    this.pluginManager.registerPlugins(plugins);
 
-    if (toolbar.$el) {
-      this.editorContainer.appendChild(toolbar.$el);
+    if (this.toolbarManager) {
+      this.toolbarManager.init();
+      this.editorContainer.appendChild(this.toolbarManager?.$el);
     }
 
     // 创建 body
@@ -79,15 +98,7 @@ export class MarkdownEditor {
 
   createdEditorAfter() {
     this.preview?.setContent(this.content);
-
-    const plugins: _EditorPlugin[] = [LazyImagePlugin];
-
-    if (this.options.plugins?.length) {
-      plugins.push(...this.options.plugins);
-    }
-
-    this.pluginManager.registerPlugins(plugins);
-
+    this.pluginManager.update();
     this.options?.setup?.();
   }
   createEditorTextArea() {
@@ -96,11 +107,16 @@ export class MarkdownEditor {
     this.editable = editable;
     editable.setAttribute("spellcheck", "false");
 
-    editable.addEventListener("input", (e) => {
-      const textContent = editable.value;
+    editable.addEventListener(
+      "input",
+      debounce((e) => {
+        const textContent = editable.value;
 
-      this.preview?.setContent(textContent);
-    });
+        console.log("textContent", "1");
+
+        this.preview?.setContent(textContent);
+      }, 200)
+    );
 
     const wrap = document.createElement("div");
 
@@ -110,5 +126,4 @@ export class MarkdownEditor {
 
     return wrap;
   }
-  
 }

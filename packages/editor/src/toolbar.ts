@@ -1,58 +1,68 @@
 import { MarkdownEditor } from "./editor";
 
-interface EditorToolbarButton {
-  label: string;
-  action: string;
-  icon: string;
-  onClick: () => void;
-}
-export class MarkdownEditorToolbar {
-  public editor?: MarkdownEditor;
-  public $el?: HTMLElement;
 
-  public buttons: EditorToolbarButton[] = [];
+export function createEditorToolbarManager(
+  editor: MarkdownEditor
+): MarkdownEditorToolbarManager {
+  const buttons: Record<string, EditorToolbarButtonConfig> = {};
 
-  constructor(editor: MarkdownEditor) {
-    this.editor = editor;
-    this.create();
+  const $el = document.createElement("div");
+  $el.classList.add("md-editor-toolbar");
 
-    this.renderButton({
-      label: "清除",
-      action: "clear",
-      icon: "clear",
-      onClick: () => {
-        this.editor?.setContent("");
-      },
-    });
+  function register(button: EditorToolbarButtonConfig) {
+    buttons[button.name] = button;
   }
 
-  create() {
-    this.$el = document.createElement("div");
-    this.$el.classList.add("md-editor-toolbar");
-    return this.$el;
-  }
-
-  registerButton(button: EditorToolbarButton) {
-    this.buttons.push(button);
-  }
-
-  renderButton(button: EditorToolbarButton) {
+  function render(button: EditorToolbarButtonConfig) {
     const btn = document.createElement("span");
 
-    btn.setAttribute('title', button.label)
+    btn.setAttribute("title", button.label);
 
     btn.classList.add("md-editor-toolbar-item");
 
-    const icon = this.editor?.iconManager.get(button.icon);
+    const icon = editor?.iconManager.create(button.icon);
 
     if (icon) {
       btn.appendChild(icon);
     }
 
     btn.addEventListener("click", () => {
-      button.onClick();
+      button.onAction?.();
     });
 
-    this.$el?.appendChild(btn);
+    $el?.appendChild(btn);
   }
+
+  function init(){
+
+    Object.values(buttons).forEach((button) => {
+      render(button);
+    });
+  }
+
+  return {
+    $el,
+    buttons,
+    register,
+    init,
+  };
+}
+
+export interface MarkdownEditorToolbarManager {
+  $el: HTMLElement;
+  register: (button: EditorToolbarButtonConfig) => void;
+  init: ()=> void
+  buttons: Record<string, EditorToolbarButtonConfig>;
+}
+
+export interface EditorToolbarButtonConfig {
+  name: string;
+  label: string;
+  icon: string;
+  onAction: () => void;
+  // tooltip: 'Save',
+  // enabled: false,
+  // onAction: () => editor.execCommand('mceSave'),
+  // onSetup: stateToggle(editor),
+  // shortcut: 'Meta+S'
 }

@@ -1,4 +1,5 @@
-import clearSvg from "./icons/clear.svg?raw";
+// import clearSvg from "./icons/clear.svg?raw";
+// import boldSvg from "./icons/bold.svg?raw";
 
 interface IconConfig {
   name: string;
@@ -8,52 +9,46 @@ interface IconConfig {
   html?: string;
 }
 
-export class IconManager {
-  public iconsMap: Map<string, IconConfig>;
+export function createIconManager(): IconManager {
+  const iconsMap = new Map<string, IconConfig>();
 
-  public icons: IconConfig[];
+  return {
+    iconsMap,
+    create(name: string) {
+      const config = iconsMap.get(name);
 
-  constructor() {
-    this.iconsMap = new Map();
-    this.icons = [];
+      if (!config) return;
 
-    this.register({
-      name: "clear",
-      type: "html",
-      html: clearSvg,
-    });
-  }
+      const icon = document.createElement("span") as HTMLElement;
 
-  get(name: string) {
-    const config = this.iconsMap.get(name);
+      icon.className = `icon-${config.type}-${config.name}`;
 
-    if (!config) return;
-
-    const icon = document.createElement("span");
-
-    icon.className = `icon-${config.type}-${config.name}`;
-
-    if (config.type === "html") {
-      if (config.html) {
-        icon.innerHTML = config.html;
+      if (config.type === "html") {
+        if (config.html) {
+          icon.innerHTML = config.html;
+        }
+      } else if (config.type === "font" && config.className) {
+        const fontIcon = document.createElement("i");
+        fontIcon.className = `icon ${config.className}`;
+        icon.appendChild(fontIcon);
+      } else if (config.type === "image" && config.src) {
+        const img = document.createElement("img");
+        img.src = config.src;
+        img.alt = config.name;
+        img.className = "icon-img";
+        icon.appendChild(img);
       }
-    } else if (config.type === "font" && config.className) {
-      const fontIcon = document.createElement("i");
-      fontIcon.className = `icon ${config.className}`;
-      icon.appendChild(fontIcon);
-    } else if (config.type === "image" && config.src) {
-      const img = document.createElement("img");
-      img.src = config.src;
-      img.alt = config.name;
-      img.className = "icon-img";
-      icon.appendChild(img);
-    }
 
-    return icon;
-  }
+      return icon;
+    },
+    register: (icon) => {
+      iconsMap.set(icon.name, icon);
+    },
+  };
+}
 
-  register(icon: IconConfig) {
-    this.iconsMap.set(icon.name, icon);
-    this.icons.push(icon);
-  }
+export interface IconManager {
+  iconsMap: Map<string, IconConfig>
+  create(name: string): HTMLElement | undefined;
+  register(icon: IconConfig): void;
 }
