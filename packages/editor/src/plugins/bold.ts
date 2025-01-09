@@ -1,5 +1,6 @@
 import { MarkdownEditor } from "../editor";
 import { EditorPlugin } from "../plugin";
+import { insertUtils } from "./utils";
 
 export function boldPlugin(editor: MarkdownEditor): EditorPlugin {
   const name = "bold";
@@ -22,31 +23,13 @@ export function boldPlugin(editor: MarkdownEditor): EditorPlugin {
     icon: name,
     label: "加粗",
     onAction: () => {
-        const textarea = editor.editable
-    
-        if(!textarea) return 
-        // 获取选中的文本范围
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        // 获取选中的文本
-        const selectedText = textarea.value.substring(start, end);
-        
-        // 包裹选中的文本
-        const backtickText = ` \`${selectedText}\` `;
-        
-        // 更新文本内容：选中的部分替换为带反引号的文本
-        textarea.value = textarea.value.substring(0, start) + backtickText + textarea.value.substring(end);
-    
-        // 移动光标到选中部分的后面
-        textarea.selectionStart = textarea.selectionEnd = start + backtickText.length;
-        editor.setContent(textarea.value)
+      insertUtils(editor, (selectedText: string) => {
+        return `\`${selectedText}\``;
+      });
     },
   });
 
-
-
-
   return {
-    name: "clear",
+    name: "bold",
   };
 }

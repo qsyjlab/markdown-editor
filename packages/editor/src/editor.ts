@@ -6,8 +6,9 @@ import {
   EditorPluginManager,
   createEditorPluginManager,
 } from "./plugin";
-import { boldPlugin, clearPlugin, LazyImagePlugin } from "./plugins";
+import { boldPlugin, clearPlugin, codePlugin, LazyImagePlugin, linkPlugin, strickoutPlugin } from "./plugins";
 import { MarkdownEditorPreview } from "./preview";
+import { createSelectionManager, SelectionManager } from "./selection";
 import {
   createEditorToolbarManager,
   MarkdownEditorToolbarManager,
@@ -31,9 +32,12 @@ export class MarkdownEditor {
   public content: string;
   public editorContainer?: HTMLElement;
   public preview?: MarkdownEditorPreview;
+
   public toolbarManager?: MarkdownEditorToolbarManager;
 
-  private pluginManager: EditorPluginManager;
+  public pluginManager: EditorPluginManager;
+
+  public selectionManager: SelectionManager;
 
   public iconManager = createIconManager();
 
@@ -45,6 +49,7 @@ export class MarkdownEditor {
     this.content = "";
     this.pluginManager = createEditorPluginManager(this);
     this.toolbarManager = createEditorToolbarManager(this);
+    this.selectionManager = createSelectionManager(this);
 
     this.createEditor();
   }
@@ -60,6 +65,10 @@ export class MarkdownEditor {
     this.pluginManager.update();
   }
 
+  getContent() {
+    return this.content;
+  }
+
   async createEditor() {
     this.editorContainer = document.createElement("div", {});
     this.editorContainer.classList.add("md-editor");
@@ -69,6 +78,9 @@ export class MarkdownEditor {
       LazyImagePlugin,
       clearPlugin,
       boldPlugin,
+      strickoutPlugin,
+      linkPlugin,
+      codePlugin
     ];
     this.pluginManager.registerPlugins(plugins);
 
@@ -81,7 +93,7 @@ export class MarkdownEditor {
     const editorBody = document.createElement("div");
     editorBody.classList.add("md-editor-body");
 
-    editorBody.appendChild(this.createEditorTextArea());
+    editorBody.appendChild(createEditorTextArea(this));
 
     const previewInstance = new MarkdownEditorPreview();
     await previewInstance.init();
@@ -93,37 +105,36 @@ export class MarkdownEditor {
 
     this.container.append(this.editorContainer);
 
-    this.createdEditorAfter();
+    createdEditorAfter(this);
   }
+}
 
-  createdEditorAfter() {
-    this.preview?.setContent(this.content);
-    this.pluginManager.update();
-    this.options?.setup?.();
-  }
-  createEditorTextArea() {
-    const editable = document.createElement("textarea");
+function createEditorTextArea(editor: MarkdownEditor) {
+  const editable = document.createElement("textarea");
 
-    this.editable = editable;
-    editable.setAttribute("spellcheck", "false");
+  editor.editable = editable;
+  editable.setAttribute("spellcheck", "false");
 
-    editable.addEventListener(
-      "input",
-      debounce((e) => {
-        const textContent = editable.value;
+  editable.addEventListener(
+    "input",
+    debounce(() => {
+      const textContent = editable.value;
+      editor.setContent(textContent);
+      // editor.preview?.setContent(textContent);
+    }, 200)
+  );
 
-        console.log("textContent", "1");
+  const wrap = document.createElement("div");
 
-        this.preview?.setContent(textContent);
-      }, 200)
-    );
+  wrap.classList.add("md-editor-editable");
 
-    const wrap = document.createElement("div");
+  wrap.append(editable);
 
-    wrap.classList.add("md-editor-editable");
+  return wrap;
+}
 
-    wrap.append(editable);
-
-    return wrap;
-  }
+function createdEditorAfter(editor: MarkdownEditor) {
+  editor.preview?.setContent(editor.content);
+  editor.pluginManager.update();
+  editor.options?.setup?.();
 }
