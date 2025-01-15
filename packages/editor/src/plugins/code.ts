@@ -1,7 +1,5 @@
 import { MarkdownEditor } from "../editor"
 import { EditorPlugin } from "../plugin"
-import { insertUtils } from "./utils"
-
 
 
 export function codePlugin(editor: MarkdownEditor): EditorPlugin {
@@ -18,9 +16,18 @@ export function codePlugin(editor: MarkdownEditor): EditorPlugin {
       icon: name,
       label: "代码块",
       onAction: () => {
-        insertUtils(editor, (selectedText: string) => {
-          return `\n\`\`\`\n${selectedText}\n\`\`\`\n`;
-        });
+
+        editor.insert((text, start, end)=> {
+          
+          const prefix = `\n\`\`\`\n`
+          const suffix = `\n\`\`\`\n`
+
+          return {
+            formattedText: prefix + text + suffix,
+            start: start + prefix.length,
+            end: end + prefix.length,
+          }
+        })
       },
     });
   

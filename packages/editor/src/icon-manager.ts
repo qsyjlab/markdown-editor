@@ -1,6 +1,3 @@
-// import clearSvg from "./icons/clear.svg?raw";
-// import boldSvg from "./icons/bold.svg?raw";
-
 interface IconConfig {
   name: string;
   type: "html" | "font" | "image";

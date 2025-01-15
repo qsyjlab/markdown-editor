@@ -17,6 +17,7 @@ export function createSelectionManager(
 
       const selectionStart = editable.selectionStart;
       const selectionEnd = editable.selectionEnd;
+      
       const selectedText = editable.value.substring(
         selectionStart,
         selectionEnd

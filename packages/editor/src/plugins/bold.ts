@@ -1,6 +1,5 @@
 import { MarkdownEditor } from "../editor";
 import { EditorPlugin } from "../plugin";
-import { insertUtils } from "./utils";
 
 export function boldPlugin(editor: MarkdownEditor): EditorPlugin {
   const name = "bold";
@@ -23,9 +22,16 @@ export function boldPlugin(editor: MarkdownEditor): EditorPlugin {
     icon: name,
     label: "加粗",
     onAction: () => {
-      insertUtils(editor, (selectedText: string) => {
-        return `\`${selectedText}\``;
-      });
+     editor.insert((text, start,end)=> {
+
+      const prefix = "**";
+      const suffix = "**";
+      return {
+        formattedText: prefix + text + suffix,
+        start: start + prefix.length,
+        end: end + prefix.length
+      }
+     })
     },
   });
 

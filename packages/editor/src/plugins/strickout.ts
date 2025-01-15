@@ -3,7 +3,7 @@
 
 import { MarkdownEditor } from "../editor";
 import { EditorPlugin } from "../plugin";
-import { insertUtils } from "./utils";
+
 
 export function strickoutPlugin(editor: MarkdownEditor): EditorPlugin {
   const name = "strickout";
@@ -20,9 +20,17 @@ export function strickoutPlugin(editor: MarkdownEditor): EditorPlugin {
     icon: name,
     label: "删除线",
     onAction: () => {
-      insertUtils(editor, (selectedText: string) => {
-        return `~~${selectedText}~~`;
-      });
+      editor.insert((text, start,end)=> {
+
+        const prefix = "~~";
+        const suffix = "~~";
+        return {
+          formattedText: prefix + text + suffix,
+          start: start + prefix.length,
+          end: end + prefix.length
+        }
+      
+      })
     },
   });
 

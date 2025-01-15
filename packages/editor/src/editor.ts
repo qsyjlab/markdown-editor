@@ -1,4 +1,5 @@
-// import { EventManager } from "./event-manager";
+import { debounce } from "lodash-es";
+
 import { createIconManager } from "./icon-manager";
 import {
   EditorPlugin,
@@ -6,15 +7,20 @@ import {
   EditorPluginManager,
   createEditorPluginManager,
 } from "./plugin";
-import { boldPlugin, clearPlugin, codePlugin, LazyImagePlugin, linkPlugin, strickoutPlugin } from "./plugins";
+import {
+  boldPlugin,
+  clearPlugin,
+  codePlugin,
+  LazyImagePlugin,
+  linkPlugin,
+  strickoutPlugin,
+} from "./plugins";
 import { MarkdownEditorPreview } from "./preview";
 import { createSelectionManager, SelectionManager } from "./selection";
 import {
   createEditorToolbarManager,
   MarkdownEditorToolbarManager,
 } from "./toolbar";
-
-import { debounce } from "lodash-es";
 
 interface MarkdownOptions {
   container: HTMLElement;
@@ -24,6 +30,18 @@ interface MarkdownOptions {
   setup?: () => void;
 
   plugins?: (() => (editor: MarkdownEditor) => EditorPlugin)[];
+}
+
+type InsertCallback = (
+  selected: string,
+  start: number,
+  end: number
+) => InsertCallbackResult;
+
+interface InsertCallbackResult {
+  start: number;
+  end: number;
+  formattedText: string;
 }
 
 export class MarkdownEditor {
@@ -55,18 +73,44 @@ export class MarkdownEditor {
   }
 
   setContent(text: string) {
-    this.content = text;
+    // this.content = text;
 
     if (this.editable) {
       this.editable.value = text;
     }
 
+    this.content = this.editable?.value || "";
     this.preview?.setContent(text);
     this.pluginManager.update();
   }
 
   getContent() {
     return this.content;
+  }
+
+  insert(callback: InsertCallback) {
+    if (!this.editable) return;
+
+    const {
+      selectedText,
+      selectionStart = 0,
+      selectionEnd = 0,
+    } = this.selectionManager.getSelection() || {};
+    const { start, end, formattedText } = callback(
+      selectedText || "",
+      selectionStart,
+      selectionEnd
+    );
+
+    this.editable.focus();
+    const content = this.content;
+
+    const preStr = content.substring(0, selectionStart);
+    const sufStr = content.substring(selectionEnd);
+    const text = preStr + formattedText + sufStr;
+    this.setContent(text);
+
+    this.selectionManager.setSelectionRange(start, end);
   }
 
   async createEditor() {
@@ -80,7 +124,7 @@ export class MarkdownEditor {
       boldPlugin,
       strickoutPlugin,
       linkPlugin,
-      codePlugin
+      codePlugin,
     ];
     this.pluginManager.registerPlugins(plugins);
 
