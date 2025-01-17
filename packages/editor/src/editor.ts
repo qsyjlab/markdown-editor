@@ -1,4 +1,4 @@
-import { debounce } from "lodash-es";
+// import { debounce } from "lodash-es";
 
 import { createIconManager } from "./icon-manager";
 import {
@@ -13,6 +13,7 @@ import {
   codePlugin,
   LazyImagePlugin,
   linkPlugin,
+  quotePlugin,
   strickoutPlugin,
 } from "./plugins";
 import { MarkdownEditorPreview } from "./preview";
@@ -21,6 +22,8 @@ import {
   createEditorToolbarManager,
   MarkdownEditorToolbarManager,
 } from "./toolbar";
+import { createCodeMirror } from "./code-mirror";
+import { InsertCallback } from "./code-mirror/interface";
 
 interface MarkdownOptions {
   container: HTMLElement;
@@ -32,17 +35,6 @@ interface MarkdownOptions {
   plugins?: (() => (editor: MarkdownEditor) => EditorPlugin)[];
 }
 
-type InsertCallback = (
-  selected: string,
-  start: number,
-  end: number
-) => InsertCallbackResult;
-
-interface InsertCallbackResult {
-  start: number;
-  end: number;
-  formattedText: string;
-}
 
 export class MarkdownEditor {
   public container: HTMLElement;
@@ -61,6 +53,8 @@ export class MarkdownEditor {
 
   public editable?: HTMLTextAreaElement;
 
+  public editorManager = createCodeMirror(this);
+
   constructor(public options: MarkdownOptions) {
     this.container = options.container;
 
@@ -73,13 +67,8 @@ export class MarkdownEditor {
   }
 
   setContent(text: string) {
-    // this.content = text;
 
-    if (this.editable) {
-      this.editable.value = text;
-    }
-
-    this.content = this.editable?.value || "";
+    this.editorManager.setContent(text)
     this.preview?.setContent(text);
     this.pluginManager.update();
   }
@@ -89,28 +78,9 @@ export class MarkdownEditor {
   }
 
   insert(callback: InsertCallback) {
-    if (!this.editable) return;
 
-    const {
-      selectedText,
-      selectionStart = 0,
-      selectionEnd = 0,
-    } = this.selectionManager.getSelection() || {};
-    const { start, end, formattedText } = callback(
-      selectedText || "",
-      selectionStart,
-      selectionEnd
-    );
+    this.editorManager.insertAndSelectText(callback)
 
-    this.editable.focus();
-    const content = this.content;
-
-    const preStr = content.substring(0, selectionStart);
-    const sufStr = content.substring(selectionEnd);
-    const text = preStr + formattedText + sufStr;
-    this.setContent(text);
-
-    this.selectionManager.setSelectionRange(start, end);
   }
 
   async createEditor() {
@@ -125,6 +95,7 @@ export class MarkdownEditor {
       strickoutPlugin,
       linkPlugin,
       codePlugin,
+      quotePlugin
     ];
     this.pluginManager.registerPlugins(plugins);
 
@@ -137,7 +108,12 @@ export class MarkdownEditor {
     const editorBody = document.createElement("div");
     editorBody.classList.add("md-editor-body");
 
-    editorBody.appendChild(createEditorTextArea(this));
+    const wrap = document.createElement("div");
+
+    wrap.classList.add("md-editor-editable");
+
+    this.editorManager.init(wrap);
+    editorBody.appendChild(wrap);
 
     const previewInstance = new MarkdownEditorPreview();
     await previewInstance.init();
@@ -151,30 +127,6 @@ export class MarkdownEditor {
 
     createdEditorAfter(this);
   }
-}
-
-function createEditorTextArea(editor: MarkdownEditor) {
-  const editable = document.createElement("textarea");
-
-  editor.editable = editable;
-  editable.setAttribute("spellcheck", "false");
-
-  editable.addEventListener(
-    "input",
-    debounce(() => {
-      const textContent = editable.value;
-      editor.setContent(textContent);
-      // editor.preview?.setContent(textContent);
-    }, 200)
-  );
-
-  const wrap = document.createElement("div");
-
-  wrap.classList.add("md-editor-editable");
-
-  wrap.append(editable);
-
-  return wrap;
 }
 
 function createdEditorAfter(editor: MarkdownEditor) {

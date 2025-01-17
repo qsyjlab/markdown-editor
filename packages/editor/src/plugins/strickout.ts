@@ -20,12 +20,14 @@ export function strickoutPlugin(editor: MarkdownEditor): EditorPlugin {
     icon: name,
     label: "删除线",
     onAction: () => {
-      editor.insert((text, start,end)=> {
+      editor.insert((params)=> {
+
+        const { selectedText, start, end } = params
 
         const prefix = "~~";
         const suffix = "~~";
         return {
-          formattedText: prefix + text + suffix,
+          formattedText: prefix + selectedText + suffix,
           start: start + prefix.length,
           end: end + prefix.length
         }

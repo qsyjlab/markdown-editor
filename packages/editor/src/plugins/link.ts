@@ -14,11 +14,13 @@ export function linkPlugin(editor: MarkdownEditor): EditorPlugin {
     icon: name,
     label: "链接",
     onAction: () => {
-      editor.insert((text, start)=> {
-        const finalStart =  start + text.length + 3
+      editor.insert((params)=> {
+
+        const { selectedText, start } = params
+        const finalStart =  start + selectedText.length + 3
         const externalPrefix = 'http://'
         return {
-          formattedText: `[${text}](${externalPrefix})`,
+          formattedText: `[${selectedText}](${externalPrefix})`,
           start: finalStart,
           end: finalStart + externalPrefix.length
         }

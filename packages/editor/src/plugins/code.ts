@@ -17,13 +17,15 @@ export function codePlugin(editor: MarkdownEditor): EditorPlugin {
       label: "代码块",
       onAction: () => {
 
-        editor.insert((text, start, end)=> {
+        editor.insert((params)=> {
+
+          const {  selectedText ,start, end } = params
           
           const prefix = `\n\`\`\`\n`
           const suffix = `\n\`\`\`\n`
 
           return {
-            formattedText: prefix + text + suffix,
+            formattedText: prefix + selectedText + suffix,
             start: start + prefix.length,
             end: end + prefix.length,
           }
