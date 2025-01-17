@@ -14,6 +14,7 @@ import {
   LazyImagePlugin,
   linkPlugin,
   quotePlugin,
+  splitLinePlugin,
   strickoutPlugin,
 } from "./plugins";
 import { MarkdownEditorPreview } from "./preview";
@@ -95,7 +96,8 @@ export class MarkdownEditor {
       strickoutPlugin,
       linkPlugin,
       codePlugin,
-      quotePlugin
+      quotePlugin,
+      splitLinePlugin
     ];
     this.pluginManager.registerPlugins(plugins);
 
