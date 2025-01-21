@@ -21,7 +21,7 @@ export function splitLinePlugin(editor: MarkdownEditor): EditorPlugin {
         return {
           formattedText: prefix,
           start,
-          end: prefix.length,
+          end: start,
         };
       });
     },
