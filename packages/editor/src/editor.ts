@@ -11,6 +11,7 @@ import {
   boldPlugin,
   clearPlugin,
   codePlugin,
+  headerPlugin,
   LazyImagePlugin,
   linkPlugin,
   quotePlugin,
@@ -97,7 +98,8 @@ export class MarkdownEditor {
       linkPlugin,
       codePlugin,
       quotePlugin,
-      splitLinePlugin
+      splitLinePlugin,
+      headerPlugin
     ];
     this.pluginManager.registerPlugins(plugins);
 

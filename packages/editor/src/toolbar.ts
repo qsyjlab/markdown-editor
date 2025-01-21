@@ -1,5 +1,5 @@
 import { MarkdownEditor } from "./editor";
-
+import { DropdownMenu } from "./ui";
 
 export function createEditorToolbarManager(
   editor: MarkdownEditor
@@ -20,21 +20,46 @@ export function createEditorToolbarManager(
 
     btn.classList.add("md-editor-toolbar-item");
 
-    const icon = editor?.iconManager.create(button.icon);
-
-    if (icon) {
-      btn.appendChild(icon);
-    }
+    let icon = editor?.iconManager.create(button.icon);
 
     btn.addEventListener("click", () => {
       button.onAction?.();
     });
 
+    const dropTrigger = button.dropTrigger || 'mouseover'
+
+    if (button.type === "dropdown") {
+      button.fetch?.((menus) => {
+        icon && btn.appendChild(icon)
+        const dropdown = new DropdownMenu({
+          triggerElement: btn,
+          trigger: dropTrigger,
+          hideOnClick:true,
+          menus: menus.map((item) => {
+            return {
+              title: item.label,
+              action: item.name,
+              onClick: item.onAction,
+            };
+          }),
+        });
+
+        $el?.appendChild(dropdown.container);
+        // btn.appendChild(dropdown.container);
+        return 
+     
+      });
+
+      return 
+    } 
+
+    if (icon) {
+      btn.appendChild(icon);
+    }
     $el?.appendChild(btn);
   }
 
-  function init(){
-
+  function init() {
     Object.values(buttons).forEach((button) => {
       render(button);
     });
@@ -51,7 +76,7 @@ export function createEditorToolbarManager(
 export interface MarkdownEditorToolbarManager {
   $el: HTMLElement;
   register: (button: EditorToolbarButtonConfig) => void;
-  init: ()=> void
+  init: () => void;
   buttons: Record<string, EditorToolbarButtonConfig>;
 }
 
@@ -59,6 +84,15 @@ export interface EditorToolbarButtonConfig {
   name: string;
   label: string;
   icon: string;
+  /**
+   * @default button
+   */
+  type?: "button" | "dropdown";
+
+  dropTrigger?: "mouseover";
+  fetch?: (
+    callback: (menus: EditorToolbarDropdownItemConfig[]) => void
+  ) => void;
   onAction: () => void;
   // tooltip: 'Save',
   // enabled: false,
@@ -66,3 +100,8 @@ export interface EditorToolbarButtonConfig {
   // onSetup: stateToggle(editor),
   // shortcut: 'Meta+S'
 }
+
+export type EditorToolbarDropdownItemConfig = Pick<
+  EditorToolbarButtonConfig,
+  "label" | "name" | "onAction"
+>;
