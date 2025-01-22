@@ -1,5 +1,3 @@
-import { createHighlighter as createShikiHighlighter } from "shiki";
-
 import {
   transformerNotationDiff,
   transformerNotationHighlight,
@@ -7,6 +5,12 @@ import {
   transformerNotationErrorLevel,
   transformerMetaHighlight,
 } from "@shikijs/transformers";
+
+import { createHighlighterCore } from 'shiki/core'
+import { createOnigurumaEngine } from 'shiki/engine/oniguruma'
+
+import presetThemes from './preset/theme'
+import presetLangs from './preset/lang'
 
 interface HighlighterProps {
   theme?: any;
@@ -23,17 +27,24 @@ export async function createHighlighter(options?: HighlighterProps) {
     dark: "github-dark",
   };
 
-  const themes =
-    typeof theme === "object" && "light" in theme && "dark" in theme
-      ? [theme.light, theme.dark]
-      : [theme];
 
-  const highlighter = await createShikiHighlighter({
-    themes,
-    langs: ["html", "css", "js", "bash", "typescript", "python", "md", "yaml"],
+  // const themes =
+  //   typeof theme === "object" && "light" in theme && "dark" in theme
+  //     ? [theme.light, theme.dark]
+  //     : [theme];
 
-    langAlias: options?.languageAlias,
-  });
+  // const highlighter = await createShikiHighlighter({
+  //   themes,
+  //   langs: ["html", "css", "js", "bash", "typescript", "python", "md", "yaml"],
+  //   langAlias: options?.languageAlias,
+  // });
+
+  const highlighter = await createHighlighterCore({
+    themes: presetThemes,
+    langs: presetLangs,
+    // `shiki/wasm` contains the wasm binary inlined as base64 string.
+    engine: createOnigurumaEngine(import('shiki/wasm'))
+  })
 
   function highlight(str: string, lang: string, attrs: string) {
 
