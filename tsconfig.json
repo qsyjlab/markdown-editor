@@ -1,4 +1,10 @@
 {
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,            // 生成声明文件
+    "declarationDir": "dist/types", // 声明文件输出目录
+    
+  },
   "files": [],
   
   "references": [
