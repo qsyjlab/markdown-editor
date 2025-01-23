@@ -1,3 +1,6 @@
+
+
+// @ts-nocheck
 export default [
   () => import("@shikijs/langs/javascript"),
   () => import("@shikijs/langs/css"),
