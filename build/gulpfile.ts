@@ -1,4 +1,4 @@
-import { parallel, series } from "gulp";
-import { buildThemeChalk } from "./src/task/build-theme";
+import { parallel } from "gulp";
+import { clearDist } from "./src/task/clean";
 
-export default parallel(series(buildThemeChalk));
+export default parallel(clearDist);

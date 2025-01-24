@@ -4,19 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm run -C build build"
+    "build": "pnpm run -C build build",
+    "clean": "pnpm run clean:dist && pnpm run -r --parallel clean",
+    "clean:dist": "rimraf dist"
   },
   "keywords": [],
   "author": "",
   "devDependencies": {
     "@types/node": "^22.10.2",
+    "rimraf": "^6.0.1",
     "sass": "^1.83.0",
     "typescript": "^5.7.2"
   },
   "dependencies": {
     "@markdown-editor/editor": "workspace:^",
     "@markdown-editor/parser": "workspace:^",
-    "@markdown-editor/theme": "workspace:^"
+    "@markdown-editor/theme": "workspace:^",
+    "@markdown-editor/build": "workspace:^"
   },
   "pnpm": {
     "overrides": {
