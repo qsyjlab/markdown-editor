@@ -1,5 +1,5 @@
 {
-  "name": "markdown-editor",
+  "name": "md-doc-editor",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -17,10 +17,10 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "@markdown-editor/editor": "workspace:^",
-    "@markdown-editor/parser": "workspace:^",
-    "@markdown-editor/theme": "workspace:^",
-    "@markdown-editor/build": "workspace:^"
+    "@md-doc-editor/editor": "workspace:^",
+    "@md-doc-editor/parser": "workspace:^",
+    "@md-doc-editor/theme": "workspace:^",
+    "@md-doc-editor/build": "workspace:^"
   },
   "pnpm": {
     "overrides": {

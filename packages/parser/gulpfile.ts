@@ -8,7 +8,7 @@ import resolvePlugin from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import { terser } from 'rollup-plugin-terser'
 
-import { projectThemeRoot, excludeFiles, projectParserRoot, projectRoot, generateExternal, projectParserPkg } from "@markdown-editor/build";
+import { projectThemeRoot, excludeFiles, projectParserRoot, projectRoot, generateExternal, projectParserPkg } from "@md-doc-editor/build";
 
 
 const target = 'es2019'

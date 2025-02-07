@@ -3,7 +3,7 @@ import {
   bindCodeGroupsEvent,
   bindCopyCodeEvent,
   bindLazyLoadImageEvent,
-} from "@markdown-editor/parser";
+} from "@md-doc-editor/parser";
 
 export class MarkdownEditorPreview {
   public $el?: HTMLElement;

@@ -7,12 +7,12 @@ import {
   bindCodeGroupsEvent,
   bindCopyCodeEvent,
   bindLazyLoadImageEvent,
-} from "@markdown-editor/parser";
+} from "@md-doc-editor/parser";
 
-import { MarkdownEditor } from "@markdown-editor/editor";
+import { MarkdownEditor } from "@md-doc-editor/editor";
 
-import "@markdown-editor/theme/style.scss";
-import "@markdown-editor/theme/editor/editor.scss";
+import "@md-doc-editor/theme/style.scss";
+import "@md-doc-editor/theme/editor/editor.scss";
 
 import { nextTick, onMounted, ref } from "vue";
 import { text } from "./markdown";

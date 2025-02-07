@@ -17,7 +17,7 @@
     "rootDir": "./",
     "types": [],
     "paths": {
-      "markdown-editor/*": [
+      "md-doc-editor/*": [
         "packages/*"
       ]
     }

@@ -4,7 +4,7 @@ import dartSass from "sass";
 import autoprefixer from "gulp-autoprefixer";
 import cleanCSS from "gulp-clean-css";
 import path from "path";
-import { projectThemeRoot } from "@markdown-editor/build";
+import { projectThemeRoot } from "@md-doc-editor/build";
 
 export function buildThemeChalk() {
   const sass = gulpSass(dartSass);

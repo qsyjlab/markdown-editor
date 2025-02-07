@@ -1,14 +1,19 @@
 {
-  "name": "@markdown-editor/parser",
+  "name": "@md-doc-editor/parser",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
+  "private": false,
   "scripts": {
     "build": "gulp --require @esbuild-kit/cjs-loader -f gulpfile.ts",
     "clean": "rimraf dist"
   },
   "keywords": [],
   "author": "",
+  "files": [
+    "dist",
+    "package.json"
+  ],
   "devDependencies": {
     "@types/gulp": "^4.0.17",
     "@types/markdown-it": "^14.1.2",

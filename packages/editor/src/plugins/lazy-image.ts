@@ -1,4 +1,4 @@
-import { bindLazyLoadImageEvent } from "@markdown-editor/parser";
+import { bindLazyLoadImageEvent } from "@md-doc-editor/parser";
 import { MarkdownEditor } from "../editor";
 
 export function LazyImagePlugin(editor: MarkdownEditor) {

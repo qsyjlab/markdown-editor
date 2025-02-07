@@ -1,5 +1,5 @@
 {
-  "name": "@markdown-editor/theme",
+  "name": "@md-doc-editor/theme",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -15,7 +15,7 @@
     "@types/gulp-clean-css": "^4.3.4",
     "@types/gulp-sass": "^5.0.4",
     "@esbuild-kit/cjs-loader": "^2.4.4",
-    "@markdown-editor/build": "workspace:^",
+    "@md-doc-editor/build": "workspace:^",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^9.0.0",
     "gulp-clean-css": "^4.3.0",

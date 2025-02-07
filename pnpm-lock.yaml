@@ -11,16 +11,16 @@ importers:
 
   .:
     dependencies:
-      '@markdown-editor/build':
+      '@md-doc-editor/build':
         specifier: workspace:^
         version: link:build
-      '@markdown-editor/editor':
+      '@md-doc-editor/editor':
         specifier: workspace:^
         version: link:packages/editor
-      '@markdown-editor/parser':
+      '@md-doc-editor/parser':
         specifier: workspace:^
         version: link:packages/parser
-      '@markdown-editor/theme':
+      '@md-doc-editor/theme':
         specifier: workspace:^
         version: link:packages/theme
     devDependencies:
@@ -120,7 +120,7 @@ importers:
       '@codemirror/view':
         specifier: ^6.36.2
         version: 6.36.2
-      '@markdown-editor/parser':
+      '@md-doc-editor/parser':
         specifier: workspace:^
         version: link:../parser
       '@types/lodash-es':
@@ -226,7 +226,7 @@ importers:
       '@esbuild-kit/cjs-loader':
         specifier: ^2.4.4
         version: 2.4.4
-      '@markdown-editor/build':
+      '@md-doc-editor/build':
         specifier: workspace:^
         version: link:../../build
       '@types/gulp':
