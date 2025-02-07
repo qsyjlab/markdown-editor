@@ -1,8 +1,10 @@
 import { projectEditorPkg } from "./path"
 import { getPackageDependencies } from "./pkg"
 
-export const generateExternal = async () => {
-    const { dependencies, peerDependencies } = getPackageDependencies(projectEditorPkg)
+export const generateExternal = async (path =  projectEditorPkg) => {
+    const { dependencies, peerDependencies } = getPackageDependencies(path)
+
+    console.log("dependencies",dependencies)
   
     return (id: string) => {
       const packages: string[] = [...peerDependencies, ...dependencies]

@@ -13,3 +13,5 @@ export const projectParserRoot = resolve(projectRoot,  'packages', 'parser');
 
 
 export const projectEditorPkg = resolve(projectEditorRoot, 'package.json')
+
+export const projectParserPkg = resolve(projectParserRoot, 'package.json')

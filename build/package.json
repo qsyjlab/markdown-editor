@@ -17,7 +17,6 @@
     "@rollup/plugin-commonjs": "^28.0.2",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.0",
-    "@rollup/plugin-typescript": "^12.1.2",
     "@types/gulp": "^4.0.17",
     "@types/gulp-autoprefixer": "^0.0.37",
     "@types/gulp-clean-css": "^4.3.4",

@@ -3,7 +3,7 @@
 </template>
 <script setup lang="ts">
 import {
-  createParser,
+  createMarkdownParser,
   bindCodeGroupsEvent,
   bindCopyCodeEvent,
   bindLazyLoadImageEvent,
@@ -41,7 +41,7 @@ function initMarkdownEditor() {
 }
 
 async function initMarkdown() {
-  const parser = await createParser({
+  const parser = await createMarkdownParser({
     enableLineNumber: false,
   });
   html.value = parser.parse(text);

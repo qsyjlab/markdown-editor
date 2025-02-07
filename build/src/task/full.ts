@@ -4,18 +4,16 @@ import { rollup } from "rollup";
 import commonjs from "@rollup/plugin-commonjs";
 import resolvePlugin from "@rollup/plugin-node-resolve";
 import json from "@rollup/plugin-json";
+import typescript from "rollup-plugin-typescript2";
+
 import esbuild from "rollup-plugin-esbuild";
 import alias from "@rollup/plugin-alias";
-// import sass from "rollup-plugin-sass";
-// import glob from "fast-glob";
+import { projectEditorRoot, projectRoot } from "../path";
+import { entries } from "../alias";
 
-import { projectEditorRoot, projectRoot } from "./path";
-import { entries } from "./alias";
-// import { excludeFiles } from "./pkg";
-// import { generateExternal } from "./external";
-// import { excludeFiles } from "./pkg";
 
-export async function runBuildTask() {
+const target = 'es2019'
+export async function buildFullBunddle() {
   try {
     // const input = excludeFiles(
     //   await glob("**/*.{js,ts,vue}", {
@@ -26,7 +24,7 @@ export async function runBuildTask() {
     // );
 
     const bundle = await rollup({
-      input: `${projectEditorRoot}/src/editor.ts`,
+      input: `${projectEditorRoot}/index.ts`,
       plugins: [
         json(),
         alias({
@@ -35,19 +33,25 @@ export async function runBuildTask() {
         esbuild({
           tsconfig: path.resolve(projectRoot, "tsconfig.json"),
           sourceMap: false,
-          minify: false,
-          target: "es2019",
+          minify: true,
+          target,
           tsconfigRaw: {
             compilerOptions: {},
           },
         }),
         resolvePlugin({}),
 
+        // typescript({
+        //   tsconfig: path.resolve(projectRoot, "tsconfig.json"),
+        //   useTsconfigDeclarationDir:true
+        // }),
         commonjs(),
+        typescript({
+          tsconfig: path.resolve(projectRoot, "tsconfig.json"),
+          useTsconfigDeclarationDir:true,
+    
+        }),
         terser(),
-        // sass({
-
-        // })
       ],
       treeshake: true,
     });

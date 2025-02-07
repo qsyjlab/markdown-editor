@@ -1,12 +1,16 @@
 
 export const getPackageManifest = (pkgPath: string) => {
+
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   return require(pkgPath)
 }
 export const getPackageDependencies = (
   pkgPath: string
 ): Record<'dependencies' | 'peerDependencies', string[]> => {
+  console.log("pkgPath",pkgPath)
   const manifest = getPackageManifest(pkgPath)
+  console.log("manifest",manifest)
+
   const { dependencies = {}, peerDependencies = {} } = manifest
 
   return {
