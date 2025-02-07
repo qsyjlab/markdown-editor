@@ -7,7 +7,7 @@ import esbuild from "rollup-plugin-esbuild";
 import resolvePlugin from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import { Project } from "ts-morph";
-import fs from "fs";
+import { mkdir, writeFile} from "fs/promises";
 
 import {
   excludeFiles,
@@ -62,34 +62,45 @@ export async function buildParserTask() {
 }
 
 export async function buildDtsTask() {
-  const project = new Project();
+
+  const outputDir = path.resolve(projectParserRoot, "dist", "types");
+  const project = new Project({
+    compilerOptions: {
+      declarationDir: outputDir,
+      declaration: true,            // 启用声明文件生成
+      emitDeclarationOnly: true,    // 只生成声明文件
+      skipLibCheck: true,           // 跳过库检查
+      noImplicitAny: false,         // 允许隐式 any
+    }
+  });
   const sourceFiles = project.addSourceFilesAtPaths("src/**/*.ts");
 
   const srcDir = path.resolve("src");
-  const outputDir = path.resolve(projectParserRoot, "dist", "types");
-  sourceFiles.forEach((sourceFile) => {
+ 
+  sourceFiles.forEach(async (sourceFile) => {
     // 获取文件的相对路径
     const relativePath = path.relative(srcDir, sourceFile.getFilePath());
-
-    // 获取文件的输出路径（保留目录结构）
-    const outputFilePath = path.join(
-      outputDir,
-      relativePath.replace(/\.ts$/, ".d.ts")
-    );
-
-    // 获取目录路径
-    const dirPath = path.dirname(outputFilePath);
-
-    // 确保目录存在
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath, { recursive: true }); // 创建目录
+        const emitOutput = sourceFile.getEmitOutput()
+    const emitFiles = emitOutput.getOutputFiles()
+    if (emitFiles.length === 0) {
+      console.log(`Emit no file: ${relativePath}`)
     }
 
-    // 获取类型声明内容
-    const declarationFile = sourceFile.getFullText();
+    const subTasks = emitFiles.map(async (outputFile) => {
+      const filepath = outputFile.getFilePath()
+      console.log("filepath",filepath)
+      await mkdir(path.dirname(filepath), {
+        recursive: true,
+      })
 
-    // 写入类型声明文件
-    fs.writeFileSync(outputFilePath, declarationFile);
+      await writeFile(
+        filepath,
+        outputFile.getText(),
+        'utf8'
+      )
+    })
+
+    await Promise.all(subTasks)
   });
 }
 
