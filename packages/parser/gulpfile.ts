@@ -6,7 +6,7 @@ import json from '@rollup/plugin-json'
 import esbuild from 'rollup-plugin-esbuild'
 import resolvePlugin from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
-import { terser } from 'rollup-plugin-terser'
+import typescript2 from 'rollup-plugin-typescript2'
 
 import { projectThemeRoot, excludeFiles, projectParserRoot, projectRoot, generateExternal, projectParserPkg } from "@md-doc-editor/build";
 
@@ -15,7 +15,7 @@ const target = 'es2019'
 export async function buildParserTask() {
   try {
     const input = excludeFiles(
-      await glob("**/*.{js,ts,vue}", {
+      await glob("**/*.{js,ts}", {
         cwd: path.resolve(projectParserRoot, "src"),
         absolute: true,
         onlyFiles: true,
@@ -27,17 +27,19 @@ export async function buildParserTask() {
       plugins: [
         json(),
         esbuild({
-          tsconfig: path.resolve(projectRoot, "tsconfig.json"),
+          tsconfig: path.resolve(projectRoot, "tsconfig.build.json"),
           sourceMap: false,
-          minify: true,
           target,
-          tsconfigRaw: {
-            compilerOptions: {},
-          },
+          // tsconfigRaw: {
+          //   compilerOptions: {},
+          // },
         }),
         resolvePlugin({}),
         commonjs(),
-        terser(),
+        typescript2({
+          tsconfig: path.resolve(projectRoot, "tsconfig.build.json"),
+          useTsconfigDeclarationDir:true
+        })
       ],
       external: await generateExternal(projectParserPkg),
       treeshake: true,
