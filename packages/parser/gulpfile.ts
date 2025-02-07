@@ -1,17 +1,23 @@
-import { dest, parallel, src } from "gulp";
+import { parallel } from "gulp";
 import path from "path";
 import { rollup } from "rollup";
-import { glob } from 'fast-glob';
-import json from '@rollup/plugin-json'
-import esbuild from 'rollup-plugin-esbuild'
-import resolvePlugin from '@rollup/plugin-node-resolve'
-import commonjs from '@rollup/plugin-commonjs'
-import typescript2 from 'rollup-plugin-typescript2'
+import { glob } from "fast-glob";
+import json from "@rollup/plugin-json";
+import esbuild from "rollup-plugin-esbuild";
+import resolvePlugin from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import { Project } from "ts-morph";
+import fs from "fs";
 
-import { projectThemeRoot, excludeFiles, projectParserRoot, projectRoot, generateExternal, projectParserPkg } from "@md-doc-editor/build";
+import {
+  excludeFiles,
+  projectParserRoot,
+  projectRoot,
+  generateExternal,
+  projectParserPkg,
+} from "@md-doc-editor/build";
 
-
-const target = 'es2019'
+const target = "es2019";
 export async function buildParserTask() {
   try {
     const input = excludeFiles(
@@ -36,10 +42,6 @@ export async function buildParserTask() {
         }),
         resolvePlugin({}),
         commonjs(),
-        typescript2({
-          tsconfig: path.resolve(projectRoot, "tsconfig.build.json"),
-          useTsconfigDeclarationDir:true
-        })
       ],
       external: await generateExternal(projectParserPkg),
       treeshake: true,
@@ -49,8 +51,8 @@ export async function buildParserTask() {
     await bundle.write({
       dir: path.resolve(projectParserRoot, "dist"),
       format: "esm",
-      preserveModules:true,
-      preserveModulesRoot: 'src'
+      preserveModules: true,
+      preserveModulesRoot: "src",
     });
 
     console.log("Build completed!");
@@ -59,4 +61,36 @@ export async function buildParserTask() {
   }
 }
 
-export default parallel(buildParserTask);
+export async function buildDtsTask() {
+  const project = new Project();
+  const sourceFiles = project.addSourceFilesAtPaths("src/**/*.ts");
+
+  const srcDir = path.resolve("src");
+  const outputDir = path.resolve(projectParserRoot, "dist", "types");
+  sourceFiles.forEach((sourceFile) => {
+    // 获取文件的相对路径
+    const relativePath = path.relative(srcDir, sourceFile.getFilePath());
+
+    // 获取文件的输出路径（保留目录结构）
+    const outputFilePath = path.join(
+      outputDir,
+      relativePath.replace(/\.ts$/, ".d.ts")
+    );
+
+    // 获取目录路径
+    const dirPath = path.dirname(outputFilePath);
+
+    // 确保目录存在
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true }); // 创建目录
+    }
+
+    // 获取类型声明内容
+    const declarationFile = sourceFile.getFullText();
+
+    // 写入类型声明文件
+    fs.writeFileSync(outputFilePath, declarationFile);
+  });
+}
+
+export default parallel(buildParserTask, buildDtsTask);

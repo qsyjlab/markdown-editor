@@ -1,8 +1,9 @@
-import MarkdownIt, { Options } from "markdown-it";
+import MarkdownIt, { Options, Renderer, Token } from "markdown-it";
 import container from "markdown-it-container";
-import type { RenderRule } from "markdown-it/lib/renderer.mjs";
 import { nanoid } from "nanoid";
 import { extractTitle } from "./utils";
+
+export type RenderRule = (tokens: Token[], idx: number, options: Options, env: any, self: Renderer) => string;
 
 export interface ContainerOptions {
   infoLabel?: string;

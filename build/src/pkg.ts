@@ -7,9 +7,8 @@ export const getPackageManifest = (pkgPath: string) => {
 export const getPackageDependencies = (
   pkgPath: string
 ): Record<'dependencies' | 'peerDependencies', string[]> => {
-  console.log("pkgPath",pkgPath)
+
   const manifest = getPackageManifest(pkgPath)
-  console.log("manifest",manifest)
 
   const { dependencies = {}, peerDependencies = {} } = manifest
 

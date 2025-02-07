@@ -54,13 +54,13 @@ export function bindLazyLoadImageEvent(params: BindLazyLoadImageParams = {}) {
 
               img.onerror = () => {
                 img.classList?.add("loaded error");
-                console.log("img.classList",img.classList)
+   
                 img.removeAttribute("loading");
               };
             }
           }
         } else {
-          console.log("img.classList",img.classList)
+
           img.classList?.add("loaded");
           img.classList.add("error")
         }
