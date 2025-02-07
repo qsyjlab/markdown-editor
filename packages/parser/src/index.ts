@@ -1,9 +1,7 @@
 import { createMarkdownParser, MarkdownParserProps } from "./markdown-parser";
 
-export function createParser(props?: MarkdownParserProps) {
-  return createMarkdownParser(props);
-}
+export { createMarkdownParser, MarkdownParserProps };
+export type MarkdownParserReturn = Awaited<ReturnType<typeof createMarkdownParser>>
 
-export { createMarkdownParser };
 export * from './events'
 
