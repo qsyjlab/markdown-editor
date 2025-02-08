@@ -11,8 +11,8 @@ import {
 
 import { MarkdownEditor } from "@md-doc-editor/editor";
 
-import "@md-doc-editor/theme/style.scss";
-import "@md-doc-editor/theme/editor/editor.scss";
+import "@md-doc-editor/theme/dist/index.css";
+import "@md-doc-editor/editor/src/style/editor.scss";
 
 import { nextTick, onMounted, ref } from "vue";
 import { text } from "./markdown";

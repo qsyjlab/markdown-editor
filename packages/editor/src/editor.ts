@@ -17,6 +17,7 @@ import {
   quotePlugin,
   splitLinePlugin,
   strickoutPlugin,
+  uploadImagePlugin,
 } from "./plugins";
 import { MarkdownEditorPreview } from "./preview";
 import { createSelectionManager, SelectionManager } from "./selection";
@@ -99,7 +100,8 @@ export class MarkdownEditor {
       codePlugin,
       quotePlugin,
       splitLinePlugin,
-      headerPlugin
+      headerPlugin,
+      uploadImagePlugin
     ];
     this.pluginManager.registerPlugins(plugins);
 
