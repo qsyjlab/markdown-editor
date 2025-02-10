@@ -31,13 +31,20 @@ function initMarkdownEditor() {
   markdownEditor = new MarkdownEditor({
     container: document.getElementById("container") as HTMLElement,
     height: '800px',
+    imagesUploadHandler: (file, success)=> {
+      
+      const url = rawFileToObjectURL(file)
+      success(url)
+    },
     setup: ()=> {
       markdownEditor?.setContent(text)
     }
   });
+}
 
-  console.log("markdownEditor",markdownEditor)
 
+function rawFileToObjectURL(file: File) {
+  return URL.createObjectURL(new Blob([file], { type: file.type }))
 }
 
 async function initMarkdown() {

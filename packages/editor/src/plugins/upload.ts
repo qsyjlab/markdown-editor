@@ -27,13 +27,30 @@ export function uploadImagePlugin(editor: MarkdownEditor): EditorPlugin {
           name: "upload-image",
           label: "上传图片",
           onAction: () => {
-            const input = document.createElement('input')
-            input.type = 'file' 
-            input.click()
-            input.addEventListener('change', (e)=> {
-              const file = (e.target as HTMLInputElement).files?.[0]
-              console.log("file",file)
-            })
+            const input = document.createElement("input");
+            input.type = "file";
+            input.click();
+            input.addEventListener("change", (e) => {
+              const file = (e.target as HTMLInputElement).files?.[0];
+
+              if (!file) return;
+
+              editor.options?.imagesUploadHandler?.(
+                file,
+                (path) => {
+                  editor.insert(({ start, end }) => {
+                    return {
+                      start,
+                      end,
+                      formattedText: `\n![${file.name}](${path})`,
+                    };
+                  });
+                },
+                () => {
+                  console.error("upload error");
+                }
+              );
+            });
           },
         },
       ]);

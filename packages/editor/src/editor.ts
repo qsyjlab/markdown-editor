@@ -36,10 +36,19 @@ interface MarkdownOptions {
   setup?: () => void;
 
   plugins?: (() => (editor: MarkdownEditor) => EditorPlugin)[];
+
+  /**
+   * 图片上传
+   */
+  imagesUploadHandler?: (
+    file: File,
+    success: (path: string) => void,
+    failure: (msg: string) => void
+  ) => void;
 }
 
-
 export class MarkdownEditor {
+
   public container: HTMLElement;
 
   public content: string;
@@ -70,8 +79,7 @@ export class MarkdownEditor {
   }
 
   setContent(text: string) {
-
-    this.editorManager.setContent(text)
+    this.editorManager.setContent(text);
     this.preview?.setContent(text);
     this.pluginManager.update();
   }
@@ -81,9 +89,7 @@ export class MarkdownEditor {
   }
 
   insert(callback: InsertCallback) {
-
-    this.editorManager.insertAndSelectText(callback)
-
+    this.editorManager.insertAndSelectText(callback);
   }
 
   async createEditor() {
@@ -101,7 +107,7 @@ export class MarkdownEditor {
       quotePlugin,
       splitLinePlugin,
       headerPlugin,
-      uploadImagePlugin
+      uploadImagePlugin,
     ];
     this.pluginManager.registerPlugins(plugins);
 
