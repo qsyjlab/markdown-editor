@@ -1,0 +1,56 @@
+.md-editor-dialog {
+  --md-dialog-margin-top: 15vh;
+  --md-editor-dialog-width: 50%;
+  --md-editor-dialog-bg: white;
+  width: var(--md-editor-dialog-width, 50%);
+
+  position: relative;
+  margin: var(--md-dialog-margin-top, 15vh) auto 50px;
+  background: var(--md-editor-dialog-bg);
+  border-radius: 8px;
+  box-shadow: 0px 12px 32px 4px rgba(0, 0, 0, 0.04),
+    0px 8px 20px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  padding: 20px;
+  overflow-wrap: break-word;
+
+  &__header {
+    position: relative;
+    padding-bottom: 15px;
+  }
+
+
+  &__footer {
+    padding-top: 15px;
+  }
+
+  &__close {
+    position: absolute;
+    right: 0;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  &__title {
+    font-size: 18px;
+    color: #303133;
+    line-height: 24px;
+  }
+}
+
+.md-editor-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2000;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  overflow: auto;
+}
