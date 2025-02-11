@@ -1,6 +1,8 @@
 import { MarkdownEditor } from "./editor";
 import { DropdownMenu } from "./ui";
 
+const dropdownMap = new Map<string, DropdownMenu>();
+
 export function createEditorToolbarManager(
   editor: MarkdownEditor
 ): MarkdownEditorToolbarManager {
@@ -26,15 +28,16 @@ export function createEditorToolbarManager(
       button.onAction?.();
     });
 
-    const dropTrigger = button.dropTrigger || 'mouseover'
+    const dropTrigger = button.dropTrigger || "mouseover";
 
     if (button.type === "dropdown") {
       button.fetch?.((menus) => {
-        icon && btn.appendChild(icon)
+        icon && btn.appendChild(icon);
+
         const dropdown = new DropdownMenu({
           triggerElement: btn,
           trigger: dropTrigger,
-          hideOnClick:true,
+          hideOnClick: true,
           menus: menus.map((item) => {
             return {
               title: item.label,
@@ -45,13 +48,13 @@ export function createEditorToolbarManager(
         });
 
         $el?.appendChild(dropdown.container);
-        // btn.appendChild(dropdown.container);
-        return 
-     
+
+        dropdownMap.set(button.name, dropdown);
+        return;
       });
 
-      return 
-    } 
+      return;
+    }
 
     if (icon) {
       btn.appendChild(icon);
@@ -60,10 +63,22 @@ export function createEditorToolbarManager(
   }
 
   function init() {
+    console.log("dropdownMap",dropdownMap)
+    debugger
     Object.values(buttons).forEach((button) => {
+     
+      const dropdown = dropdownMap.get(button.name)
+      if(dropdown) {
+        dropdown.destory()
+      }
+
+      dropdownMap.delete(button.name)
       render(button);
+      
     });
+    console.log("dropdownMap",dropdownMap)
   }
+
 
   return {
     $el,
@@ -72,6 +87,7 @@ export function createEditorToolbarManager(
     init,
   };
 }
+
 
 export interface MarkdownEditorToolbarManager {
   $el: HTMLElement;

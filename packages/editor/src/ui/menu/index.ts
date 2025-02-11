@@ -1,5 +1,5 @@
 import { debounce } from "lodash-es";
-import { setStyle } from "../../utils";
+import { setStyle, useId } from "../../utils";
 
 interface MenuItem {
   title: string;
@@ -9,17 +9,21 @@ interface MenuItem {
 
 interface DropdownMenuProps {
   style?: Record<string, any>;
-  class?:string
+  class?: string;
   triggerElement: HTMLElement | null;
   menus: MenuItem[];
   trigger: "mouseover" | "click";
   hideOnClick: boolean;
 }
-
 export class DropdownMenu {
   public container: HTMLElement;
 
   dropdown: HTMLElement | null = null;
+  
+  idPrefix = 'md-editor-dropdown-'
+
+  id: string
+
 
   visbible: boolean;
 
@@ -33,18 +37,19 @@ export class DropdownMenu {
     this.config = props;
     this.container = document.createElement("span");
 
+    this.id = ''
+
     this.container.setAttribute("tabindex", "-1");
     const style = this.container.style;
     style.display = "inline-block";
     style.position = "relative";
 
-    setStyle(this.container, props.style || {})
+    setStyle(this.container, props.style || {});
 
     this.container.classList.add("md-editor-dropdown");
-    if(props.class) {
-      this.container.classList.add(props.class)
+    if (props.class) {
+      this.container.classList.add(props.class);
     }
-  
 
     this.visbible = false;
     this.menus = props.menus;
@@ -64,6 +69,8 @@ export class DropdownMenu {
 
     this.dropdown = dropdown;
     dropdown.classList.add("dropdown");
+    this.id = useId().toString()
+    this.dropdown.id = `${this.idPrefix}${this.id}`
 
     const menuItems = this.menus;
     const ul = document.createElement("div");
@@ -83,7 +90,7 @@ export class DropdownMenu {
       ul.appendChild(li);
     });
     dropdown.appendChild(ul);
-
+  
     // 将按钮和菜单添加到容器中
     this.container.appendChild(button);
     document.body.appendChild(dropdown);
@@ -101,8 +108,8 @@ export class DropdownMenu {
 
     const buttonRect = this.triggerElement?.getBoundingClientRect();
 
-    dropdown.style.left = `${buttonRect.left}px`; 
-    dropdown.style.top = `${buttonRect.bottom + window.scrollY}px`; 
+    dropdown.style.left = `${buttonRect.left}px`;
+    dropdown.style.top = `${buttonRect.bottom + window.scrollY}px`;
 
     dropdown.style.display = "block";
     this.visbible = true;
@@ -173,5 +180,6 @@ export class DropdownMenu {
 
   destory() {
     this.dropdown && document.removeChild(this.dropdown);
+    console.log("this.dropdown", this.dropdown);
   }
 }
