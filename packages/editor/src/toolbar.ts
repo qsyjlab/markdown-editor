@@ -46,6 +46,8 @@ export function createEditorToolbarManager(
             };
           }),
         });
+        
+        dropdown.dropdown?.setAttribute("editor-dropdown-trigger", button.name);
 
         $el?.appendChild(dropdown.container);
 
@@ -63,22 +65,32 @@ export function createEditorToolbarManager(
   }
 
   function init() {
-    console.log("dropdownMap",dropdownMap)
-    debugger
     Object.values(buttons).forEach((button) => {
-     
-      const dropdown = dropdownMap.get(button.name)
-      if(dropdown) {
-        dropdown.destory()
-      }
 
-      dropdownMap.delete(button.name)
+      removeDropdown(button.name)
+
+
       render(button);
-      
     });
-    console.log("dropdownMap",dropdownMap)
   }
 
+  function removeDropdown(name:string) {
+    const dropdown = dropdownMap.get(name);
+    if (dropdown) {
+      dropdown.destory();
+    }
+
+    // 二次删除防止热更新时多次创建
+    const dropdownDom = document.querySelector(
+      `[editor-dropdown-trigger="${name}"]`
+    );
+    if (dropdownDom) {
+      dropdownDom.remove();
+    }
+
+
+    dropdownMap.delete(name);
+  }
 
   return {
     $el,
@@ -87,7 +99,6 @@ export function createEditorToolbarManager(
     init,
   };
 }
-
 
 export interface MarkdownEditorToolbarManager {
   $el: HTMLElement;

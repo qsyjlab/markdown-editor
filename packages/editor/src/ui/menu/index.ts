@@ -1,6 +1,8 @@
 import { debounce } from "lodash-es";
 import { setStyle, useId } from "../../utils";
 
+import "../../style/ui/dropdown.scss";
+
 interface MenuItem {
   title: string;
   action: string;
@@ -68,12 +70,13 @@ export class DropdownMenu {
     const dropdown = document.createElement("div");
 
     this.dropdown = dropdown;
-    dropdown.classList.add("dropdown");
+    dropdown.classList.add("md-editor-dropdown-popper");
     this.id = useId().toString()
     this.dropdown.id = `${this.idPrefix}${this.id}`
 
     const menuItems = this.menus;
     const ul = document.createElement("div");
+    ul.classList.add('md-editor-dropdown-menus')
     menuItems.forEach((item) => {
       const li = document.createElement("div");
       if (item.onClick) {
@@ -85,7 +88,7 @@ export class DropdownMenu {
         });
       }
 
-      li.classList.add("menu-item");
+      li.classList.add("md-editor-dropdown-menu-item");
       li.textContent = item.title;
       ul.appendChild(li);
     });
