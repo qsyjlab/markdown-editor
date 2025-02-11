@@ -17,6 +17,7 @@ import {
   quotePlugin,
   splitLinePlugin,
   strickoutPlugin,
+  tablePlugin,
   uploadImagePlugin,
 } from "./plugins";
 import { MarkdownEditorPreview } from "./preview";
@@ -108,6 +109,7 @@ export class MarkdownEditor {
       splitLinePlugin,
       headerPlugin,
       uploadImagePlugin,
+      tablePlugin
     ];
     this.pluginManager.registerPlugins(plugins);
 

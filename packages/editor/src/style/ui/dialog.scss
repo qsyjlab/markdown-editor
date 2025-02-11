@@ -22,6 +22,11 @@
 
   &__footer {
     padding-top: 15px;
+
+    &-wrap {
+      display: flex;
+      justify-content: flex-end;
+    }
   }
 
   &__close {
