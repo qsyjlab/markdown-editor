@@ -6,11 +6,11 @@ import {
   transformerMetaHighlight,
 } from "@shikijs/transformers";
 
-import { createHighlighterCore } from 'shiki/core'
-import { createOnigurumaEngine } from 'shiki/engine/oniguruma'
+import { createHighlighterCore, enableDeprecationWarnings } from "shiki/core";
+import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 
-import presetThemes from './preset/theme'
-import presetLangs from './preset/lang'
+import presetThemes from "./preset/theme";
+import presetLangs from "./preset/lang";
 
 interface HighlighterProps {
   theme?: any;
@@ -20,13 +20,15 @@ interface HighlighterProps {
   languageAlias?: Record<string, string>;
 }
 
+
+enableDeprecationWarnings(false);
+
 export async function createHighlighter(options?: HighlighterProps) {
   // const { theme = ["github-light", "github-dark"] } = options || {};
   const theme = options?.theme ?? {
     light: "github-light",
     dark: "github-dark",
   };
-
 
   // const themes =
   //   typeof theme === "object" && "light" in theme && "dark" in theme
@@ -43,13 +45,11 @@ export async function createHighlighter(options?: HighlighterProps) {
     themes: presetThemes,
     langs: presetLangs,
     // `shiki/wasm` contains the wasm binary inlined as base64 string.
-    engine: createOnigurumaEngine(import('shiki/wasm'))
-  })
+    engine: createOnigurumaEngine(import("shiki/wasm")),
+  });
 
   function highlight(str: string, lang: string, attrs: string) {
-
     lang = getRealLang(lang);
-
 
     const highlighted = highlighter.codeToHtml(str, {
       lang: lang,
@@ -57,7 +57,7 @@ export async function createHighlighter(options?: HighlighterProps) {
       transformers: [
         transformerNotationDiff(),
         transformerNotationHighlight(),
-        // transformerNotationWordHighlight(),
+        transformerNotationWordHighlight(),
         transformerNotationErrorLevel(),
         transformerMetaHighlight(),
       ],
@@ -76,17 +76,14 @@ export async function createHighlighter(options?: HighlighterProps) {
 }
 
 function getRealLang(lang: string) {
-
   const vueRE = /-vue(?=:|$)/;
   const lineNoStartRE = /=(\d*)/;
   const lineNoRE = /:(no-)?line-numbers(=\d*)?$/;
   // const mustacheRE = /\{\{.*?\}\}/g;
 
-  return (
-    lang
-      .replace(lineNoStartRE, "")
-      .replace(lineNoRE, "")
-      .replace(vueRE, "")
-      .toLowerCase()
-  );
+  return lang
+    .replace(lineNoStartRE, "")
+    .replace(lineNoRE, "")
+    .replace(vueRE, "")
+    .toLowerCase();
 }
