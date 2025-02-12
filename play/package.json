@@ -4,9 +4,10 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "vite dev",
+        "dev": "node -v && vite dev",
         "build": "vite build",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "dev:node18":"nvm use 18.15.0 && pnpm run dev"
     },
     "keywords": [],
     "author": "",

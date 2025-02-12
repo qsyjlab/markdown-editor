@@ -18,7 +18,7 @@ export function createIconManager(): IconManager {
 
       const icon = document.createElement("span") as HTMLElement;
 
-      icon.className = `icon-${config.type}-${config.name}`;
+      icon.className = `md-editor-icon icon-${config.type}-${config.name}`;
 
       if (config.type === "html") {
         if (config.html) {

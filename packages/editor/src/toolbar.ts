@@ -1,5 +1,6 @@
 import { MarkdownEditor } from "./editor";
 import { DropdownMenu } from "./ui";
+import { Tooltip } from "./ui/tooltip";
 
 const dropdownMap = new Map<string, DropdownMenu>();
 
@@ -46,7 +47,7 @@ export function createEditorToolbarManager(
             };
           }),
         });
-        
+
         dropdown.dropdown?.setAttribute("editor-dropdown-trigger", button.name);
 
         $el?.appendChild(dropdown.container);
@@ -61,20 +62,34 @@ export function createEditorToolbarManager(
     if (icon) {
       btn.appendChild(icon);
     }
+
+    // 尝试移除旧元素
+    document.querySelectorAll(`[attatch-menu-el-id="${button.name}"]`)?.forEach(node=> {
+      node.remove()
+    })
+    
+
+    new Tooltip(btn, button.label, {
+      placement: "top",
+      offset: 10,
+
+      createAfter(element) {
+        element.setAttribute("attatch-menu-el-id", button.name);
+      },
+    });
+
     $el?.appendChild(btn);
   }
 
   function init() {
     Object.values(buttons).forEach((button) => {
-
-      removeDropdown(button.name)
-
+      removeDropdown(button.name);
 
       render(button);
     });
   }
 
-  function removeDropdown(name:string) {
+  function removeDropdown(name: string) {
     const dropdown = dropdownMap.get(name);
     if (dropdown) {
       dropdown.destory();
@@ -87,7 +102,6 @@ export function createEditorToolbarManager(
     if (dropdownDom) {
       dropdownDom.remove();
     }
-
 
     dropdownMap.delete(name);
   }
@@ -121,11 +135,6 @@ export interface EditorToolbarButtonConfig {
     callback: (menus: EditorToolbarDropdownItemConfig[]) => void
   ) => void;
   onAction: () => void;
-  // tooltip: 'Save',
-  // enabled: false,
-  // onAction: () => editor.execCommand('mceSave'),
-  // onSetup: stateToggle(editor),
-  // shortcut: 'Meta+S'
 }
 
 export type EditorToolbarDropdownItemConfig = Pick<
