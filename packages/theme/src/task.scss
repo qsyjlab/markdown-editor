@@ -1,0 +1,35 @@
+.contains-task-list {
+  li {
+    list-style: none;
+    
+  }
+  /* 设置复选框的样式，更改选中时的外观 */
+  input[type="checkbox"]:checked:before {
+    content: "✔";
+    font-size: 0.8em;
+    color: white;
+    display: block;
+    text-align: center;
+  }
+
+  /* 可选：为复选框添加自定义外观，去掉原生外观 */
+  input[type="checkbox"] {
+    appearance: none;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    width: 15px;
+    height: 15px;
+    background-color: white;
+  }
+
+  /* 设置选中状态下的背景 */
+  input[type="checkbox"]:checked {
+    background-color: var(--md-theme-primary-color);
+    border-color: var(--md-theme-primary-color);
+  }
+
+  /* 鼠标悬停时改变复选框样式 */
+  input[type="checkbox"]:hover:not(:disabled) {
+    border-color: var(--md-theme-primary-color);
+  }
+}

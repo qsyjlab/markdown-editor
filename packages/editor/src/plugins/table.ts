@@ -84,6 +84,9 @@ export function tablePlugin(editor: MarkdownEditor): EditorPlugin {
 
   return {
     name,
+    destroy() {
+      dialog.destory();
+    },
   };
 }
 

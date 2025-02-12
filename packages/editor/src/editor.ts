@@ -21,13 +21,13 @@ import {
   uploadImagePlugin,
 } from "./plugins";
 import { MarkdownEditorPreview } from "./preview";
-import { createSelectionManager, SelectionManager } from "./selection";
 import {
   createEditorToolbarManager,
   MarkdownEditorToolbarManager,
 } from "./toolbar";
 import { createCodeMirror } from "./code-mirror";
 import { InsertCallback } from "./code-mirror/interface";
+import { taskPlugin } from "./plugins/task";
 
 interface MarkdownOptions {
   container: HTMLElement;
@@ -60,8 +60,6 @@ export class MarkdownEditor {
 
   public pluginManager: EditorPluginManager;
 
-  public selectionManager: SelectionManager;
-
   public iconManager = createIconManager();
 
   public editable?: HTMLTextAreaElement;
@@ -74,7 +72,6 @@ export class MarkdownEditor {
     this.content = "";
     this.pluginManager = createEditorPluginManager(this);
     this.toolbarManager = createEditorToolbarManager(this);
-    this.selectionManager = createSelectionManager(this);
 
     this.createEditor();
   }
@@ -109,7 +106,8 @@ export class MarkdownEditor {
       splitLinePlugin,
       headerPlugin,
       uploadImagePlugin,
-      tablePlugin
+      tablePlugin,
+      taskPlugin
     ];
     this.pluginManager.registerPlugins(plugins);
 

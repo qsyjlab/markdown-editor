@@ -21,11 +21,10 @@ export class DropdownMenu {
   public container: HTMLElement;
 
   dropdown: HTMLElement | null = null;
-  
-  idPrefix = 'md-editor-dropdown-'
 
-  id: string
+  idPrefix = "md-editor-dropdown-";
 
+  id: string;
 
   visbible: boolean;
 
@@ -39,7 +38,7 @@ export class DropdownMenu {
     this.config = props;
     this.container = document.createElement("span");
 
-    this.id = ''
+    this.id = "";
 
     this.container.setAttribute("tabindex", "-1");
     const style = this.container.style;
@@ -71,12 +70,12 @@ export class DropdownMenu {
 
     this.dropdown = dropdown;
     dropdown.classList.add("md-editor-dropdown-popper");
-    this.id = useId().toString()
-    this.dropdown.id = `${this.idPrefix}${this.id}`
+    this.id = useId().toString();
+    this.dropdown.id = `${this.idPrefix}${this.id}`;
 
     const menuItems = this.menus;
     const ul = document.createElement("div");
-    ul.classList.add('md-editor-dropdown-menus')
+    ul.classList.add("md-editor-dropdown-menus");
     menuItems.forEach((item) => {
       const li = document.createElement("div");
       if (item.onClick) {
@@ -93,7 +92,7 @@ export class DropdownMenu {
       ul.appendChild(li);
     });
     dropdown.appendChild(ul);
-  
+
     // 将按钮和菜单添加到容器中
     this.container.appendChild(button);
     document.body.appendChild(dropdown);

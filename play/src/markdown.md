@@ -21,6 +21,26 @@ VitePress 带有内置的 Markdown 扩展。
 
 这允许将标题链接为 `#my-anchor`，而不是默认的 `#使用自定义锚点`。
 
+## 任务列表 {#task-lists}
+- [ ] unchecked item 1
+- [x] unchecked item 2
+- [ ] unchecked item 3
+- [x] checked item 4
+
+
+## 无序列表 {#unordered-lists}
+- unchecked item 1
+- unchecked item 2
+- unchecked item 3
+- checked item 4
+
+## 有序列表 {#ordered-lists}
+1. unchecked item 1
+2. unchecked item 2
+3. unchecked item 3
+4. checked item 4
+
+
 ## 链接 {#links}
 
 内部和外部链接都会被特殊处理。
