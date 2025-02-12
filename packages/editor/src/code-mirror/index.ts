@@ -1,4 +1,4 @@
-import { basicSetup, EditorView } from "codemirror";
+import { EditorView } from "codemirror";
 import {
   EditorState,
   EditorStateConfig,
@@ -8,6 +8,7 @@ import { markdown } from "@codemirror/lang-markdown";
 import { debounce } from "lodash-es";
 import { MarkdownEditor } from "../editor";
 import { InsertCallback } from "./interface";
+import { basicSetup } from "./extension";
 
 export function createCodeMirror(editor: MarkdownEditor) {
   let instance: EditorView | null = null;

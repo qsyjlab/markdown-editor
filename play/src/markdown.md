@@ -43,37 +43,6 @@ VitePress 带有内置的 Markdown 扩展。
 
 ## 链接 {#links}
 
-内部和外部链接都会被特殊处理。
-
-### 内部链接 {#internal-links}
-
-内部链接将转换为单页导航的路由链接。此外，子目录中包含的每个 `index.md` 都会自动转换为 `index.html`，并带有相应的 URL `/`。
-
-例如，给定以下目录结构：
-
-```
-.
-├─ index.md
-├─ foo
-│  ├─ index.md
-│  ├─ one.md
-│  └─ two.md
-└─ bar
-   ├─ index.md
-   ├─ three.md
-   └─ four.md
-```
-
-假设现在处于 `foo/one.md` 文件中：
-
-```md
-[Home](/) <!-- 将用户导航至根目录下的 index.html -->
-[foo](/foo/) <!-- 将用户导航至目录 foo 下的 index.html -->
-[foo heading](./#heading) <!-- 将用户锚定到目录 foo 下的index文件中的一个标题上 -->
-[bar - three](../bar/three) <!-- 可以省略扩展名 -->
-[bar - three](../bar/three.md) <!-- 可以添加 .md -->
-[bar - four](../bar/four.html) <!-- 或者可以添加 .html -->
-```
 
 ### 页面后缀 {#page-suffix}
 

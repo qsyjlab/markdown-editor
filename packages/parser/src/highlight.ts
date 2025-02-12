@@ -57,7 +57,7 @@ export async function createHighlighter(options?: HighlighterProps) {
       transformers: [
         transformerNotationDiff(),
         transformerNotationHighlight(),
-        transformerNotationWordHighlight(),
+        // transformerNotationWordHighlight(),
         transformerNotationErrorLevel(),
         transformerMetaHighlight(),
       ],
