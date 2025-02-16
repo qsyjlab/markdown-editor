@@ -4,6 +4,8 @@ import { Tooltip } from "./ui/tooltip";
 
 const dropdownMap = new Map<string, DropdownMenu>();
 
+// <svg t="1739714861805" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="966" width="200" height="200"></svg>
+
 export function createEditorToolbarManager(
   editor: MarkdownEditor
 ): MarkdownEditorToolbarManager {
@@ -12,6 +14,14 @@ export function createEditorToolbarManager(
   const $el = document.createElement("div");
   $el.classList.add("md-editor-toolbar");
 
+  const left = document.createElement('div')
+  left.classList.add('md-editor-toolbar__left')
+
+  const right = document.createElement('div')
+  right.classList.add('md-editor-toolbar__right')
+  $el.appendChild(left)
+  $el.appendChild(right)
+  
   function register(button: EditorToolbarButtonConfig) {
     buttons[button.name] = button;
   }
@@ -50,7 +60,7 @@ export function createEditorToolbarManager(
 
         dropdown.dropdown?.setAttribute("editor-dropdown-trigger", button.name);
 
-        $el?.appendChild(dropdown.container);
+        left?.appendChild(dropdown.container);
 
         dropdownMap.set(button.name, dropdown);
         return;
@@ -78,7 +88,7 @@ export function createEditorToolbarManager(
       },
     });
 
-    $el?.appendChild(btn);
+    left?.appendChild(btn);
   }
 
   function init() {

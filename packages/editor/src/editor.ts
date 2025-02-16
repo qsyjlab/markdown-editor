@@ -11,6 +11,7 @@ import {
   boldPlugin,
   clearPlugin,
   codePlugin,
+  contentPlugin,
   headerPlugin,
   LazyImagePlugin,
   linkPlugin,
@@ -28,6 +29,7 @@ import {
 import { createCodeMirror } from "./code-mirror";
 import { InsertCallback } from "./code-mirror/interface";
 import { taskPlugin } from "./plugins/task";
+import { SidebarManager } from "./sidebar-manager";
 
 interface MarkdownOptions {
   container: HTMLElement;
@@ -49,7 +51,6 @@ interface MarkdownOptions {
 }
 
 export class MarkdownEditor {
-
   public container: HTMLElement;
 
   public content: string;
@@ -62,7 +63,7 @@ export class MarkdownEditor {
 
   public iconManager = createIconManager();
 
-  public editable?: HTMLTextAreaElement;
+  public sidebarManager = new SidebarManager();
 
   public editorManager = createCodeMirror(this);
 
@@ -74,12 +75,30 @@ export class MarkdownEditor {
     this.toolbarManager = createEditorToolbarManager(this);
 
     this.createEditor();
+    console.log("insntace", this);
   }
 
   setContent(text: string) {
     this.editorManager.setContent(text);
     this.preview?.setContent(text);
     this.pluginManager.update();
+
+    const headings = this.preview?.queryAllHeadings();
+
+    const headingsContent = document.createElement("div");
+
+    headings?.forEach((item) => {
+      const heading = document.createElement("div");
+      heading.innerHTML = item.title || ''
+      heading.classList.add(`md-editor-toc-item`);
+      heading.style.paddingLeft = `${(item.level - 1) * 10}px`;
+      headingsContent.appendChild(heading);
+    });
+
+    this.sidebarManager.$el?.append(headingsContent);
+
+    // debugger
+    console.log("headings", headings);
   }
 
   getContent() {
@@ -107,7 +126,8 @@ export class MarkdownEditor {
       headerPlugin,
       uploadImagePlugin,
       tablePlugin,
-      taskPlugin
+      taskPlugin,
+      contentPlugin,
     ];
     this.pluginManager.registerPlugins(plugins);
 
@@ -135,6 +155,12 @@ export class MarkdownEditor {
 
     this.editorContainer.appendChild(editorBody);
 
+    this.sidebarManager.create();
+
+    if (this.sidebarManager.$el) {
+      editorBody.appendChild(this.sidebarManager.$el);
+    }
+
     this.container.append(this.editorContainer);
 
     createdEditorAfter(this);
@@ -146,3 +172,5 @@ function createdEditorAfter(editor: MarkdownEditor) {
   editor.pluginManager.update();
   editor.options?.setup?.();
 }
+
+function generateTocElement() {}

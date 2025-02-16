@@ -11,7 +11,7 @@
 
 .md-editor {
   width: 100%;
-  border: 2px solid var(--md-editor-border-color);
+  border: 1px solid var(--md-editor-border-color);
   border-radius: 5px;
   box-sizing: border-box;
   display: flex;
@@ -32,13 +32,25 @@
     padding: 5px 10px;
     flex-shrink: 0;
     font-size: 24px;
+    display: flex;
+    
+
+    .md-editor-dropdown {
+      height: 28px;
+    }
+
+    &__left {
+      
+    }
+
     &-item {
       display: inline-block;
       padding: 2px 5px;
       cursor: pointer;
       border-radius: 5px;
+      margin-right: 10px;
       &:hover {
-        background: #f5f5f5;
+        background: #f0f0f0;        ;
       }
     }
   }
@@ -72,6 +84,16 @@
     padding: 10px;
     overflow: auto;
   }
+
+  &-sidebar {
+    display: none;
+
+    &.is-active {
+      flex-shrink: 0;
+      display: block;
+      width: 280px;
+    }
+  }
 }
 
 .icon-button {
@@ -87,8 +109,14 @@
 
 .md-editor-toolbar-item {
   position: relative;
+  height: 28px;
+  display: inline-block;
+  box-sizing: border-box;
 }
 
 .md-editor-icon {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

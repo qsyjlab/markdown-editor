@@ -23,7 +23,7 @@ export class MarkdownEditorPreview {
     this.$el = document.createElement("div");
     this.$el.classList.add("md-editor-preview");
 
-    bindPreviewEvent(this.$el)
+    bindPreviewEvent(this.$el);
 
     return this.$el;
   }
@@ -38,6 +38,18 @@ export class MarkdownEditorPreview {
     this.$el.innerHTML = this.parserdHtmlText;
 
     bindPreviewEvent(this.$el);
+  }
+
+  queryAllHeadings() {
+    const headings = this.$el?.querySelectorAll("h1,h2,h3,h4,h5,h6") || [];
+    return Array.from(headings).map((heading) => {
+      const level = parseInt(heading.tagName[1], 10);
+      return {
+        level,
+        title: heading.textContent,
+        el: heading
+      };
+    });
   }
 }
 
