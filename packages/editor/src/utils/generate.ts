@@ -33,7 +33,7 @@ export function generateMarkdownTaskList(tasks:MarkdownTask[]) {
   let taskList = '';
 
   tasks.forEach((task, index) => {
-    taskList += `- [${task.completed ? 'x' : ''}]${task.name}`;
+    taskList += `- [${task.completed ? 'x' : ''}] ${task.name}`;
   });
 
   return taskList;
