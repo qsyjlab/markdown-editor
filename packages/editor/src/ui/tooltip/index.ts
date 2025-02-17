@@ -4,6 +4,7 @@ import {
   ComputePositionConfig,
   flip,
   shift,
+  arrow,
 } from "@floating-ui/dom";
 
 import "../../style/ui/tooltip.scss";
@@ -12,8 +13,9 @@ interface TooltipOptions extends ComputePositionConfig {
   //   placement: string;
   lazy?: boolean;
   offset: number;
+  showArrow?: boolean;
 
-  createAfter?: (element:HTMLElement) => void;
+  createAfter?: (element: HTMLElement) => void;
 }
 
 export class Tooltip {
@@ -34,6 +36,7 @@ export class Tooltip {
       placement: "top",
       offset: 10,
       lazy: true,
+      showArrow: true,
     };
 
     // 合并默认配置和传入的配置
@@ -49,30 +52,34 @@ export class Tooltip {
   create() {
     if (this.$el || !this.config.lazy) return;
 
-    this.$el = this.createTooltipElement();
+    this.$el = createTooltipElement({
+      arrow: this.config.showArrow || false,
+      text: this.text,
+    });
 
-    this.config.createAfter?.(this.$el)
+    this.config.createAfter?.(this.$el);
 
     autoUpdate(this.triggerElement, this.$el, () => {
       this.updateTooltipPosition();
     });
   }
-  // 创建 tooltip 元素
-  createTooltipElement() {
-    const tooltip = document.createElement("div");
-    tooltip.classList.add("md-editor-tooltip");
-    tooltip.innerText = this.text;
-    document.body.appendChild(tooltip);
-
-    return tooltip;
-  }
 
   // 更新 tooltip 的位置
   updateTooltipPosition() {
     if (!this.$el) return;
+
+    const arrowElement = this.$el.querySelector(".md-editor-tooltip-arrow");
     computePosition(this.triggerElement, this.$el, {
       placement: this.config.placement,
-      middleware: [flip(), shift()],
+      middleware: [
+        flip(),
+        shift(),
+        arrowElement
+          ? arrow({
+              element: arrowElement,
+            })
+          : null,
+      ],
     }).then(({ x, y }) => {
       // 设置 tooltip 位置
       this.$el &&
@@ -112,4 +119,29 @@ export class Tooltip {
     if (!this.$el) return;
     this.$el.remove();
   }
+}
+
+interface CreateOptions {
+  arrow: boolean;
+  text: string;
+}
+
+// 创建 tooltip 元素
+function createTooltipElement(options: CreateOptions) {
+  const tooltip = document.createElement("div");
+  tooltip.classList.add("md-editor-tooltip");
+
+  if (options.arrow) {
+    const arrow = document.createElement("div");
+    arrow.classList.add("md-editor-tooltip-arrow");
+    tooltip.appendChild(arrow);
+  }
+
+  const content = document.createElement("div");
+  content.classList.add("md-editor-tooltip-content");
+  content.innerHTML = options.text;
+  tooltip.appendChild(content)
+  document.body.appendChild(tooltip);
+
+  return tooltip;
 }
