@@ -26,10 +26,11 @@ import {
   createEditorToolbarManager,
   MarkdownEditorToolbarManager,
 } from "./toolbar";
-import { createCodeMirror } from "./code-mirror";
+import { CodemirrorManager } from "./code-mirror";
 import { InsertCallback } from "./code-mirror/interface";
 import { taskPlugin } from "./plugins/task";
 import { SidebarManager } from "./sidebar-manager";
+import { debounce } from "lodash-es";
 
 interface MarkdownOptions {
   container: HTMLElement;
@@ -65,7 +66,7 @@ export class MarkdownEditor {
 
   public sidebarManager = new SidebarManager();
 
-  public editorManager = createCodeMirror(this);
+  public editorManager: CodemirrorManager;
 
   constructor(public options: MarkdownOptions) {
     this.container = options.container;
@@ -74,8 +75,17 @@ export class MarkdownEditor {
     this.pluginManager = createEditorPluginManager(this);
     this.toolbarManager = createEditorToolbarManager(this);
 
+    const updateCallback = debounce((val: string) => {
+      this.preview?.setContent(val);
+
+      this.pluginManager.update();
+    }, 80);
+
+    this.editorManager = new CodemirrorManager({
+      update: updateCallback,
+    });
+
     this.createEditor();
-    console.log("insntace", this);
   }
 
   setContent(text: string) {
@@ -89,7 +99,7 @@ export class MarkdownEditor {
 
     headings?.forEach((item) => {
       const heading = document.createElement("div");
-      heading.innerHTML = item.title || ''
+      heading.innerHTML = item.title || "";
       heading.classList.add(`md-editor-toc-item`);
       heading.style.paddingLeft = `${(item.level - 1) * 10}px`;
       headingsContent.appendChild(heading);
@@ -144,7 +154,8 @@ export class MarkdownEditor {
 
     wrap.classList.add("md-editor-editable");
 
-    this.editorManager.init(wrap);
+    this.editorManager.create(wrap);
+
     editorBody.appendChild(wrap);
 
     const previewInstance = new MarkdownEditorPreview();
@@ -172,5 +183,3 @@ function createdEditorAfter(editor: MarkdownEditor) {
   editor.pluginManager.update();
   editor.options?.setup?.();
 }
-
-function generateTocElement() {}

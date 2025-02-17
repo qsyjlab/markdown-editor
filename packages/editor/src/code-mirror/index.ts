@@ -5,18 +5,32 @@ import {
   TransactionSpec,
 } from "@codemirror/state";
 import { markdown } from "@codemirror/lang-markdown";
-import { debounce } from "lodash-es";
-import { MarkdownEditor } from "../editor";
 import { InsertCallback } from "./interface";
 import { basicSetup } from "./extension";
 
-export function createCodeMirror(editor: MarkdownEditor) {
-  let instance: EditorView | null = null;
+interface CodemirrorManagerOptions {
 
-  function insertAndSelectText(callback: InsertCallback) {
-    if (!instance) return;
+  update?: (content: string) => void;
 
-    const { state, dispatch } = instance;
+}
+
+export class CodemirrorManager {
+  public instance: EditorView | null = null;
+
+  public options:CodemirrorManagerOptions;
+  constructor(options:CodemirrorManagerOptions) {
+    this.options = options
+  }
+
+  create(el: HTMLElement) {
+    let startState = this.mergeState();
+    this.instance = new EditorView({ state: startState, parent: el });
+  }
+
+  insertAndSelectText(callback: InsertCallback) {
+    if (!this.instance) return;
+
+    const { state, dispatch } = this.instance;
     const { selection } = state;
 
     const transactiones: TransactionSpec[] = [];
@@ -45,20 +59,8 @@ export function createCodeMirror(editor: MarkdownEditor) {
     dispatch(tr);
   }
 
-  function init(el: HTMLElement) {
-    let startState = mergeState();
-    instance = new EditorView({ state: startState, parent: el });
-  }
+  mergeState(config: EditorStateConfig = {}) {
 
-  function setContent(val: string) {
-    const state = mergeState({
-      doc: val,
-    });
-    instance?.setState(state);
-  }
-
-  function mergeState(config: EditorStateConfig = {}) {
-    const update = debounce(updateContent, 50);
 
     let startState = EditorState.create({
       extensions: [
@@ -69,7 +71,7 @@ export function createCodeMirror(editor: MarkdownEditor) {
           if (v.docChanged) {
             const value = v.state.doc.toString();
 
-            update(value);
+            this.options.update?.(value);
           }
         }),
       ],
@@ -78,17 +80,10 @@ export function createCodeMirror(editor: MarkdownEditor) {
     return startState;
   }
 
-  function updateContent(val: string) {
-    requestAnimationFrame(() => {
-      editor.preview?.setContent(val);
-      editor.pluginManager.update();
+  setContent(val: string) {
+    const state = this.mergeState({
+      doc: val,
     });
+    this.instance?.setState(state);
   }
-  
-  return {
-    init,
-    instance,
-    setContent,
-    insertAndSelectText,
-  };
 }
