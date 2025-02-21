@@ -46,7 +46,9 @@ interface MarkdownOptions {
 
   isSyncScoll?: boolean;
 
-  
+  onFocus?: () => void;
+
+  onBlur?: () => void;
 
   /**
    * 图片上传
@@ -57,7 +59,7 @@ interface MarkdownOptions {
     failure: (msg: string) => void
   ) => void;
 
-  onChange?: (mdText: string, htmlText:string) => void;
+  onChange?: (mdText: string, htmlText: string) => void;
 }
 
 export class MarkdownEditor {
@@ -91,30 +93,32 @@ export class MarkdownEditor {
       this.preview?.setContent(val);
 
       this.pluginManager.update();
-
+      this.sidebarManager.updateHeading(this.preview?.queryAllHeadings() || []);
       this.options?.onChange?.(val, this.preview?.parserdHtmlText || "");
     }, 80);
 
     this.editorManager = new CodemirrorManager({
       update: updateCallback,
+      onBlur: this.options.onBlur,
+      onFocus: this.options.onFocus,
     });
 
     this.sidebarManager = new SidebarManager({
       onClickHeading: (heading) => {
         const scrollTop = getScroll(this.preview?.$el!, true);
 
-        const targetElement = heading.el
+        const targetElement = heading.el;
 
         if (!targetElement) return;
 
         const eleOffsetTop = getOffsetTop(targetElement, this.preview?.$el!);
         let y = scrollTop + eleOffsetTop;
-        
-        this.preview?.setAniming(true)
+
+        this.preview?.setAniming(true);
         scrollTo(y, {
-          getContainer: ()=> this.preview?.$el!,
+          getContainer: () => this.preview?.$el!,
           callback: () => {
-            this.preview?.setAniming(false)
+            this.preview?.setAniming(false);
           },
         });
       },
@@ -176,6 +180,10 @@ export class MarkdownEditor {
 
     this.editorManager.create(wrap);
 
+    this.editorManager.instance?.dom.addEventListener("mousedown", () => {
+      this.scrollManager?.syncScroll();
+    });
+
     editorBody.appendChild(wrap);
 
     const previewInstance = new MarkdownEditorPreview();
@@ -233,8 +241,6 @@ function createdEditorAfter(editor: MarkdownEditor) {
   editor.preview?.setContent(editor.content);
   editor.pluginManager.update();
   editor.options?.setup?.();
-
-
 }
 
 function mergedDefaultOptions(options: MarkdownOptions) {

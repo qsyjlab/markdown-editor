@@ -10,17 +10,18 @@ import { basicSetup } from "./extension";
 import { placeholder } from "@codemirror/view";
 
 interface CodemirrorManagerOptions {
-
   update?: (content: string) => void;
 
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 export class CodemirrorManager {
   public instance: EditorView | null = null;
 
-  public options:CodemirrorManagerOptions;
-  constructor(options:CodemirrorManagerOptions) {
-    this.options = options
+  public options: CodemirrorManagerOptions;
+  constructor(options: CodemirrorManagerOptions) {
+    this.options = options;
   }
 
   create(el: HTMLElement) {
@@ -61,15 +62,21 @@ export class CodemirrorManager {
   }
 
   mergeState(config: EditorStateConfig = {}) {
-
-
     let startState = EditorState.create({
       extensions: [
-        placeholder('请输入'),
+        placeholder("请输入"),
         basicSetup,
         markdown(),
         EditorView.lineWrapping,
         EditorView.updateListener.of((v) => {
+          if (v.focusChanged) {
+            if (v.view.hasFocus) {
+              this.options?.onFocus?.();
+            } else {
+              this.options?.onBlur?.();
+            }
+          }
+
           if (v.docChanged) {
             const value = v.state.doc.toString();
 

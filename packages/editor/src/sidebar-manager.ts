@@ -1,4 +1,5 @@
 import { MarkdownHeading } from "./preview";
+import { clearElementChildren } from "./utils";
 
 
 interface SidebarManagerOptions {
@@ -62,7 +63,9 @@ export class SidebarManager {
       });
     });
 
-    this.$el?.append(headingsContent);
+    clearElementChildren(this.$el!)
+
+    this.$el?.append(headingsContent)
   }
 
   updateActiveHeading(id: string) {
