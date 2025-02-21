@@ -36,6 +36,7 @@ export class EditorScrollManager {
     this.options = options;
 
     this.previewDom.addEventListener("scroll", () => {
+      if (this.previewMananger.isAniming) return;
       this.updateHeading();
     });
   }

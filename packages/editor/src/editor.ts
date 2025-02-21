@@ -33,6 +33,7 @@ import { SidebarManager } from "./sidebar-manager";
 import { debounce } from "lodash-es";
 import { EditorScrollManager } from "./scroll-manager";
 import { syncScrollPlugin } from "./plugins/sync-scroll";
+import { getOffsetTop, getScroll, scrollTo } from "./utils";
 
 interface MarkdownOptions {
   container: HTMLElement;
@@ -45,6 +46,8 @@ interface MarkdownOptions {
 
   isSyncScoll?: boolean;
 
+  
+
   /**
    * 图片上传
    */
@@ -53,6 +56,8 @@ interface MarkdownOptions {
     success: (path: string) => void,
     failure: (msg: string) => void
   ) => void;
+
+  onChange?: (mdText: string, htmlText:string) => void;
 }
 
 export class MarkdownEditor {
@@ -86,6 +91,8 @@ export class MarkdownEditor {
       this.preview?.setContent(val);
 
       this.pluginManager.update();
+
+      this.options?.onChange?.(val, this.preview?.parserdHtmlText || "");
     }, 80);
 
     this.editorManager = new CodemirrorManager({
@@ -94,9 +101,22 @@ export class MarkdownEditor {
 
     this.sidebarManager = new SidebarManager({
       onClickHeading: (heading) => {
-        this.preview?.$el?.querySelector(`#${heading.id}`)?.scrollIntoView({
-          behavior: "smooth",
-        })
+        const scrollTop = getScroll(this.preview?.$el!, true);
+
+        const targetElement = heading.el
+
+        if (!targetElement) return;
+
+        const eleOffsetTop = getOffsetTop(targetElement, this.preview?.$el!);
+        let y = scrollTop + eleOffsetTop;
+        
+        this.preview?.setAniming(true)
+        scrollTo(y, {
+          getContainer: ()=> this.preview?.$el!,
+          callback: () => {
+            this.preview?.setAniming(false)
+          },
+        });
       },
     });
 
@@ -213,6 +233,8 @@ function createdEditorAfter(editor: MarkdownEditor) {
   editor.preview?.setContent(editor.content);
   editor.pluginManager.update();
   editor.options?.setup?.();
+
+
 }
 
 function mergedDefaultOptions(options: MarkdownOptions) {

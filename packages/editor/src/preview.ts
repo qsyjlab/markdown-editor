@@ -21,11 +21,19 @@ export class MarkdownEditorPreview {
 
   private _currentAnchor: MarkdownHeading | null = null;
 
-  // private options:MarkdownEditorPreviewOpitons
+  private _isAniming = false;
 
   constructor() {
-    // this.options = options
     this.parserdHtmlText = "";
+  }
+
+  
+  get isAniming() {
+    return this._isAniming;
+  }
+
+  setAniming(val: boolean) {
+    this._isAniming = val;
   }
 
   get headings() {

@@ -1,8 +1,5 @@
 <template>
   <div id="container"></div>
-  <button @click="showDialog">显示</button>
-
-  <button @click="closeDialog">关闭</button>
 </template>
 <script setup lang="ts">
 import {
@@ -25,26 +22,30 @@ const html = ref("");
 
 let markdownEditor: MarkdownEditor | null;
 // const content = ref("");
-let dialogInstance =  new Dialog({})
+let dialogInstance = new Dialog({});
 
 onMounted(() => {
   initMarkdownEditor();
-  
+
   // initMarkdown();
 });
 
 function showDialog() {
-  dialogInstance.show()
+  dialogInstance.show();
 }
 
-function closeDialog(){
-  dialogInstance.close()
+function closeDialog() {
+  dialogInstance.close();
 }
 
 function initMarkdownEditor() {
   markdownEditor = new MarkdownEditor({
     container: document.getElementById("container") as HTMLElement,
     height: "800px",
+    onChange(mdText, htmlText) {
+      console.log("mdText", mdText);
+      console.log("htmlText", htmlText)
+    },
     imagesUploadHandler: (file, success) => {
       const url = rawFileToObjectURL(file);
       success(url);
@@ -86,12 +87,12 @@ input[type="checkbox" i] {
   width: 18px;
   height: 18px;
   font-size: 20px;
-  -webkit-appearance: none;  /* 去掉默认的复选框样式 */
+  -webkit-appearance: none; /* 去掉默认的复选框样式 */
   -moz-appearance: none;
   appearance: none;
-  border: 2px solid #ccc;  /* 设置边框 */
-  border-radius: 3px;      /* 圆角 */
-  background-color: #fff;  /* 默认背景 */
+  border: 2px solid #ccc; /* 设置边框 */
+  border-radius: 3px; /* 圆角 */
+  background-color: #fff; /* 默认背景 */
 }
 input[type="checkbox"] {
   cursor: pointer;
@@ -99,12 +100,12 @@ input[type="checkbox"] {
   width: 18px;
   height: 18px;
   font-size: 20px;
-  -webkit-appearance: none;  /* 去掉默认的复选框样式 */
+  -webkit-appearance: none; /* 去掉默认的复选框样式 */
   -moz-appearance: none;
   appearance: none;
-  border: 2px solid #ccc;  /* 设置边框 */
-  border-radius: 3px;      /* 圆角 */
-  background-color: #fff;  /* 默认背景 */
+  border: 2px solid #ccc; /* 设置边框 */
+  border-radius: 3px; /* 圆角 */
+  background-color: #fff; /* 默认背景 */
 }
 
 input[type="checkbox"]::after {
@@ -117,16 +118,15 @@ input[type="checkbox"]::after {
   visibility: visible;
   padding-left: 0;
   text-align: center;
-  content: " ";  /* 默认内容为空 */
+  content: " "; /* 默认内容为空 */
   border-radius: 3px;
 }
 
 input[type="checkbox"]:checked::after {
-  content: "✓";  /* 选中时显示勾号 */
+  content: "✓"; /* 选中时显示勾号 */
   color: #fff;
   font-size: 12px;
   font-weight: 700;
-  background-color: #ff4014;  /* 选中时的背景色 */
+  background-color: #ff4014; /* 选中时的背景色 */
 }
-
 </style>
