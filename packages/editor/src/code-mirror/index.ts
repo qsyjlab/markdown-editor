@@ -7,6 +7,7 @@ import {
 import { markdown } from "@codemirror/lang-markdown";
 import { InsertCallback } from "./interface";
 import { basicSetup } from "./extension";
+import { placeholder } from "@codemirror/view";
 
 interface CodemirrorManagerOptions {
 
@@ -64,6 +65,7 @@ export class CodemirrorManager {
 
     let startState = EditorState.create({
       extensions: [
+        placeholder('请输入'),
         basicSetup,
         markdown(),
         EditorView.lineWrapping,

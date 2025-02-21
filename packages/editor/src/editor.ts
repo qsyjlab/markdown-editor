@@ -32,6 +32,7 @@ import { taskPlugin } from "./plugins/task";
 import { SidebarManager } from "./sidebar-manager";
 import { debounce } from "lodash-es";
 import { EditorScrollManager } from "./scroll-manager";
+import { syncScrollPlugin } from "./plugins/sync-scroll";
 
 interface MarkdownOptions {
   container: HTMLElement;
@@ -67,7 +68,7 @@ export class MarkdownEditor {
 
   public iconManager = createIconManager();
 
-  public sidebarManager = new SidebarManager();
+  public sidebarManager;
 
   public editorManager: CodemirrorManager;
 
@@ -91,6 +92,14 @@ export class MarkdownEditor {
       update: updateCallback,
     });
 
+    this.sidebarManager = new SidebarManager({
+      onClickHeading: (heading) => {
+        this.preview?.$el?.querySelector(`#${heading.id}`)?.scrollIntoView({
+          behavior: "smooth",
+        })
+      },
+    });
+
     this.createEditor();
   }
 
@@ -98,20 +107,7 @@ export class MarkdownEditor {
     this.editorManager.setContent(text);
     this.preview?.setContent(text);
     this.pluginManager.update();
-
-    const headings = this.preview?.queryAllHeadings();
-
-    const headingsContent = document.createElement("div");
-
-    headings?.forEach((item) => {
-      const heading = document.createElement("div");
-      heading.innerHTML = item.title || "";
-      heading.classList.add(`md-editor-toc-item`);
-      heading.style.paddingLeft = `${(item.level - 1) * 10}px`;
-      headingsContent.appendChild(heading);
-    });
-
-    this.sidebarManager.$el?.append(headingsContent);
+    this.sidebarManager.updateHeading(this.preview?.queryAllHeadings() || []);
   }
 
   getContent() {
@@ -141,6 +137,7 @@ export class MarkdownEditor {
       tablePlugin,
       taskPlugin,
       contentPlugin,
+      syncScrollPlugin,
     ];
     this.pluginManager.registerPlugins(plugins);
 
@@ -179,7 +176,12 @@ export class MarkdownEditor {
 
     this.scrollManager = new EditorScrollManager(
       this.editorManager,
-      this.preview
+      this.preview,
+      {
+        onHeadingAnchorChange: (currentAnchor) => {
+          this.sidebarManager.updateActiveHeading(currentAnchor?.id || "");
+        },
+      }
     );
 
     if (this.options.isSyncScoll) {
@@ -198,7 +200,6 @@ export class MarkdownEditor {
 
   closeSync() {
     this.scrollManager?.setSync(false);
-    this.scrollManager?.removeListener();
   }
 
   destroy() {

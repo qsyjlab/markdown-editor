@@ -5,14 +5,35 @@ import {
   bindLazyLoadImageEvent,
 } from "@md-doc-editor/parser";
 
+
+// interface MarkdownEditorPreviewOpitons {
+
+//   onHeadingChange?: (currentActive: MarkdownHeading | null)=> void
+// }
+
 export class MarkdownEditorPreview {
   public $el?: HTMLElement;
   public parser?: Awaited<ReturnType<typeof createMarkdownParser>>;
 
   public parserdHtmlText: string;
 
+  private _headings: MarkdownHeading[] = [];
+
+  private _currentAnchor: MarkdownHeading | null = null;
+
+  // private options:MarkdownEditorPreviewOpitons
+
   constructor() {
+    // this.options = options
     this.parserdHtmlText = "";
+  }
+
+  get headings() {
+    return this._headings;
+  }
+
+  get currentAnchor() {
+    return this._currentAnchor;
   }
 
   async init() {
@@ -38,16 +59,19 @@ export class MarkdownEditorPreview {
     this.$el.innerHTML = this.parserdHtmlText;
 
     bindPreviewEvent(this.$el);
+
+    this._headings = this.queryAllHeadings();
   }
 
-  queryAllHeadings() {
+  queryAllHeadings(): MarkdownHeading[] {
     const headings = this.$el?.querySelectorAll("h1,h2,h3,h4,h5,h6") || [];
     return Array.from(headings).map((heading) => {
       const level = parseInt(heading.tagName[1], 10);
       return {
         level,
-        title: heading.textContent,
-        el: heading
+        title: heading.textContent || "",
+        el: heading as HTMLElement,
+        id: heading.id
       };
     });
   }
@@ -62,4 +86,11 @@ function bindPreviewEvent(container: HTMLElement | Document) {
   bindLazyLoadImageEvent({
     $el: container,
   });
+}
+
+export interface MarkdownHeading {
+  level: number;
+  title: string;
+  el: HTMLElement;
+  id: string
 }

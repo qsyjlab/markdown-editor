@@ -1,6 +1,12 @@
 import { debounce } from "lodash-es";
 import { CodemirrorManager } from "./code-mirror";
-import { MarkdownEditorPreview } from "./preview";
+import { MarkdownEditorPreview, MarkdownHeading } from "./preview";
+
+interface ScrollManagerOptions {
+  onHeadingAnchorChange?: (
+    currentHeadingAnchor: MarkdownHeading | null
+  ) => void;
+}
 
 export class EditorScrollManager {
   private editorDom: HTMLElement;
@@ -13,15 +19,29 @@ export class EditorScrollManager {
   private isSync = false;
 
   private _scrollTop: number = 0;
+
+  private _currentAnchor: MarkdownHeading | null = null;
+
+  private options: ScrollManagerOptions;
+
   constructor(
     codeMirrorManager: CodemirrorManager,
-    previewMananger: MarkdownEditorPreview
+    previewMananger: MarkdownEditorPreview,
+    options: ScrollManagerOptions
   ) {
     this.codeMirrorManager = codeMirrorManager;
     this.editorDom = this.codeMirrorManager!.instance?.scrollDOM!;
     this.previewMananger = previewMananger;
-
     this.previewDom = this.previewMananger.$el!;
+    this.options = options;
+
+    this.previewDom.addEventListener("scroll", () => {
+      this.updateHeading();
+    });
+  }
+
+  get currentAnchor() {
+    return this._currentAnchor;
   }
 
   get scrollTop() {
@@ -29,16 +49,11 @@ export class EditorScrollManager {
   }
 
   setSync(val: boolean) {
-    debugger;
     this.isSync = val;
   }
 
   toggleSync() {
     this.isSync = !this.isSync;
-
-    if (this.isSync) {
-    }
-
     return this.isSync;
   }
 
@@ -66,8 +81,6 @@ export class EditorScrollManager {
     } else {
       const editableIns = this.codeMirrorManager.instance;
       const previewDom = this.previewDom;
-
-      console.log("editableIns", editableIns);
 
       if (!editableIns) return;
 
@@ -113,4 +126,66 @@ export class EditorScrollManager {
   removeListener() {
     this.editorDom.removeEventListener("scroll", this.syncScroll);
   }
+
+  updateHeading() {
+    const currentActiveLink = getInternalCurrentAnchor(
+      this.previewDom,
+      this.previewMananger.queryAllHeadings(),
+      20,
+      5
+    );
+    this._currentAnchor = currentActiveLink;
+    this.options.onHeadingAnchorChange?.(this.currentAnchor);
+  }
 }
+
+function getInternalCurrentAnchor(
+  container: HTMLElement,
+  _links: MarkdownHeading[],
+  _offsetTop = 0,
+  _bounds = 5
+): MarkdownHeading | null {
+  const linkSections: any[] = [];
+
+  _links.forEach((link) => {
+    const target = link.el;
+    if (target && container) {
+      const top = getOffsetTop(target, container);
+
+      if (top < _offsetTop + _bounds) {
+        linkSections.push({ link, top });
+      }
+    }
+  });
+
+  if (linkSections.length) {
+    const maxSection = linkSections.reduce((prev, curr) =>
+      curr.top > prev.top ? curr : prev
+    );
+    return maxSection.link;
+  }
+  return null;
+}
+
+function getOffsetTop(
+  element: HTMLElement,
+  container: AnchorContainer
+): number {
+  if (!element.getClientRects().length) {
+    return 0;
+  }
+
+  const rect = element.getBoundingClientRect();
+
+  if (rect.width || rect.height) {
+    if (container === window) {
+      container = document.documentElement;
+      return rect.top - container.clientTop;
+    }
+    return rect.top - (container as HTMLElement).getBoundingClientRect().top;
+  }
+
+  return rect.top;
+}
+
+export type AnchorContainer = HTMLElement | Window;
