@@ -15,6 +15,11 @@ export function createEditorPluginManager(
         plugin?.update?.();
       });
     },
+    destroy: () => {
+      Object.values(plugins).forEach((plugin) => {
+        plugin?.destroy?.();
+      });
+    },
     registerPlugins(plugins: EditorPluginFn[]) {
       plugins.forEach((plugin) => {
         const pluginResult = plugin(editor)
@@ -30,11 +35,16 @@ export function createEditorPluginManager(
 export interface EditorPluginManager {
   update: () => void;
 
+  destroy: ()=> void
+
   plugins: Record<string, EditorPlugin>;
 
   add: (name: string, api: EditorPlugin) => void;
 
   registerPlugins: (plugins: EditorPluginFn[]) => void;
+
+
+
 }
 export interface EditorPlugin extends Record<string, any> {
 

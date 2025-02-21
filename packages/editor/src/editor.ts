@@ -31,6 +31,7 @@ import { InsertCallback } from "./code-mirror/interface";
 import { taskPlugin } from "./plugins/task";
 import { SidebarManager } from "./sidebar-manager";
 import { debounce } from "lodash-es";
+import { EditorScrollManager } from "./scroll-manager";
 
 interface MarkdownOptions {
   container: HTMLElement;
@@ -40,6 +41,8 @@ interface MarkdownOptions {
   setup?: () => void;
 
   plugins?: (() => (editor: MarkdownEditor) => EditorPlugin)[];
+
+  isSyncScoll?: boolean;
 
   /**
    * 图片上传
@@ -68,8 +71,11 @@ export class MarkdownEditor {
 
   public editorManager: CodemirrorManager;
 
+  public scrollManager?: EditorScrollManager;
+
   constructor(public options: MarkdownOptions) {
-    this.container = options.container;
+    this.options = mergedDefaultOptions(options);
+    this.container = this.options.container;
 
     this.content = "";
     this.pluginManager = createEditorPluginManager(this);
@@ -106,9 +112,6 @@ export class MarkdownEditor {
     });
 
     this.sidebarManager.$el?.append(headingsContent);
-
-    // debugger
-    console.log("headings", headings);
   }
 
   getContent() {
@@ -174,7 +177,34 @@ export class MarkdownEditor {
 
     this.container.append(this.editorContainer);
 
+    this.scrollManager = new EditorScrollManager(
+      this.editorManager,
+      this.preview
+    );
+
+    if (this.options.isSyncScoll) {
+      this.openSync();
+    } else {
+      this.closeSync();
+    }
+
     createdEditorAfter(this);
+  }
+
+  openSync() {
+    this.scrollManager?.setSync(true);
+    this.scrollManager?.addListener();
+  }
+
+  closeSync() {
+    this.scrollManager?.setSync(false);
+    this.scrollManager?.removeListener();
+  }
+
+  destroy() {
+    this.closeSync();
+    this.pluginManager.destroy();
+    this.toolbarManager?.$el.remove();
   }
 }
 
@@ -182,4 +212,14 @@ function createdEditorAfter(editor: MarkdownEditor) {
   editor.preview?.setContent(editor.content);
   editor.pluginManager.update();
   editor.options?.setup?.();
+}
+
+function mergedDefaultOptions(options: MarkdownOptions) {
+  return Object.assign(
+    {} as MarkdownOptions,
+    {
+      isSyncScoll: true,
+    },
+    options
+  );
 }
