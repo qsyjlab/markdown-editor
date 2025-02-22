@@ -7,6 +7,7 @@ interface MenuItem {
   title: string;
   action: string;
   onClick?: () => void;
+  createdHandler?: (menuItem: HTMLElement, config: MenuItem) => HTMLElement;
 }
 
 interface DropdownMenuProps {
@@ -88,8 +89,13 @@ export class DropdownMenu {
       }
 
       li.classList.add("md-editor-dropdown-menu-item");
-      li.textContent = item.title;
-      ul.appendChild(li);
+
+      if (item.createdHandler) {
+        ul.appendChild(item.createdHandler(li, item));
+      } else {
+        li.textContent = item.title;
+        ul.appendChild(li);
+      }
     });
     dropdown.appendChild(ul);
 

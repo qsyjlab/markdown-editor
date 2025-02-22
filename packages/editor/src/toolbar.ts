@@ -9,9 +9,12 @@ export class EditorToolbarManager {
 
   private $el: HTMLElement;
 
-  private buttonsState: Record<string, EditorToolbarButtonState & {
-    tooltip?: Tooltip;
-  }> = {};
+  private buttonsState: Record<
+    string,
+    EditorToolbarButtonState & {
+      tooltip?: Tooltip;
+    }
+  > = {};
 
   constructor() {
     const $el = document.createElement("div");
@@ -39,22 +42,20 @@ export class EditorToolbarManager {
       newState
     );
 
-    const state = this.buttonsState[name]
-    const menu = this.$el.querySelector(`[menu-id="${name}"]`)
-    const menuConfig = this.buttons[name]
-    if(!menu) return 
+    const state = this.buttonsState[name];
+    const menu = this.$el.querySelector(`[menu-id="${name}"]`);
+    const menuConfig = this.buttons[name];
+    if (!menu) return;
     const label = getCurrentLabel(menuConfig || {}, state?.isActive || false);
-    menu.classList.remove('is-active')
-    if(state.isActive) {
-      menu.classList.add('is-active')
+    menu.classList.remove("is-active");
+    if (state.isActive) {
+      menu.classList.add("is-active");
     }
-    state?.tooltip?.setText(label)
+    state?.tooltip?.setText(label);
   }
 
   getMenuState(name: string) {
-
-    const state = this.buttonsState[name]
-
+    const state = this.buttonsState[name];
 
     return state;
   }
@@ -70,7 +71,7 @@ export class EditorToolbarManager {
     const label = getCurrentLabel(button, state?.isActive || false);
 
     btn.setAttribute("title", label);
-    btn.setAttribute('menu-id', button.name)
+    btn.setAttribute("menu-id", button.name);
 
     btn.classList.add("md-editor-toolbar-item");
 
@@ -99,6 +100,20 @@ export class EditorToolbarManager {
               title: item.label,
               action: item.name,
               onClick: item.onAction,
+              createdHandler: (el) => {
+                const icon = iconManager.create(item.name);
+
+                if (icon) {
+                  icon.classList.add('md-editor-dropdown-menu-item__icon')
+                  el.appendChild(icon);
+                }
+
+                const title = document.createElement("div");
+                title.innerHTML = item.label;
+                title.classList.add('md-editor-dropdown-menu-item__title')
+                el.appendChild(title);
+                return el;
+              },
             };
           }),
         });
@@ -133,7 +148,7 @@ export class EditorToolbarManager {
         element.setAttribute("attatch-menu-el-id", button.name);
       },
     });
-    state.tooltip = tooltip
+    state.tooltip = tooltip;
 
     const left = this.$el.querySelector(".md-editor-toolbar__left");
     left?.appendChild(btn);
