@@ -23,8 +23,7 @@ import {
 } from "./plugins";
 import { MarkdownEditorPreview } from "./preview";
 import {
-  createEditorToolbarManager,
-  MarkdownEditorToolbarManager,
+  EditorToolbarManager,
 } from "./toolbar";
 import { CodemirrorManager } from "./code-mirror";
 import { InsertCallback } from "./code-mirror/interface";
@@ -69,7 +68,7 @@ export class MarkdownEditor {
   public editorContainer?: HTMLElement;
   public preview?: MarkdownEditorPreview;
 
-  public toolbarManager?: MarkdownEditorToolbarManager;
+  public toolbarManager = new EditorToolbarManager();
 
   public pluginManager: EditorPluginManager;
 
@@ -87,7 +86,6 @@ export class MarkdownEditor {
 
     this.content = "";
     this.pluginManager = createEditorPluginManager(this);
-    this.toolbarManager = createEditorToolbarManager(this);
 
     const updateCallback = debounce((val: string) => {
       this.preview?.setContent(val);
@@ -166,8 +164,8 @@ export class MarkdownEditor {
     this.pluginManager.registerPlugins(plugins);
 
     if (this.toolbarManager) {
-      this.toolbarManager.init();
-      this.editorContainer.appendChild(this.toolbarManager?.$el);
+      this.toolbarManager.renderAll(this.iconManager);
+      this.editorContainer.appendChild(this.toolbarManager.getBody());
     }
 
     // 创建 body
@@ -233,7 +231,7 @@ export class MarkdownEditor {
   destroy() {
     this.closeSync();
     this.pluginManager.destroy();
-    this.toolbarManager?.$el.remove();
+    this.toolbarManager?.getBody()?.remove();
   }
 }
 

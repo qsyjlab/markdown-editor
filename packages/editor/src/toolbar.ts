@@ -1,39 +1,84 @@
-import { MarkdownEditor } from "./editor";
+import { IconManager } from "./icon-manager";
 import { DropdownMenu } from "./ui";
 import { Tooltip } from "./ui/tooltip";
 
 const dropdownMap = new Map<string, DropdownMenu>();
 
-// <svg t="1739714861805" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="966" width="200" height="200"></svg>
+export class EditorToolbarManager {
+  private buttons: Record<string, EditorToolbarButtonConfig> = {};
 
-export function createEditorToolbarManager(
-  editor: MarkdownEditor
-): MarkdownEditorToolbarManager {
-  const buttons: Record<string, EditorToolbarButtonConfig> = {};
+  private $el: HTMLElement;
 
-  const $el = document.createElement("div");
-  $el.classList.add("md-editor-toolbar");
+  private buttonsState: Record<string, EditorToolbarButtonState & {
+    tooltip?: Tooltip;
+  }> = {};
 
-  const left = document.createElement('div')
-  left.classList.add('md-editor-toolbar__left')
+  constructor() {
+    const $el = document.createElement("div");
 
-  const right = document.createElement('div')
-  right.classList.add('md-editor-toolbar__right')
-  $el.appendChild(left)
-  $el.appendChild(right)
-  
-  function register(button: EditorToolbarButtonConfig) {
-    buttons[button.name] = button;
+    this.$el = $el;
+    $el.classList.add("md-editor-toolbar");
+
+    const left = document.createElement("div");
+    left.classList.add("md-editor-toolbar__left");
+
+    const right = document.createElement("div");
+    right.classList.add("md-editor-toolbar__right");
+    $el.appendChild(left);
+    $el.appendChild(right);
   }
 
-  function render(button: EditorToolbarButtonConfig) {
+  getBody() {
+    return this.$el;
+  }
+
+  updateMenuState(name: string, newState: Partial<EditorToolbarButtonState>) {
+    this.buttonsState[name] = Object.assign(
+      {},
+      this.buttonsState[name],
+      newState
+    );
+
+    const state = this.buttonsState[name]
+    const menu = this.$el.querySelector(`[menu-id="${name}"]`)
+    const menuConfig = this.buttons[name]
+    if(!menu) return 
+    const label = getCurrentLabel(menuConfig || {}, state?.isActive || false);
+    menu.classList.remove('is-active')
+    if(state.isActive) {
+      menu.classList.add('is-active')
+    }
+    state?.tooltip?.setText(label)
+  }
+
+  getMenuState(name: string) {
+
+    const state = this.buttonsState[name]
+
+
+    return state;
+  }
+
+  render(button: EditorToolbarButtonConfig, iconManager: IconManager) {
     const btn = document.createElement("span");
 
-    btn.setAttribute("title", button.label);
+    const defaultState = button.defaultState || {};
+
+    this.updateMenuState(button.name, defaultState);
+    const state = this.getMenuState(button.name);
+
+    const label = getCurrentLabel(button, state?.isActive || false);
+
+    btn.setAttribute("title", label);
+    btn.setAttribute('menu-id', button.name)
 
     btn.classList.add("md-editor-toolbar-item");
 
-    let icon = editor?.iconManager.create(button.icon);
+    if (state.isActive) {
+      btn.classList.add("is-active");
+    }
+
+    let icon = iconManager.create(button.icon);
 
     btn.addEventListener("click", () => {
       button.onAction?.();
@@ -60,6 +105,7 @@ export function createEditorToolbarManager(
 
         dropdown.dropdown?.setAttribute("editor-dropdown-trigger", button.name);
 
+        const left = this.$el.querySelector(".md-editor-toolbar__left");
         left?.appendChild(dropdown.container);
 
         dropdownMap.set(button.name, dropdown);
@@ -74,32 +120,38 @@ export function createEditorToolbarManager(
     }
 
     // 尝试移除旧元素
-    document.querySelectorAll(`[attatch-menu-el-id="${button.name}"]`)?.forEach(node=> {
-      node.remove()
-    })
-    
+    document
+      .querySelectorAll(`[attatch-menu-el-id="${button.name}"]`)
+      ?.forEach((node) => {
+        node.remove();
+      });
 
-    new Tooltip(btn, button.label, {
+    const tooltip = new Tooltip(btn, label, {
       placement: "top",
       offset: 10,
-
       createAfter(element) {
         element.setAttribute("attatch-menu-el-id", button.name);
       },
     });
+    state.tooltip = tooltip
 
+    const left = this.$el.querySelector(".md-editor-toolbar__left");
     left?.appendChild(btn);
   }
 
-  function init() {
-    Object.values(buttons).forEach((button) => {
-      removeDropdown(button.name);
+  register(button: EditorToolbarButtonConfig) {
+    this.buttons[button.name] = button;
+  }
 
-      render(button);
+  renderAll(iconManager: IconManager) {
+    Object.values(this.buttons).forEach((button) => {
+      this.removeDropdown(button.name);
+
+      this.render(button, iconManager);
     });
   }
 
-  function removeDropdown(name: string) {
+  removeDropdown(name: string) {
     const dropdown = dropdownMap.get(name);
     if (dropdown) {
       dropdown.destory();
@@ -115,25 +167,16 @@ export function createEditorToolbarManager(
 
     dropdownMap.delete(name);
   }
-
-  return {
-    $el,
-    buttons,
-    register,
-    init,
-  };
-}
-
-export interface MarkdownEditorToolbarManager {
-  $el: HTMLElement;
-  register: (button: EditorToolbarButtonConfig) => void;
-  init: () => void;
-  buttons: Record<string, EditorToolbarButtonConfig>;
 }
 
 export interface EditorToolbarButtonConfig {
   name: string;
   label: string;
+
+  activeLabel?: string;
+
+  inActiveLabel?: string;
+
   icon: string;
   /**
    * @default button
@@ -145,9 +188,24 @@ export interface EditorToolbarButtonConfig {
     callback: (menus: EditorToolbarDropdownItemConfig[]) => void
   ) => void;
   onAction: () => void;
+
+  defaultState?: EditorToolbarButtonState;
 }
 
 export type EditorToolbarDropdownItemConfig = Pick<
   EditorToolbarButtonConfig,
   "label" | "name" | "onAction"
 >;
+
+export interface EditorToolbarButtonState {
+  isActive?: boolean;
+  [key: string]: any;
+}
+
+function getCurrentLabel(button: EditorToolbarButtonConfig, isActive = false) {
+  if (isActive && button.activeLabel) {
+    return button.activeLabel || button.label;
+  }
+
+  return button.inActiveLabel || button.label;
+}

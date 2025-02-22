@@ -49,6 +49,13 @@ export class Tooltip {
     this.init();
   }
 
+  setText(text: string) {
+    this.text = text;
+
+    const content = this.$el?.querySelector(".md-editor-tooltip-content");
+    content && (content.innerHTML = text);
+  }
+
   create() {
     if (this.$el || !this.config.lazy) return;
 
@@ -140,7 +147,7 @@ function createTooltipElement(options: CreateOptions) {
   const content = document.createElement("div");
   content.classList.add("md-editor-tooltip-content");
   content.innerHTML = options.text;
-  tooltip.appendChild(content)
+  tooltip.appendChild(content);
   document.body.appendChild(tooltip);
 
   return tooltip;

@@ -16,7 +16,7 @@ export class EditorScrollManager {
 
   private previewMananger: MarkdownEditorPreview;
 
-  private isSync = false;
+  public isSync = true;
 
   private _scrollTop: number = 0;
 
