@@ -2,7 +2,7 @@
   "name": "@md-doc-editor/editor",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/editor.js",
   "types": "dist/types/index.d.ts",
   "private": false,
   "scripts": {
