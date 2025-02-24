@@ -8,6 +8,7 @@ import { markdown } from "@codemirror/lang-markdown";
 import { InsertCallback } from "./interface";
 import { basicSetup } from "./extension";
 import { placeholder } from "@codemirror/view";
+import { undo, redo } from "@codemirror/commands";
 
 interface CodemirrorManagerOptions {
   update?: (content: string) => void;
@@ -94,5 +95,17 @@ export class CodemirrorManager {
       doc: val,
     });
     this.instance?.setState(state);
+  }
+
+  undo() {
+    if (!this.instance) return;
+
+    undo(this.instance);
+  }
+
+  redo() {
+    if (!this.instance) return;
+
+    redo(this.instance);
   }
 }

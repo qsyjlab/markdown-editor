@@ -14,6 +14,16 @@
   flex-direction: column;
   min-height: 0;
 
+  &.is-fullscreen {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    height: auto!important;
+  }
+
   ::-webkit-scrollbar {
     width: 4px;
     height: 4px;
@@ -68,12 +78,19 @@
     flex-shrink: 0;
     font-size: 24px;
     display: flex;
+    justify-content: space-between;
 
     .md-editor-dropdown {
       height: 30px;
     }
 
     &__left {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    &__right {
       display: flex;
       align-items: center;
       flex-wrap: wrap;

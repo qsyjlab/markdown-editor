@@ -188,6 +188,6 @@ export class DropdownMenu {
 
   destory() {
     this.dropdown && document.removeChild(this.dropdown);
-    console.log("this.dropdown", this.dropdown);
+
   }
 }

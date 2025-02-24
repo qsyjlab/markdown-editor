@@ -14,14 +14,12 @@ import {
   defaultHighlightStyle,
   bracketMatching,
 } from "@codemirror/language";
-import { history, defaultKeymap, historyKeymap } from "@codemirror/commands";
+import { history, historyKeymap } from "@codemirror/commands";
 import { highlightSelectionMatches } from "@codemirror/search";
 import {
   closeBrackets,
   autocompletion,
-  completionKeymap,
 } from "@codemirror/autocomplete";
-import { lintKeymap } from "@codemirror/lint";
 
 export const basicSetup = (() => [
   highlightActiveLineGutter(),
@@ -38,9 +36,9 @@ export const basicSetup = (() => [
   highlightActiveLine(),
   highlightSelectionMatches(),
   keymap.of([
-    ...defaultKeymap,
+    // ...defaultKeymap,
     ...historyKeymap,
-    ...completionKeymap,
-    ...lintKeymap,
+    // ...completionKeymap,
+    // ...lintKeymap,
   ]),
 ])();

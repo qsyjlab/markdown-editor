@@ -4,6 +4,36 @@ import { Tooltip } from "./ui/tooltip";
 
 const dropdownMap = new Map<string, DropdownMenu>();
 
+interface EditorToolbarManagerOptions {
+  leftToolbar?: string[];
+
+  rightToolbar?: string[];
+}
+
+const defaultLeftToolbar = [
+  "clear",
+  "undo",
+  "redo",
+  "bold",
+  "strickout",
+  "link",
+  "code",
+  "quote",
+  "splitLine",
+  "header",
+  "uploadImage",
+  "table",
+  "task",
+];
+
+const defaultRightToolbar = [
+  "content",
+  "syncScroll",
+  "onlyEditable",
+  "onlyPreview",
+  "fullscreen",
+];
+
 export class EditorToolbarManager {
   private buttons: Record<string, EditorToolbarButtonConfig> = {};
 
@@ -16,7 +46,19 @@ export class EditorToolbarManager {
     }
   > = {};
 
-  constructor() {
+  private options?: EditorToolbarManagerOptions;
+
+  constructor(options?: EditorToolbarManagerOptions) {
+    this.options = options || {};
+
+    if (!this.options.leftToolbar) {
+      this.options.leftToolbar = [...defaultLeftToolbar];
+    }
+
+    if (!this.options.rightToolbar) {
+      this.options.rightToolbar = [...defaultRightToolbar];
+    }
+
     const $el = document.createElement("div");
 
     this.$el = $el;
@@ -60,7 +102,11 @@ export class EditorToolbarManager {
     return state;
   }
 
-  render(button: EditorToolbarButtonConfig, iconManager: IconManager) {
+  render(
+    button: EditorToolbarButtonConfig,
+    iconManager: IconManager,
+    to?: "left" | "right"
+  ) {
     const btn = document.createElement("span");
 
     const defaultState = button.defaultState || {};
@@ -104,13 +150,13 @@ export class EditorToolbarManager {
                 const icon = iconManager.create(item.name);
 
                 if (icon) {
-                  icon.classList.add('md-editor-dropdown-menu-item__icon')
+                  icon.classList.add("md-editor-dropdown-menu-item__icon");
                   el.appendChild(icon);
                 }
 
                 const title = document.createElement("div");
                 title.innerHTML = item.label;
-                title.classList.add('md-editor-dropdown-menu-item__title')
+                title.classList.add("md-editor-dropdown-menu-item__title");
                 el.appendChild(title);
                 return el;
               },
@@ -150,8 +196,13 @@ export class EditorToolbarManager {
     });
     state.tooltip = tooltip;
 
-    const left = this.$el.querySelector(".md-editor-toolbar__left");
-    left?.appendChild(btn);
+    if (!to || to === "left") {
+      const left = this.$el.querySelector(".md-editor-toolbar__left");
+      left?.appendChild(btn);
+    } else {
+      const right = this.$el.querySelector(".md-editor-toolbar__right");
+      right?.appendChild(btn);
+    }
   }
 
   register(button: EditorToolbarButtonConfig) {
@@ -160,9 +211,14 @@ export class EditorToolbarManager {
 
   renderAll(iconManager: IconManager) {
     Object.values(this.buttons).forEach((button) => {
+
       this.removeDropdown(button.name);
 
-      this.render(button, iconManager);
+      if (this.options?.rightToolbar?.includes(button.name)) {
+        this.render(button, iconManager, "right");
+      } else if (this.options?.leftToolbar?.includes(button.name)) {
+        this.render(button, iconManager, "left");
+      }
     });
   }
 

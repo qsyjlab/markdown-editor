@@ -1,4 +1,4 @@
-interface IconConfig {
+export interface IconConfig {
   name: string;
   type: "html" | "font" | "image";
   src?: string;

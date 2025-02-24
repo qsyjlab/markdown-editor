@@ -77,11 +77,20 @@ export async function buildDtsTask() {
 
   const srcDir = path.resolve("src");
 
+  project.emit()
+
   sourceFiles.forEach(async (sourceFile) => {
     // 获取文件的相对路径
     const relativePath = path.relative(srcDir, sourceFile.getFilePath());
     const emitOutput = sourceFile.getEmitOutput();
     const emitFiles = emitOutput.getOutputFiles();
+
+    if(relativePath.includes('icon-manager.ts')) {
+
+      console.log("debugger")
+      debugger
+    }
+
     if (emitFiles.length === 0) {
       console.log(`Emit no file: ${relativePath}`);
     }

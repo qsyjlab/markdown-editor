@@ -33,8 +33,6 @@ export class Dialog {
     this.visbible = false;
 
     this.$parent = this.config?.appendTo || document.body;
-
-    console.log("this.config", this.config);
   }
 
   create() {

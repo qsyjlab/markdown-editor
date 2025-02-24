@@ -5,7 +5,6 @@ import { EditorPlugin } from "../plugin";
 export function toggleLayoutPlugin(editor: MarkdownEditor): EditorPlugin {
   const name = "toggleLayout";
 
-
   editor.iconManager.register({
     name: "onlyEditable",
     type: "html",
@@ -31,6 +30,9 @@ export function toggleLayoutPlugin(editor: MarkdownEditor): EditorPlugin {
       }
       editor.toolbarManager.updateMenuState("onlyEditable", {
         isActive: !isActive,
+      });
+      editor.toolbarManager.updateMenuState("onlyPreview", {
+        isActive: false,
       });
     },
   });
@@ -61,6 +63,9 @@ export function toggleLayoutPlugin(editor: MarkdownEditor): EditorPlugin {
       }
       editor.toolbarManager.updateMenuState("onlyPreview", {
         isActive: !isActive,
+      });
+      editor.toolbarManager.updateMenuState("onlyEditable", {
+        isActive: false,
       });
     },
   });

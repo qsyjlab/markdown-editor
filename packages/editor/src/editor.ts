@@ -30,8 +30,10 @@ import { EditorScrollManager } from "./scroll-manager";
 import { syncScrollPlugin } from "./plugins/sync-scroll";
 import { getOffsetTop, getScroll, scrollTo } from "./utils";
 import { toggleLayoutPlugin } from "./plugins/toggle-layout";
+import { fullscreenPlugin } from "./plugins/full-screen";
+import { hisotryPlugin } from "./plugins/history";
 
-import './style/editor.scss'
+import "./style/editor.scss";
 
 interface MarkdownOptions {
   container: HTMLElement;
@@ -47,6 +49,9 @@ interface MarkdownOptions {
   onFocus?: () => void;
 
   onBlur?: () => void;
+
+  leftToolbar?: string[];
+  rightToolbar?: string[];
 
   /**
    * 图片上传
@@ -70,7 +75,7 @@ export class MarkdownEditor {
 
   public preview?: MarkdownEditorPreview;
 
-  public toolbarManager = new EditorToolbarManager();
+  public toolbarManager:EditorToolbarManager
 
   public pluginManager: EditorPluginManager;
 
@@ -85,6 +90,7 @@ export class MarkdownEditor {
   public layoutState = {
     showToolbar: true,
     showPreview: true,
+    fullscreen: false,
   };
 
   constructor(public options: MarkdownOptions) {
@@ -102,6 +108,10 @@ export class MarkdownEditor {
       this.options?.onChange?.(val, this.preview?.parserdHtmlText || "");
     }, 80);
 
+
+    this.toolbarManager = new EditorToolbarManager({
+      
+    })
     this.editorManager = new CodemirrorManager({
       update: updateCallback,
       onBlur: this.options.onBlur,
@@ -147,6 +157,14 @@ export class MarkdownEditor {
     this.editorManager.insertAndSelectText(callback);
   }
 
+  undo() {
+    this.editorManager.undo()
+  }
+
+  redo() {
+    this.editorManager.redo()
+  }
+
   async createEditor() {
     this.editorContainer = document.createElement("div", {});
     this.editorContainer.classList.add("md-editor");
@@ -168,7 +186,14 @@ export class MarkdownEditor {
       contentPlugin,
       syncScrollPlugin,
       toggleLayoutPlugin,
+      fullscreenPlugin,
+      hisotryPlugin,
     ];
+
+    if(this.options.plugins && this.options.plugins.length) {
+      plugins.push(...this.options.plugins)
+    }
+
     this.pluginManager.registerPlugins(plugins);
 
     if (this.toolbarManager) {
@@ -184,7 +209,6 @@ export class MarkdownEditor {
 
     wrap.classList.add("md-editor-editable");
 
-   
     this.editorManager.create(wrap);
 
     this.editorManager.instance?.dom.addEventListener("mousedown", () => {
@@ -226,31 +250,45 @@ export class MarkdownEditor {
     } else {
       this.closeSync();
     }
-
-    console.log('editor',this)
     createdEditorAfter(this);
   }
 
+  toggleFullscreen(value?: boolean) {
+    if (value !== void 0) {
+      this.layoutState.fullscreen = value;
+      return;
+    }
+    this.layoutState.fullscreen = !this.layoutState.fullscreen;
+
+    if (!this.editorContainer) return;
+    if (this.layoutState.fullscreen) {
+      this.editorContainer?.classList.add("is-fullscreen");
+      this.editorContainer.style.height = "";
+    } else {
+      this.editorContainer?.classList.remove("is-fullscreen");
+      this.editorContainer.style.height = this.options.height || "auto";
+    }
+  }
+
   onlyShowEditable() {
-    this.editorBody?.classList.add('is-only-show-editable')
-    this.editorBody?.classList.remove('is-only-show-preview')
-    this.layoutState.showPreview = false    
-    this.layoutState.showToolbar = true  
+    this.editorBody?.classList.add("is-only-show-editable");
+    this.editorBody?.classList.remove("is-only-show-preview");
+    this.layoutState.showPreview = false;
+    this.layoutState.showToolbar = true;
   }
 
   onlyShowPreview() {
-    
-    this.editorBody?.classList.remove('is-only-show-editable')
-    this.editorBody?.classList.add('is-only-show-preview')
-    this.layoutState.showPreview = true    
-    this.layoutState.showToolbar = false  
+    this.editorBody?.classList.remove("is-only-show-editable");
+    this.editorBody?.classList.add("is-only-show-preview");
+    this.layoutState.showPreview = true;
+    this.layoutState.showToolbar = false;
   }
 
-  resetLayout(){
-    this.editorBody?.classList.remove('is-only-show-editable')
-    this.editorBody?.classList.remove('is-only-show-preview')
-    this.layoutState.showPreview = true    
-    this.layoutState.showToolbar = true
+  resetLayout() {
+    this.editorBody?.classList.remove("is-only-show-editable");
+    this.editorBody?.classList.remove("is-only-show-preview");
+    this.layoutState.showPreview = true;
+    this.layoutState.showToolbar = true;
   }
 
   openSync() {
