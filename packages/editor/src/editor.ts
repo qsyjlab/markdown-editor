@@ -1,5 +1,3 @@
-// import { debounce } from "lodash-es";
-
 import { createIconManager } from "./icon-manager";
 import {
   EditorPlugin,
@@ -32,6 +30,8 @@ import { EditorScrollManager } from "./scroll-manager";
 import { syncScrollPlugin } from "./plugins/sync-scroll";
 import { getOffsetTop, getScroll, scrollTo } from "./utils";
 import { toggleLayoutPlugin } from "./plugins/toggle-layout";
+
+import './style/editor.scss'
 
 interface MarkdownOptions {
   container: HTMLElement;
