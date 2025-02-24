@@ -12,15 +12,16 @@
   "author": "",
   "devDependencies": {
     "@types/node": "^22.10.2",
+    "lerna": "^8.2.0",
     "rimraf": "^6.0.1",
     "sass": "^1.83.0",
     "typescript": "^5.7.2"
   },
   "dependencies": {
+    "@md-doc-editor/build": "workspace:^",
     "@md-doc-editor/editor": "workspace:^",
     "@md-doc-editor/parser": "workspace:^",
-    "@md-doc-editor/theme": "workspace:^",
-    "@md-doc-editor/build": "workspace:^"
+    "@md-doc-editor/theme": "workspace:^"
   },
   "pnpm": {
     "overrides": {
