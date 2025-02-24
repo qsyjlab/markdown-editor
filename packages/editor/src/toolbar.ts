@@ -1,9 +1,7 @@
+import { clientAttrKey } from "./constants/attrs-key";
 import { IconManager } from "./icon-manager";
 import { DropdownMenu } from "./ui";
 import { Tooltip } from "./ui/tooltip";
-import { useId } from "./utils";
-
-const dropdownMap = new Map<string, DropdownMenu>();
 
 interface EditorToolbarManagerOptions {
   leftToolbar?: string[];
@@ -40,12 +38,13 @@ export class EditorToolbarManager {
 
   private $el: HTMLElement;
 
-  private clientId = useId();
+  private clientId: string = "";
 
   private buttonsState: Record<
     string,
     EditorToolbarButtonState & {
       tooltip?: Tooltip;
+      dropdown?: DropdownMenu;
     }
   > = {};
 
@@ -136,15 +135,17 @@ export class EditorToolbarManager {
 
     const dropTrigger = button.dropTrigger || "mouseover";
     const id = `md-editor-dropdown-popper-container-${this.clientId}`;
+    let container = document.body.querySelector<HTMLElement>("#" + id);
+
+    if (!container) {
+      container = document.createElement("div");
+      container.id = id;
+      container.classList.add("md-editor-dropdown-popper-container");
+      container.setAttribute('md-doc-editor-popper-client-id', this.clientId);
+      document.body.appendChild(container);
+    }
+
     if (button.type === "dropdown") {
-      let container = document.body.querySelector<HTMLElement>("#" + id);
-
-      if (!container) {
-        container = document.createElement("div");
-        container.id = id;
-        container.classList.add("md-editor-dropdown-popper-container");
-      }
-
       button.fetch?.((menus) => {
         icon && btn.appendChild(icon);
 
@@ -181,7 +182,9 @@ export class EditorToolbarManager {
         const left = this.$el.querySelector(".md-editor-toolbar__left");
         left?.appendChild(dropdown.container);
 
-        dropdownMap.set(button.name, dropdown);
+        this.updateMenuState(button.name, {
+          dropdown,
+        });
         return;
       });
 
@@ -193,8 +196,7 @@ export class EditorToolbarManager {
     }
 
     // 尝试移除旧元素
-    document.body
-      .querySelector(`#${id}`)
+    container
       ?.querySelectorAll(`[attatch-menu-el-id="${button.name}"]`)
       ?.forEach((node) => {
         node.remove();
@@ -203,6 +205,7 @@ export class EditorToolbarManager {
     const tooltip = new Tooltip(btn, label, {
       placement: "top",
       offset: 10,
+      appendTo: container,
       createAfter(element) {
         element.setAttribute("attatch-menu-el-id", button.name);
       },
@@ -224,8 +227,6 @@ export class EditorToolbarManager {
 
   renderAll(iconManager: IconManager) {
     Object.values(this.buttons).forEach((button) => {
-      this.removeDropdown(button.name);
-
       if (this.options?.rightToolbar?.includes(button.name)) {
         this.render(button, iconManager, "right");
       } else if (this.options?.leftToolbar?.includes(button.name)) {
@@ -234,21 +235,26 @@ export class EditorToolbarManager {
     });
   }
 
-  removeDropdown(name: string) {
-    const dropdown = dropdownMap.get(name);
-    if (dropdown) {
-      dropdown.destory();
-    }
+  setClientId(id: string) {
+    this.clientId = id;
+    this.$el.setAttribute(clientAttrKey, this.clientId);
+  }
 
-    // 二次删除防止热更新时多次创建
-    const dropdownDom = document.querySelector(
-      `[editor-dropdown-trigger="${name}"]`
-    );
-    if (dropdownDom) {
-      dropdownDom.remove();
-    }
+  destory() {
+    Object.keys(this.buttonsState).forEach((key) => {
+      const state = this.buttonsState[key];
+      if (state.dropdown) {
+        state.dropdown.destory();
+        delete state.dropdown;
+      }
 
-    dropdownMap.delete(name);
+      if (state.tooltip) {
+        state.tooltip?.destroy();
+      }
+    });
+    document.body
+      .querySelector(`[md-doc-editor-popper-client-id="${this.clientId}"]`)
+      ?.remove();
   }
 }
 

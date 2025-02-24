@@ -108,4 +108,9 @@ export class CodemirrorManager {
 
     redo(this.instance);
   }
+
+  destory(){
+    this.instance?.destroy()
+    this.instance = null
+  }
 }

@@ -14,7 +14,7 @@ interface TooltipOptions extends ComputePositionConfig {
   lazy?: boolean;
   offset: number;
   showArrow?: boolean;
-
+  appendTo?: HTMLElement;
   createAfter?: (element: HTMLElement) => void;
 }
 
@@ -22,11 +22,13 @@ export class Tooltip {
   public options?: Partial<TooltipOptions>;
   public config: Partial<TooltipOptions>;
   public $el: HTMLElement | null = null;
+  private appendTo: HTMLElement;
   constructor(
     public triggerElement: HTMLElement,
     public text: string,
     options?: Partial<TooltipOptions>
   ) {
+    this.appendTo = options?.appendTo || document.body;
     this.triggerElement = triggerElement;
     this.text = text;
     this.options = options;
@@ -62,6 +64,7 @@ export class Tooltip {
     this.$el = createTooltipElement({
       arrow: this.config.showArrow || false,
       text: this.text,
+      appendTo: this.appendTo,
     });
 
     this.config.createAfter?.(this.$el);
@@ -131,6 +134,7 @@ export class Tooltip {
 interface CreateOptions {
   arrow: boolean;
   text: string;
+  appendTo: HTMLElement;
 }
 
 // 创建 tooltip 元素
@@ -148,7 +152,7 @@ function createTooltipElement(options: CreateOptions) {
   content.classList.add("md-editor-tooltip-content");
   content.innerHTML = options.text;
   tooltip.appendChild(content);
-  document.body.appendChild(tooltip);
+  options.appendTo?.appendChild(tooltip);
 
   return tooltip;
 }

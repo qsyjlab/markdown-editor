@@ -28,7 +28,7 @@ import { SidebarManager } from "./sidebar-manager";
 import { debounce } from "lodash-es";
 import { EditorScrollManager } from "./scroll-manager";
 import { syncScrollPlugin } from "./plugins/sync-scroll";
-import { getOffsetTop, getScroll, scrollTo } from "./utils";
+import { getOffsetTop, getScroll, scrollTo, useId } from "./utils";
 import { toggleLayoutPlugin } from "./plugins/toggle-layout";
 import { fullscreenPlugin } from "./plugins/full-screen";
 import { hisotryPlugin } from "./plugins/history";
@@ -75,7 +75,7 @@ export class MarkdownEditor {
 
   public preview?: MarkdownEditorPreview;
 
-  public toolbarManager:EditorToolbarManager
+  public toolbarManager: EditorToolbarManager;
 
   public pluginManager: EditorPluginManager;
 
@@ -87,6 +87,8 @@ export class MarkdownEditor {
 
   public scrollManager?: EditorScrollManager;
 
+  public clientId: string = "";
+
   public layoutState = {
     showToolbar: true,
     showPreview: true,
@@ -94,6 +96,8 @@ export class MarkdownEditor {
   };
 
   constructor(public options: MarkdownOptions) {
+    this.clientId = useId().toString()
+
     this.options = mergedDefaultOptions(options);
     this.container = this.options.container;
 
@@ -108,10 +112,7 @@ export class MarkdownEditor {
       this.options?.onChange?.(val, this.preview?.parserdHtmlText || "");
     }, 80);
 
-
-    this.toolbarManager = new EditorToolbarManager({
-      
-    })
+    this.toolbarManager = new EditorToolbarManager({});
     this.editorManager = new CodemirrorManager({
       update: updateCallback,
       onBlur: this.options.onBlur,
@@ -158,17 +159,20 @@ export class MarkdownEditor {
   }
 
   undo() {
-    this.editorManager.undo()
+    this.editorManager.undo();
   }
 
   redo() {
-    this.editorManager.redo()
+    this.editorManager.redo();
   }
 
   async createEditor() {
     this.editorContainer = document.createElement("div", {});
     this.editorContainer.classList.add("md-editor");
     this.editorContainer.style.height = this.options.height || "auto";
+
+    this.setClientId(this.clientId)
+    this.toolbarManager.setClientId(this.clientId)
 
     const plugins: EditorPluginFn[] = [
       LazyImagePlugin,
@@ -190,8 +194,8 @@ export class MarkdownEditor {
       hisotryPlugin,
     ];
 
-    if(this.options.plugins && this.options.plugins.length) {
-      plugins.push(...this.options.plugins)
+    if (this.options.plugins && this.options.plugins.length) {
+      plugins.push(...this.options.plugins);
     }
 
     this.pluginManager.registerPlugins(plugins);
@@ -300,10 +304,17 @@ export class MarkdownEditor {
     this.scrollManager?.setSync(false);
   }
 
-  destroy() {
+  setClientId(id: string) {
+    this.clientId = id;
+    this.editorContainer?.setAttribute('md-editor-client-id', id)
+  }
+
+  destory() {
     this.closeSync();
     this.pluginManager.destroy();
-    this.toolbarManager?.getBody()?.remove();
+    this.toolbarManager.destory()
+    this.editorManager.destory()
+    this.editorContainer?.remove()
   }
 }
 
