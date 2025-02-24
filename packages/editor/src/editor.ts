@@ -22,9 +22,7 @@ import {
   uploadImagePlugin,
 } from "./plugins";
 import { MarkdownEditorPreview } from "./preview";
-import {
-  EditorToolbarManager,
-} from "./toolbar";
+import { EditorToolbarManager } from "./toolbar";
 import { CodemirrorManager } from "./code-mirror";
 import { InsertCallback } from "./code-mirror/interface";
 import { taskPlugin } from "./plugins/task";
@@ -33,6 +31,7 @@ import { debounce } from "lodash-es";
 import { EditorScrollManager } from "./scroll-manager";
 import { syncScrollPlugin } from "./plugins/sync-scroll";
 import { getOffsetTop, getScroll, scrollTo } from "./utils";
+import { toggleLayoutPlugin } from "./plugins/toggle-layout";
 
 interface MarkdownOptions {
   container: HTMLElement;
@@ -66,6 +65,9 @@ export class MarkdownEditor {
 
   public content: string;
   public editorContainer?: HTMLElement;
+
+  public editorBody?: HTMLElement;
+
   public preview?: MarkdownEditorPreview;
 
   public toolbarManager = new EditorToolbarManager();
@@ -79,6 +81,11 @@ export class MarkdownEditor {
   public editorManager: CodemirrorManager;
 
   public scrollManager?: EditorScrollManager;
+
+  public layoutState = {
+    showToolbar: true,
+    showPreview: true,
+  };
 
   constructor(public options: MarkdownOptions) {
     this.options = mergedDefaultOptions(options);
@@ -160,6 +167,7 @@ export class MarkdownEditor {
       taskPlugin,
       contentPlugin,
       syncScrollPlugin,
+      toggleLayoutPlugin,
     ];
     this.pluginManager.registerPlugins(plugins);
 
@@ -176,6 +184,7 @@ export class MarkdownEditor {
 
     wrap.classList.add("md-editor-editable");
 
+   
     this.editorManager.create(wrap);
 
     this.editorManager.instance?.dom.addEventListener("mousedown", () => {
@@ -183,6 +192,8 @@ export class MarkdownEditor {
     });
 
     editorBody.appendChild(wrap);
+
+    this.editorBody = editorBody;
 
     const previewInstance = new MarkdownEditorPreview();
     await previewInstance.init();
@@ -216,7 +227,30 @@ export class MarkdownEditor {
       this.closeSync();
     }
 
+    console.log('editor',this)
     createdEditorAfter(this);
+  }
+
+  onlyShowEditable() {
+    this.editorBody?.classList.add('is-only-show-editable')
+    this.editorBody?.classList.remove('is-only-show-preview')
+    this.layoutState.showPreview = false    
+    this.layoutState.showToolbar = true  
+  }
+
+  onlyShowPreview() {
+    
+    this.editorBody?.classList.remove('is-only-show-editable')
+    this.editorBody?.classList.add('is-only-show-preview')
+    this.layoutState.showPreview = true    
+    this.layoutState.showToolbar = false  
+  }
+
+  resetLayout(){
+    this.editorBody?.classList.remove('is-only-show-editable')
+    this.editorBody?.classList.remove('is-only-show-preview')
+    this.layoutState.showPreview = true    
+    this.layoutState.showToolbar = true
   }
 
   openSync() {

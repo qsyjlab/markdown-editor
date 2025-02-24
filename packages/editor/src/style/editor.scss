@@ -42,6 +42,24 @@
     flex: auto;
     min-height: 0;
     box-sizing: border-box;
+
+    &.is-only-show-editable {
+      .md-editor-preview {
+        display: none !important;
+      }
+      .md-editor-editable {
+        width: 100% !important;
+      }
+    }
+
+    &.is-only-show-preview {
+      .md-editor-editable {
+        display: none !important;
+      }
+      .md-editor-preview {
+        width: 100% !important;
+      }
+    }
   }
 
   &-toolbar {
@@ -60,7 +78,6 @@
       align-items: center;
       flex-wrap: wrap;
     }
-
 
     &-item {
       display: inline-block;
@@ -85,7 +102,7 @@
     height: 100%;
     // padding: 10px;
     overflow: auto;
-    background-color: #F8F9FA;
+    background-color: #f8f9fa;
   }
   &-preview {
     box-sizing: border-box;
