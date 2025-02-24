@@ -1,6 +1,7 @@
 import { IconManager } from "./icon-manager";
 import { DropdownMenu } from "./ui";
 import { Tooltip } from "./ui/tooltip";
+import { useId } from "./utils";
 
 const dropdownMap = new Map<string, DropdownMenu>();
 
@@ -38,6 +39,8 @@ export class EditorToolbarManager {
   private buttons: Record<string, EditorToolbarButtonConfig> = {};
 
   private $el: HTMLElement;
+
+  private clientId = useId();
 
   private buttonsState: Record<
     string,
@@ -132,12 +135,21 @@ export class EditorToolbarManager {
     });
 
     const dropTrigger = button.dropTrigger || "mouseover";
-
+    const id = `md-editor-dropdown-popper-container-${this.clientId}`;
     if (button.type === "dropdown") {
+      let container = document.body.querySelector<HTMLElement>("#" + id);
+
+      if (!container) {
+        container = document.createElement("div");
+        container.id = id;
+        container.classList.add("md-editor-dropdown-popper-container");
+      }
+
       button.fetch?.((menus) => {
         icon && btn.appendChild(icon);
 
         const dropdown = new DropdownMenu({
+          appendTo: container,
           triggerElement: btn,
           trigger: dropTrigger,
           hideOnClick: true,
@@ -181,8 +193,9 @@ export class EditorToolbarManager {
     }
 
     // 尝试移除旧元素
-    document
-      .querySelectorAll(`[attatch-menu-el-id="${button.name}"]`)
+    document.body
+      .querySelector(`#${id}`)
+      ?.querySelectorAll(`[attatch-menu-el-id="${button.name}"]`)
       ?.forEach((node) => {
         node.remove();
       });
@@ -211,7 +224,6 @@ export class EditorToolbarManager {
 
   renderAll(iconManager: IconManager) {
     Object.values(this.buttons).forEach((button) => {
-
       this.removeDropdown(button.name);
 
       if (this.options?.rightToolbar?.includes(button.name)) {

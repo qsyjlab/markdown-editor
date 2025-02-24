@@ -109,9 +109,10 @@ export class EditorScrollManager {
       const previewDoms = previewDom?.querySelectorAll(matchHtmlTags);
 
       const tagetDom = previewDoms?.[editorDoms.length];
+      
       tagetDom?.scrollIntoView({
         behavior: "smooth",
-        block: "start",
+        block: 'nearest',
         inline: "nearest",
       });
     }

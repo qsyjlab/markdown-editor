@@ -17,6 +17,8 @@ interface DropdownMenuProps {
   menus: MenuItem[];
   trigger: "mouseover" | "click";
   hideOnClick: boolean;
+  appendTo?: HTMLElement;
+
 }
 export class DropdownMenu {
   public container: HTMLElement;
@@ -37,7 +39,7 @@ export class DropdownMenu {
 
   constructor(props: DropdownMenuProps) {
     this.config = props;
-    this.container = document.createElement("span");
+    this.container = props.appendTo || document.createElement("span");
 
     this.id = "";
 
@@ -187,7 +189,6 @@ export class DropdownMenu {
   }
 
   destory() {
-    this.dropdown && document.removeChild(this.dropdown);
-
+    this.dropdown && document.body.removeChild(this.dropdown);
   }
 }

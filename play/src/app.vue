@@ -1,5 +1,7 @@
 <template>
   <div id="container"></div>
+
+  <div id="container2"></div>
 </template>
 <script setup lang="ts">
 import {
@@ -9,7 +11,7 @@ import {
   bindLazyLoadImageEvent,
 } from "@md-doc-editor/parser";
 
-import { MarkdownEditor, Dialog } from "@md-doc-editor/editor";
+import { MarkdownEditor } from "@md-doc-editor/editor";
 
 import "@md-doc-editor/theme";
 // import "@md-doc-editor/theme/dist/task.css";
@@ -21,8 +23,7 @@ import { text } from "./markdown";
 const html = ref("");
 
 let markdownEditor: MarkdownEditor | null;
-// const content = ref("");
-let dialogInstance = new Dialog({});
+
 
 onMounted(() => {
   initMarkdownEditor();
@@ -30,18 +31,11 @@ onMounted(() => {
   // initMarkdown();
 });
 
-function showDialog() {
-  dialogInstance.show();
-}
-
-function closeDialog() {
-  dialogInstance.close();
-}
 
 function initMarkdownEditor() {
   markdownEditor = new MarkdownEditor({
     container: document.getElementById("container") as HTMLElement,
-    height: "800px",
+    height: "550px",
     onChange(mdText, htmlText) {
       console.log("mdText", mdText);
       console.log("htmlText", htmlText)
@@ -52,6 +46,23 @@ function initMarkdownEditor() {
     },
     setup: () => {
       markdownEditor?.setContent(text);
+    },
+  });
+
+
+  const markdownEditor2 = new MarkdownEditor({
+    container: document.getElementById("container2") as HTMLElement,
+    height: "550px",
+    onChange(mdText, htmlText) {
+      console.log("mdText", mdText);
+      console.log("htmlText", htmlText)
+    },
+    imagesUploadHandler: (file, success) => {
+      const url = rawFileToObjectURL(file);
+      success(url);
+    },
+    setup: () => {
+      markdownEditor2?.setContent(text);
     },
   });
 }

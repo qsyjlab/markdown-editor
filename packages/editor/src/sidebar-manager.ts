@@ -79,6 +79,7 @@ export class SidebarManager {
       activeHeadingEl?.classList.add("is-active");
       activeHeadingEl?.scrollIntoView({
         behavior: "smooth",
+        block: 'nearest'
       });
     }
   }
