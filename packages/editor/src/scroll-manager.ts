@@ -100,7 +100,7 @@ export class EditorScrollManager {
         this.previewMananger?.parser?.parse(invisibleMarkdown);
 
       const invisibleDomAll = new DOMParser().parseFromString(
-        invisibleHtml,
+        invisibleHtml || "",
         "text/html"
       );
 
@@ -109,10 +109,10 @@ export class EditorScrollManager {
       const previewDoms = previewDom?.querySelectorAll(matchHtmlTags);
 
       const tagetDom = previewDoms?.[editorDoms.length];
-      
+
       tagetDom?.scrollIntoView({
         behavior: "smooth",
-        block: 'nearest',
+        block: "nearest",
         inline: "nearest",
       });
     }

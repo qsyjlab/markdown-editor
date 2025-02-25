@@ -40,10 +40,11 @@ export async function buildDtsTask(root = projectEditorRoot) {
 
   consola.success("Added source files");
 
-  // typeCheck(project);
-  // consola.success("Type check passed!");
+  typeCheck(project);
+  consola.success("Type check passed!");
 
-  project.emitToMemory();
+
+  await project.emitToMemory();
 
   // 随后将解析完的文件写道打包路径
   for (const sourceFile of sourceFiles) {

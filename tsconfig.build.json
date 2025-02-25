@@ -8,6 +8,5 @@
       "baseUrl": "./"
       
     },
-    "include": ["node_modules/shiki/core"]
   }
   

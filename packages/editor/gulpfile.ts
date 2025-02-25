@@ -62,4 +62,4 @@ export async function buildEditorTask() {
     Logger.error("Build Editor failed:", error)
   }
 }
-export default series(buildEditorTask, buildDtsTask);
+export default series(buildEditorTask, ()=> buildDtsTask());

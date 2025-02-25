@@ -6,8 +6,11 @@ import {
   transformerMetaHighlight,
 } from "@shikijs/transformers";
 
-import { createHighlighterCore, enableDeprecationWarnings } from "shiki/core";
-import { createOnigurumaEngine } from "shiki/engine/oniguruma";
+import {
+  createOnigurumaEngine,
+  enableDeprecationWarnings,
+  createHighlighterCore,
+} from "shiki";
 
 import presetThemes from "./preset/theme";
 import presetLangs from "./preset/lang";
@@ -19,7 +22,6 @@ interface HighlighterProps {
 
   languageAlias?: Record<string, string>;
 }
-
 
 enableDeprecationWarnings(false);
 
