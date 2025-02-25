@@ -150,7 +150,7 @@ export class EditorToolbarManager {
         icon && btn.appendChild(icon);
 
         const dropdown = new DropdownMenu({
-          appendTo: container,
+          appendTo: container!,
           triggerElement: btn,
           trigger: dropTrigger,
           hideOnClick: true,

@@ -5,6 +5,7 @@
       "declarationDir": "./dist/types",  // 类型声明输出目录
       "emitDeclarationOnly": false,  // 仅生成声明文件
       "skipLibCheck": true,
+      "baseUrl": "./"
 
     },
   }
