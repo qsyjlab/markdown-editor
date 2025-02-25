@@ -2,10 +2,10 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "target": "ES2020",
-    "module": "esnext",
+    "module": "ESNext",
     "baseUrl": ".",
     "sourceMap": false,
-    "moduleResolution": "node",
+    "moduleResolution":"node",
     "allowJs": false,
     "strict": true,
     "noUnusedLocals": true,

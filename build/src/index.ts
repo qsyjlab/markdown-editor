@@ -1,4 +1,1 @@
-import { runBuildTask } from "./rollup";
-
-
-runBuildTask()
+export * from './task'

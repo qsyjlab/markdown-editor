@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm run clean:dist && npx lerna run build --stream",
+    "build": "pnpm run clean:dist && npx lerna run build",
     "clean:dist": "rimraf dist && npx lerna run clean"
   },
   "keywords": [],

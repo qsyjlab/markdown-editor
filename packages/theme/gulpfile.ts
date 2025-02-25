@@ -1,4 +1,4 @@
-import { dest, parallel, src } from "gulp";
+import { dest, series, src } from "gulp";
 import gulpSass from "gulp-sass";
 import dartSass from "sass";
 import autoprefixer from "gulp-autoprefixer";
@@ -15,8 +15,7 @@ export function buildThemeChalk() {
     .pipe(
       cleanCSS()
     )
-
     .pipe(dest(path.resolve(projectThemeRoot, "dist")));
 }
 
-export default parallel(buildThemeChalk);
+export default series(buildThemeChalk);

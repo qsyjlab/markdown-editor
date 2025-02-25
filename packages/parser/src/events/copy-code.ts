@@ -25,7 +25,7 @@ export function bindCopyCodeEvent(params?: BindCopyCodeEventParams) {
     $el = document,
   } = params || {};
 
-  const timeoutIdMap: WeakMap<HTMLElement, NodeJS.Timeout> = new WeakMap();
+  const timeoutIdMap: WeakMap<HTMLElement, any> = new WeakMap();
 
   function eventHandler(e: MouseEvent) {
     const el = e.target as HTMLElement;
