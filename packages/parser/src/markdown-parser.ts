@@ -1,7 +1,7 @@
 import MarkdownIt from "markdown-it";
 import attrsPlugin from "markdown-it-attrs";
 
-import { createHighlighter } from "./highlight";
+import { createHighlighter, HighlighterProps } from "./highlight";
 import {
   preWrapperPlugin,
   linkPlugin,
@@ -23,7 +23,10 @@ import { anchorLevel } from "./constant";
 import { createTasksPlugin } from "./plugins/tasks";
 
 export interface MarkdownParserProps {
-  languages?: string[];
+  languages?: HighlighterProps["languages"];
+
+  languageAlias?: HighlighterProps["languageAlias"];
+
   enableLineNumber?: boolean;
 
   /**
@@ -38,7 +41,10 @@ export interface MarkdownParserProps {
 }
 
 export async function createMarkdownParser(props?: MarkdownParserProps) {
-  const { highlight } = await createHighlighter();
+  const { highlight } = await createHighlighter({
+    languageAlias: props?.languageAlias,
+    languages: props?.languages
+  });
 
   const instance: MarkdownIt = new MarkdownIt({
     highlight,
@@ -72,7 +78,7 @@ export async function createMarkdownParser(props?: MarkdownParserProps) {
     slugify,
   } as HeadersPluginOptions);
   instance.use(imagePlugin);
-  instance.use(createTasksPlugin)
+  instance.use(createTasksPlugin);
 
   function parse(text: string) {
     return instance.render(text);

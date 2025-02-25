@@ -1,3 +1,5 @@
+import { MarkdownParserProps } from "@md-doc-editor/parser";
+
 import { createIconManager } from "./icon-manager";
 import {
   EditorPlugin,
@@ -50,6 +52,8 @@ interface MarkdownOptions {
 
   onBlur?: () => void;
 
+  parserOptions?: MarkdownParserProps;
+
   leftToolbar?: string[];
   rightToolbar?: string[];
 
@@ -61,6 +65,8 @@ interface MarkdownOptions {
     success: (path: string) => void,
     failure: (msg: string) => void
   ) => void;
+
+  onClickImage?: (path: string) => void;
 
   onChange?: (mdText: string, htmlText: string) => void;
 }
@@ -96,7 +102,7 @@ export class MarkdownEditor {
   };
 
   constructor(public options: MarkdownOptions) {
-    this.clientId = useId().toString()
+    this.clientId = useId().toString();
 
     this.options = mergedDefaultOptions(options);
     this.container = this.options.container;
@@ -171,8 +177,8 @@ export class MarkdownEditor {
     this.editorContainer.classList.add("md-editor");
     this.editorContainer.style.height = this.options.height || "auto";
 
-    this.setClientId(this.clientId)
-    this.toolbarManager.setClientId(this.clientId)
+    this.setClientId(this.clientId);
+    this.toolbarManager.setClientId(this.clientId);
 
     const plugins: EditorPluginFn[] = [
       LazyImagePlugin,
@@ -223,7 +229,10 @@ export class MarkdownEditor {
 
     this.editorBody = editorBody;
 
-    const previewInstance = new MarkdownEditorPreview();
+    const previewInstance = new MarkdownEditorPreview({
+      parserOptions: this.options.parserOptions,
+      onClickImage: this.options.onClickImage
+    });
     await previewInstance.init();
     this.preview = previewInstance;
 
@@ -306,15 +315,15 @@ export class MarkdownEditor {
 
   setClientId(id: string) {
     this.clientId = id;
-    this.editorContainer?.setAttribute('md-editor-client-id', id)
+    this.editorContainer?.setAttribute("md-editor-client-id", id);
   }
 
   destory() {
     this.closeSync();
     this.pluginManager.destroy();
-    this.toolbarManager.destory()
-    this.editorManager.destory()
-    this.editorContainer?.remove()
+    this.toolbarManager.destory();
+    this.editorManager.destory();
+    this.editorContainer?.remove();
   }
 }
 

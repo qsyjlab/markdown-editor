@@ -3,13 +3,14 @@ import {
   bindCodeGroupsEvent,
   bindCopyCodeEvent,
   bindLazyLoadImageEvent,
+  MarkdownParserProps,
 } from "@md-doc-editor/parser";
 
+interface MarkdownEditorPreviewOpitons {
+  parserOptions?: MarkdownParserProps;
 
-// interface MarkdownEditorPreviewOpitons {
-
-//   onHeadingChange?: (currentActive: MarkdownHeading | null)=> void
-// }
+  onClickImage?(src: string): void;
+}
 
 export class MarkdownEditorPreview {
   public $el?: HTMLElement;
@@ -23,11 +24,13 @@ export class MarkdownEditorPreview {
 
   private _isAniming = false;
 
-  constructor() {
+  private options?: MarkdownEditorPreviewOpitons;
+
+  constructor(options?: MarkdownEditorPreviewOpitons) {
     this.parserdHtmlText = "";
+    this.options = options;
   }
 
-  
   get isAniming() {
     return this._isAniming;
   }
@@ -45,20 +48,21 @@ export class MarkdownEditorPreview {
   }
 
   async init() {
-    this.parser = await createMarkdownParser();
+    this.parser = await createMarkdownParser(this.options?.parserOptions);
   }
 
   create() {
     this.$el = document.createElement("div");
     this.$el.classList.add("md-editor-preview");
 
-    bindPreviewEvent(this.$el);
+    bindPreviewEvent(this.$el, this.options);
 
     return this.$el;
   }
 
   setContent(text: string) {
     this.parserdHtmlText = this.parser?.parse(text) || "";
+    debugger
     this.render();
   }
 
@@ -66,7 +70,7 @@ export class MarkdownEditorPreview {
     if (!this.$el) return;
     this.$el.innerHTML = this.parserdHtmlText;
 
-    bindPreviewEvent(this.$el);
+    bindPreviewEvent(this.$el, this.options);
 
     this._headings = this.queryAllHeadings();
   }
@@ -79,13 +83,16 @@ export class MarkdownEditorPreview {
         level,
         title: heading.textContent || "",
         el: heading as HTMLElement,
-        id: heading.id
+        id: heading.id,
       };
     });
   }
 }
 
-function bindPreviewEvent(container: HTMLElement | Document) {
+function bindPreviewEvent(
+  container: HTMLElement | Document,
+  options?: MarkdownEditorPreviewOpitons
+) {
   bindCodeGroupsEvent(container);
   bindCopyCodeEvent({
     $el: container,
@@ -93,6 +100,9 @@ function bindPreviewEvent(container: HTMLElement | Document) {
 
   bindLazyLoadImageEvent({
     $el: container,
+    onClick(src) {
+      options?.onClickImage?.(src)
+    },
   });
 }
 
@@ -100,5 +110,5 @@ export interface MarkdownHeading {
   level: number;
   title: string;
   el: HTMLElement;
-  id: string
+  id: string;
 }

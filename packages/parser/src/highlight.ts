@@ -10,15 +10,16 @@ import {
   createOnigurumaEngine,
   enableDeprecationWarnings,
   createHighlighterCore,
+  HighlighterCoreOptions,
 } from "shiki";
 
 import presetThemes from "./preset/theme";
 import presetLangs from "./preset/lang";
 
-interface HighlighterProps {
+export interface HighlighterProps {
   theme?: any;
 
-  languages?: string[];
+  languages?: HighlighterCoreOptions['langs'];
 
   languageAlias?: Record<string, string>;
 }
@@ -45,8 +46,8 @@ export async function createHighlighter(options?: HighlighterProps) {
 
   const highlighter = await createHighlighterCore({
     themes: presetThemes,
-    langs: presetLangs,
-    // `shiki/wasm` contains the wasm binary inlined as base64 string.
+    langs: options?.languages ? options.languages : presetLangs,
+    // `shiki/wasm` contains the wasm binary inlined as base64 string
     engine: createOnigurumaEngine(import("shiki/wasm")),
   });
 

@@ -11,11 +11,13 @@ import {
   bindLazyLoadImageEvent,
 } from "@md-doc-editor/parser";
 
+import presetLang from "@md-doc-editor/parser/src/preset/lang";
+
 import { MarkdownEditor } from "@md-doc-editor/editor";
 
 import "@md-doc-editor/theme";
 // import "@md-doc-editor/theme/dist/task.css";
-import "@md-doc-editor/editor/src/style/editor.scss";
+// import "@md-doc-editor/editor/src/style/editor.scss";
 
 import { nextTick, onMounted, ref } from "vue";
 import { text } from "./markdown";
@@ -24,47 +26,51 @@ const html = ref("");
 
 let markdownEditor: MarkdownEditor | null;
 
-
 onMounted(() => {
   initMarkdownEditor();
 
   // initMarkdown();
 });
 
-
 function initMarkdownEditor() {
   markdownEditor = new MarkdownEditor({
     container: document.getElementById("container") as HTMLElement,
     height: "550px",
+    parserOptions: {
+      languages: [...presetLang, () => import("@shikijs/langs/json")],
+    },
+
     onChange(mdText, htmlText) {
-      console.log("mdText", mdText);
-      console.log("htmlText", htmlText)
+      // console.log("mdText", mdText);
+      // console.log("htmlText", htmlText)
     },
     imagesUploadHandler: (file, success) => {
       const url = rawFileToObjectURL(file);
       success(url);
+    },
+    onClickImage: (path) => {
+      console.log("path", path);
     },
     setup: () => {
       markdownEditor?.setContent(text);
     },
   });
 
-
-  const markdownEditor2 = new MarkdownEditor({
-    container: document.getElementById("container2") as HTMLElement,
-    height: "550px",
-    onChange(mdText, htmlText) {
-      console.log("mdText", mdText);
-      console.log("htmlText", htmlText)
-    },
-    imagesUploadHandler: (file, success) => {
-      const url = rawFileToObjectURL(file);
-      success(url);
-    },
-    setup: () => {
-      markdownEditor2?.setContent(text);
-    },
-  });
+  // const markdownEditor2 = new MarkdownEditor({
+  //   container: document.getElementById("container2") as HTMLElement,
+  //   height: "550px",
+  //   onChange(mdText, htmlText) {
+  //     console.log("mdText", mdText);
+  //     console.log("htmlText", htmlText)
+  //   },
+  //   imagesUploadHandler: (file, success) => {
+  //     const url = rawFileToObjectURL(file);
+  //     success(url);
+  //   },
+  //   setup: () => {
+  //     markdownEditor2?.setContent(text);
+  //   },
+  // });
 }
 
 function rawFileToObjectURL(file: File) {

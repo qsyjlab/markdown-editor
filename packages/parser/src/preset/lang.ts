@@ -9,4 +9,4 @@ export default [
   () => import("@shikijs/langs/ts"),
   () => import("@shikijs/langs/sh"),
   () => import("@shikijs/langs/html"),
-];
+]
