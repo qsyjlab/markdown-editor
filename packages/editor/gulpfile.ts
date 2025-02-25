@@ -73,11 +73,19 @@ export async function buildDtsTask() {
       noImplicitAny: false, // 允许隐式 any
     },
   });
-  const sourceFiles = project.addSourceFilesAtPaths("src/**/*.ts");
+  const sourceFiles = project.addSourceFilesAtPaths('src/**/*{.js,.jsx}');
 
   const srcDir = path.resolve("src");
 
-  project.emit()
+  project.resolveSourceFileDependencies()
+
+  const emitResult = await project.emit();
+
+
+  for (const diagnostic of emitResult.getDiagnostics()) {
+    console.log(diagnostic.getMessageText());
+  }
+
 
   sourceFiles.forEach(async (sourceFile) => {
     // 获取文件的相对路径

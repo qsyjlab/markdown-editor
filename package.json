@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm run -C build build",
-    "clean": "pnpm run clean:dist && pnpm run -r --parallel clean",
-    "clean:dist": "rimraf dist"
+    "build": "pnpm run clean:dist && npx lerna run build --stream",
+    "clean:dist": "rimraf dist && npx lerna run clean"
   },
   "keywords": [],
   "author": "",
