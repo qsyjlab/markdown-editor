@@ -4,20 +4,17 @@
   <div id="container2"></div>
 </template>
 <script setup lang="ts">
+// import {
+
+// } from "@md-doc-editor/parser";
+
 import {
+  MarkdownEditor,
   createMarkdownParser,
   bindCodeGroupsEvent,
   bindCopyCodeEvent,
   bindLazyLoadImageEvent,
-} from "@md-doc-editor/parser";
-
-// import presetLang from "@md-doc-editor/parser/src/preset/lang";
-
-import { MarkdownEditor } from "@md-doc-editor/editor";
-
-import "@md-doc-editor/theme";
-// import "@md-doc-editor/theme/dist/task.css";
-// import "@md-doc-editor/editor/src/style/editor.scss";
+} from "@md-doc-editor/editor";
 
 import { nextTick, onMounted, ref } from "vue";
 import { text } from "./markdown";
