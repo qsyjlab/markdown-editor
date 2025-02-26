@@ -5,11 +5,12 @@ import {
   bindLazyLoadImageEvent,
   MarkdownParserProps,
 } from "@md-doc-editor/parser";
+import preview from "./ui/preview-image";
 
 interface MarkdownEditorPreviewOpitons {
   parserOptions?: MarkdownParserProps;
 
-  onClickImage?(src: string): void;
+  onClickImage?(src: string, event: MouseEvent): void;
 }
 
 export class MarkdownEditorPreview {
@@ -62,7 +63,6 @@ export class MarkdownEditorPreview {
 
   setContent(text: string) {
     this.parserdHtmlText = this.parser?.parse(text) || "";
-    debugger
     this.render();
   }
 
@@ -100,8 +100,14 @@ function bindPreviewEvent(
 
   bindLazyLoadImageEvent({
     $el: container,
-    onClick(src) {
-      options?.onClickImage?.(src)
+    onClick(src, e) {
+
+      if(options?.onClickImage){
+        options.onClickImage(src, e);
+      }else {
+        preview(e.target as HTMLElement)
+      }
+ 
     },
   });
 }

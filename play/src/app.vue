@@ -11,7 +11,7 @@ import {
   bindLazyLoadImageEvent,
 } from "@md-doc-editor/parser";
 
-import presetLang from "@md-doc-editor/parser/src/preset/lang";
+// import presetLang from "@md-doc-editor/parser/src/preset/lang";
 
 import { MarkdownEditor } from "@md-doc-editor/editor";
 
@@ -37,7 +37,7 @@ function initMarkdownEditor() {
     container: document.getElementById("container") as HTMLElement,
     height: "550px",
     parserOptions: {
-      languages: [...presetLang, () => import("@shikijs/langs/json")],
+      // languages: [...presetLang, () => import("@shikijs/langs/json")],
     },
 
     onChange(mdText, htmlText) {
@@ -48,9 +48,7 @@ function initMarkdownEditor() {
       const url = rawFileToObjectURL(file);
       success(url);
     },
-    onClickImage: (path) => {
-      console.log("path", path);
-    },
+
     setup: () => {
       markdownEditor?.setContent(text);
     },

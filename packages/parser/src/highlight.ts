@@ -8,9 +8,10 @@ import {
 
 import {
   createOnigurumaEngine,
-  enableDeprecationWarnings,
+  // enableDeprecationWarnings,
   createHighlighterCore,
   HighlighterCoreOptions,
+  createJavaScriptRegexEngine,
 } from "shiki";
 
 import presetThemes from "./preset/theme";
@@ -19,12 +20,12 @@ import presetLangs from "./preset/lang";
 export interface HighlighterProps {
   theme?: any;
 
-  languages?: HighlighterCoreOptions['langs'];
+  languages?: HighlighterCoreOptions["langs"];
 
   languageAlias?: Record<string, string>;
 }
 
-enableDeprecationWarnings(false);
+// enableDeprecationWarnings(false);
 
 export async function createHighlighter(options?: HighlighterProps) {
   // const { theme = ["github-light", "github-dark"] } = options || {};
@@ -46,9 +47,8 @@ export async function createHighlighter(options?: HighlighterProps) {
 
   const highlighter = await createHighlighterCore({
     themes: presetThemes,
-    langs: options?.languages ? options.languages : presetLangs,
-    // `shiki/wasm` contains the wasm binary inlined as base64 string
-    engine: createOnigurumaEngine(import("shiki/wasm")),
+    langs: options?.languages ? options.languages : [...presetLangs, 'vue'],
+    engine: createJavaScriptRegexEngine({ forgiving: true }),
   });
 
   function highlight(str: string, lang: string, attrs: string) {
