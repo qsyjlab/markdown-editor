@@ -49,6 +49,7 @@ export class MarkdownEditorPreview {
   }
 
   async init() {
+    import('@md-doc-editor/theme/dist/index.css')
     this.parser = await createMarkdownParser(this.options?.parserOptions);
   }
 
@@ -86,6 +87,11 @@ export class MarkdownEditorPreview {
         id: heading.id,
       };
     });
+  }
+
+
+  destory(){
+    this.parser?.destory()
   }
 }
 

@@ -141,7 +141,7 @@ export class EditorToolbarManager {
       container = document.createElement("div");
       container.id = id;
       container.classList.add("md-editor-dropdown-popper-container");
-      container.setAttribute('md-doc-editor-popper-client-id', this.clientId);
+      container.setAttribute("md-doc-editor-popper-client-id", this.clientId);
       document.body.appendChild(container);
     }
 
@@ -226,10 +226,18 @@ export class EditorToolbarManager {
   }
 
   renderAll(iconManager: IconManager) {
-    Object.values(this.buttons).forEach((button) => {
-      if (this.options?.rightToolbar?.includes(button.name)) {
+    // 渲染右边工具栏按钮，按数组顺序
+    this.options?.rightToolbar?.forEach((buttonName) => {
+      const button = this.buttons[buttonName];
+      if (button) {
         this.render(button, iconManager, "right");
-      } else if (this.options?.leftToolbar?.includes(button.name)) {
+      }
+    });
+
+    // 渲染左边工具栏按钮，按数组顺序
+    this.options?.leftToolbar?.forEach((buttonName) => {
+      const button = this.buttons[buttonName];
+      if (button) {
         this.render(button, iconManager, "left");
       }
     });

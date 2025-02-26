@@ -25,6 +25,7 @@
     "@codemirror/view": "^6.36.2",
     "@floating-ui/dom": "^1.6.13",
     "@md-doc-editor/parser": "workspace:^",
+    "@md-doc-editor/theme": "workspace:^",
     "codemirror": "^6.0.1",
     "lodash-es": "^4.17.21"
   },
