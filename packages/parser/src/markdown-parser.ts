@@ -41,9 +41,9 @@ export interface MarkdownParserProps {
 }
 
 export async function createMarkdownParser(props?: MarkdownParserProps) {
-  const { highlight } = await createHighlighter({
+  const { highlight, dispose } = await createHighlighter({
     languageAlias: props?.languageAlias,
-    languages: props?.languages
+    languages: props?.languages,
   });
 
   const instance: MarkdownIt = new MarkdownIt({
@@ -86,5 +86,8 @@ export async function createMarkdownParser(props?: MarkdownParserProps) {
 
   return {
     parse,
+    destory: () => {
+      dispose();
+    },
   };
 }
