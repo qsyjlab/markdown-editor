@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "pnpm run clean:dist && npx lerna run build",
+    "publish": "npx lerna publish",
     "clean:dist": "rimraf dist && npx lerna run clean"
   },
   "keywords": [],
