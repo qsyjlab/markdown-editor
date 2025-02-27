@@ -110,10 +110,10 @@
 
   [class*="language-"] > span.lang {
     position: absolute;
-    top: 2px;
-    right: 8px;
+    top: 5px;
+    right: 12px;
     z-index: 2;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 500;
     -webkit-user-select: none;
     user-select: none;
@@ -135,9 +135,9 @@
     font-size: 0.875em;
     color: #67676c;
     transition: border-color 0.5s, color 0.5s;
-    padding-top: 20px;
+    padding-top: 26px;
     width: 32px;
-    border-right: 1px solid #e2e2;
+    border-right: 1px solid var(--md-code-block-gutter);
     z-index: 3;
     text-align: center;
     overflow: hidden;
@@ -155,7 +155,7 @@
     position: relative;
     z-index: 1;
     margin: 0;
-    padding: 20px 0;
+    padding: 26px 0;
     background: transparent;
     overflow-x: auto;
   }

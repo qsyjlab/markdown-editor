@@ -25,10 +25,9 @@ export function lineNumberPlugin (md: MarkdownIt, enable = false) {
         rawCode.indexOf('<code>'),
         rawCode.indexOf('</code>')
       )
-  
       const lines = code.split('\n')
   
-      const lineNumbersCode = [...Array(lines.length)]
+      const lineNumbersCode = [...Array(lines.length - 1)]
         .map(
           (_, index) =>
             `<span class="line-number">${index + startLineNumber}</span><br>`
