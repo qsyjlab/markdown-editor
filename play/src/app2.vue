@@ -4,55 +4,52 @@
   <div id="container2"></div>
 </template>
 <script setup lang="ts">
-import {
-  createMarkdownParser,
-  MarkdownParserReturn,
-} from "@md-doc-editor/parser";
-
 // import {
-//   MarkdownEditor,
-//   createMarkdownParser,
-//   bindCodeGroupsEvent,
-//   bindCopyCodeEvent,
-//   bindLazyLoadImageEvent,
-// } from "@md-doc-editor/editor";
+
+// } from "@md-doc-editor/parser";
+
+import {
+  MarkdownEditor,
+  createMarkdownParser,
+  bindCodeGroupsEvent,
+  bindCopyCodeEvent,
+  bindLazyLoadImageEvent,
+} from "@md-doc-editor/editor";
 
 import { nextTick, onMounted, ref } from "vue";
 import { text } from "./markdown";
 
 const html = ref("");
 
-let markdownEditor: MarkdownParserReturn | null;
+let markdownEditor: MarkdownEditor | null;
 
 onMounted(() => {
   initMarkdownEditor();
+
   // initMarkdown();
 });
 
-async function initMarkdownEditor() {
-  markdownEditor = await createMarkdownParser();
-  const text = markdownEditor.parse("# hello world");
-  console.log("text", text);
-  // markdownEditor = new MarkdownEditor({
-  //   container: document.getElementById("container") as HTMLElement,
-  //   height: "550px",
-  //   parserOptions: {
-  //     // languages: [...presetLang, () => import("@shikijs/langs/json")],
-  //   },
+function initMarkdownEditor() {
+  markdownEditor = new MarkdownEditor({
+    container: document.getElementById("container") as HTMLElement,
+    height: "550px",
+    parserOptions: {
+      // languages: [...presetLang, () => import("@shikijs/langs/json")],
+    },
 
-  //   onChange(mdText, htmlText) {
-  //     // console.log("mdText", mdText);
-  //     // console.log("htmlText", htmlText)
-  //   },
-  //   imagesUploadHandler: (file, success) => {
-  //     const url = rawFileToObjectURL(file);
-  //     success(url);
-  //   },
+    onChange(mdText, htmlText) {
+      // console.log("mdText", mdText);
+      // console.log("htmlText", htmlText)
+    },
+    imagesUploadHandler: (file, success) => {
+      const url = rawFileToObjectURL(file);
+      success(url);
+    },
 
-  //   setup: () => {
-  //     markdownEditor?.setContent(text);
-  //   },
-  // });
+    setup: () => {
+      markdownEditor?.setContent(text);
+    },
+  });
 
   // const markdownEditor2 = new MarkdownEditor({
   //   container: document.getElementById("container2") as HTMLElement,
@@ -75,21 +72,21 @@ function rawFileToObjectURL(file: File) {
   return URL.createObjectURL(new Blob([file], { type: file.type }));
 }
 
-// async function initMarkdown() {
-//   const parser = await createMarkdownParser({
-//     enableLineNumber: false,
-//   });
-//   html.value = parser.parse(text);
-//   nextTick(() => {
-//     bindCodeGroupsEvent();
-//     bindCopyCodeEvent();
-//     bindLazyLoadImageEvent({
-//       onClick: (src) => {
-//         console.log("src", src);
-//       },
-//     });
-//   });
-// }
+async function initMarkdown() {
+  const parser = await createMarkdownParser({
+    enableLineNumber: false,
+  });
+  html.value = parser.parse(text);
+  nextTick(() => {
+    bindCodeGroupsEvent();
+    bindCopyCodeEvent();
+    bindLazyLoadImageEvent({
+      onClick: (src) => {
+        console.log("src", src);
+      },
+    });
+  });
+}
 </script>
 <style scoped>
 #container {
