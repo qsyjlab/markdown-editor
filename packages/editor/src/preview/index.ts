@@ -5,12 +5,13 @@ import {
   bindLazyLoadImageEvent,
   MarkdownParserProps,
 } from "@md-doc-editor/parser";
-import preview from "./ui/preview-image";
 
-interface MarkdownEditorPreviewOpitons {
+import preview from "../ui/preview-image";
+
+export interface MarkdownEditorPreviewOpitons {
   parserOptions?: MarkdownParserProps;
 
-  onClickImage?(src: string, event: MouseEvent): void;
+  onPreview?(src: string, event: MouseEvent): void;
 }
 
 export class MarkdownEditorPreview {
@@ -19,13 +20,13 @@ export class MarkdownEditorPreview {
 
   public parserdHtmlText: string;
 
-  private _headings: MarkdownHeading[] = [];
+  protected _headings: MarkdownHeading[] = [];
 
-  private _currentAnchor: MarkdownHeading | null = null;
+  protected _currentAnchor: MarkdownHeading | null = null;
 
-  private _isAniming = false;
+  protected _isAniming = false;
 
-  private options?: MarkdownEditorPreviewOpitons;
+  protected options?: MarkdownEditorPreviewOpitons;
 
   constructor(options?: MarkdownEditorPreviewOpitons) {
     this.parserdHtmlText = "";
@@ -51,13 +52,14 @@ export class MarkdownEditorPreview {
   async init() {
     // @ts-ignore
     import('@md-doc-editor/theme/dist/index.css')
-
     this.parser = await createMarkdownParser(this.options?.parserOptions);
+
+
   }
 
   create() {
     this.$el = document.createElement("div");
-    this.$el.classList.add("md-editor-preview");
+    this.$el.classList.add("md-editor-preview-body");
 
     bindPreviewEvent(this.$el, this.options);
 
@@ -91,9 +93,9 @@ export class MarkdownEditorPreview {
     });
   }
 
-
-  destory(){
-    this.parser?.destory()
+  destory() {
+    this.parser?.destory();
+    this.$el?.remove();
   }
 }
 
@@ -109,13 +111,11 @@ function bindPreviewEvent(
   bindLazyLoadImageEvent({
     $el: container,
     onClick(src, e) {
-
-      if(options?.onClickImage){
-        options.onClickImage(src, e);
-      }else {
-        preview(e.target as HTMLElement)
+      if (options?.onPreview) {
+        options.onPreview(src, e);
+      } else {
+        preview(e.target as HTMLElement);
       }
- 
     },
   });
 }

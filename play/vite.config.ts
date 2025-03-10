@@ -3,6 +3,9 @@ import vue from "@vitejs/plugin-vue";
 import visualizer from "rollup-plugin-visualizer";
 
 export default defineConfig({
+  optimizeDeps: {
+    exclude: ["@md-doc-editor/editor"],
+  },
   plugins: [
     vue(),
     visualizer({
@@ -15,5 +18,8 @@ export default defineConfig({
   ],
   server: {
     port: 5177,
+    watch: {
+      usePolling: true,
+    },
   },
 });

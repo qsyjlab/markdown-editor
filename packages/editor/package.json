@@ -14,6 +14,10 @@
     "dist",
     "package.json"
   ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./preview": "./dist/preview/index.js"
+  },
   "keywords": [],
   "author": "",
   "dependencies": {

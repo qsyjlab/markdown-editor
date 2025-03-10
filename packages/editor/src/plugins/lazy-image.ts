@@ -6,9 +6,9 @@ export function LazyImagePlugin(editor: MarkdownEditor) {
   return {
     name:'lazy-image',
     update: () => {
-      if (!editor.preview?.$el) return;
+      if (!editor.previewManager?.$el) return;
       bindLazyLoadImageEvent({
-        $el: editor.preview.$el,
+        $el: editor.previewManager.$el,
         onClick(src, e) {
           preview(e.target as HTMLElement)
         },
