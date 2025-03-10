@@ -5,7 +5,8 @@
   "main": "dist/index.css",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "gulp --require @esbuild-kit/cjs-loader"
+    "build": "gulp --require @esbuild-kit/cjs-loader",
+    "watch": "gulp watch --require @esbuild-kit/cjs-loader"
   },
   "keywords": [],
   "author": "",

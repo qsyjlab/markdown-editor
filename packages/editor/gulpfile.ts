@@ -1,4 +1,4 @@
-import { series } from "gulp";
+import { series, watch as gulpWatch } from "gulp";
 import path from "path";
 import { rollup } from "rollup";
 import { glob } from "fast-glob";
@@ -7,6 +7,7 @@ import esbuild from "rollup-plugin-esbuild";
 import resolvePlugin from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import sass from "rollup-plugin-sass";
+import { rmSync } from "fs";
 
 import {
   excludeFiles,
@@ -15,11 +16,17 @@ import {
   projectEditorPkg,
   projectEditorRoot,
   buildDtsTask,
-  Logger
+  Logger,
 } from "@md-doc-editor/build";
 
 const target = "es2019";
 export async function buildEditorTask() {
+
+
+  const distRoot = path.resolve(projectEditorRoot, "dist")
+  rmSync(distRoot, { recursive: true, force: true });
+  Logger.success("Clean Editor dist completed!");
+
   try {
     const input = excludeFiles(
       await glob("**/*.{js,ts}", {
@@ -51,15 +58,22 @@ export async function buildEditorTask() {
 
     // 输出文件的配置
     await bundle.write({
-      dir: path.resolve(projectEditorRoot, "dist"),
+      dir: distRoot,
       format: "esm",
       preserveModules: true,
       preserveModulesRoot: "src",
     });
 
-    Logger.success('Build Editor completed!')
+    Logger.success("Build Editor completed!");
   } catch (error) {
-    Logger.error("Build Editor failed:", error)
+    Logger.error("Build Editor failed:", error);
   }
 }
-export default series(buildEditorTask, ()=> buildDtsTask());
+ 
+
+export function watch() {
+  Logger.info("Editor Dev watching...")
+  gulpWatch("src/**/*.ts", buildEditorTask);
+}
+
+export default series(buildEditorTask, () => buildDtsTask());

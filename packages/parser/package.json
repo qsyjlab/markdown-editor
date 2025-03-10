@@ -8,6 +8,7 @@
   "private": false,
   "scripts": {
     "build": "pnpm run clean && gulp --require @esbuild-kit/cjs-loader -f gulpfile.ts",
+    "watch": "gulp watch --require @esbuild-kit/cjs-loader -f gulpfile.ts",
     "clean": "rimraf dist"
   },
   "keywords": [],

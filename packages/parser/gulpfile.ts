@@ -1,4 +1,4 @@
-import { series } from "gulp";
+import { series, watch as gulpWatch } from "gulp";
 import path from "path";
 import { rollup } from "rollup";
 import { glob } from "fast-glob";
@@ -14,7 +14,7 @@ import {
   generateExternal,
   projectParserPkg,
   buildDtsTask,
-  Logger
+  Logger,
 } from "@md-doc-editor/build";
 
 const target = "es2019";
@@ -52,11 +52,15 @@ export async function buildParserTask() {
       preserveModulesRoot: "src",
     });
 
-    Logger.success('Build Parser completed!')
+    Logger.success("Build Parser completed!");
   } catch (error) {
-    Logger.success('Build Error completed!', error)
+    Logger.success("Build Error completed!", error);
   }
 }
 
+export function watch() {
+  Logger.info("Parser Dev watching...");
+  gulpWatch("src/**/*.ts", buildParserTask);
+}
 
-export default series(buildParserTask, ()=> buildDtsTask(projectParserRoot));
+export default series(buildParserTask, () => buildDtsTask(projectParserRoot));
