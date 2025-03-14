@@ -7,7 +7,6 @@ import {
   linkPlugin,
   lineNumberPlugin,
   createContainerPlugin,
-  createMathPlugin,
   createAnchorPlugin,
   imagePlugin,
 } from "./plugins";
@@ -38,6 +37,12 @@ export interface MarkdownParserProps {
    *  codeCopyButtonTitle
    */
   codeCopyButtonTitle?: string;
+
+
+  /**
+   * 回调 markdown实例，可以自定义扩展
+   */
+  extend?: (md: MarkdownIt) => void;
 }
 
 export async function createMarkdownParser(props?: MarkdownParserProps) {
@@ -70,7 +75,7 @@ export async function createMarkdownParser(props?: MarkdownParserProps) {
     }
   );
 
-  instance.use(createMathPlugin);
+  // instance.use(createMathPlugin);
   instance.use(attrsPlugin);
   instance.use(...createAnchorPlugin());
   instance.use(headersPlugin, {
@@ -79,6 +84,9 @@ export async function createMarkdownParser(props?: MarkdownParserProps) {
   } as HeadersPluginOptions);
   instance.use(imagePlugin);
   instance.use(createTasksPlugin);
+
+  props?.extend?.(instance);
+
 
   function parse(text: string) {
     return instance.render(text);

@@ -1,18 +1,23 @@
 {
   "name": "@md-doc-editor/editor",
-  "version": "1.4.0",
+  "version": "1.4.3",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",
   "private": false,
   "scripts": {
     "build": "pnpm run clean && gulp --require @esbuild-kit/cjs-loader -f gulpfile.ts",
+    "watch": "gulp watch --require @esbuild-kit/cjs-loader -f gulpfile.ts",
     "clean": "rimraf dist"
   },
   "files": [
     "dist",
     "package.json"
   ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./preview": "./dist/preview/index.js"
+  },
   "keywords": [],
   "author": "",
   "dependencies": {

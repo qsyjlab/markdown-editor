@@ -21,7 +21,7 @@
     top: 0;
     bottom: 0;
     right: 0;
-    height: auto!important;
+    height: auto !important;
   }
 
   ::-webkit-scrollbar {
@@ -52,6 +52,7 @@
     flex: auto;
     min-height: 0;
     box-sizing: border-box;
+    background-color: white;
 
     &.is-only-show-editable {
       .md-editor-preview {
@@ -79,6 +80,7 @@
     font-size: 24px;
     display: flex;
     justify-content: space-between;
+    background-color: white;
 
     .md-editor-dropdown {
       height: 30px;
@@ -127,12 +129,13 @@
     height: 100%;
     padding: 10px;
     overflow: auto;
+    background-color: white;
   }
 
   &-sidebar {
     display: none;
     border-left: 1px solid var(--md-editor-border-color);
-
+    background-color: white;
     &.is-active {
       flex-shrink: 0;
       display: block;

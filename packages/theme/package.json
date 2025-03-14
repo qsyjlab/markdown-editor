@@ -1,11 +1,12 @@
 {
   "name": "@md-doc-editor/theme",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "",
   "main": "dist/index.css",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "gulp --require @esbuild-kit/cjs-loader"
+    "build": "gulp --require @esbuild-kit/cjs-loader",
+    "watch": "gulp watch --require @esbuild-kit/cjs-loader"
   },
   "keywords": [],
   "author": "",

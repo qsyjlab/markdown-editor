@@ -73,6 +73,9 @@ export function bindCopyCodeEvent(params?: BindCopyCodeEventParams) {
   }
 
   $el.addEventListener("click", (e) => {
+
+    e.stopPropagation()
+
     eventHandler(e as MouseEvent);
   });
 

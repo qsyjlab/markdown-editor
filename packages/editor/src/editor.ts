@@ -21,12 +21,12 @@ import {
   tablePlugin,
   uploadImagePlugin,
 } from "./plugins";
-import { MarkdownEditorPreview } from "./preview";
 import { EditorToolbarManager } from "./toolbar";
 import { CodemirrorManager } from "./code-mirror";
 import { InsertCallback } from "./code-mirror/interface";
 import { taskPlugin } from "./plugins/task";
 import { SidebarManager } from "./sidebar-manager";
+import { EditorPreviewManager } from './preview-manager'
 import { debounce } from "lodash-es";
 import { EditorScrollManager } from "./scroll-manager";
 import { syncScrollPlugin } from "./plugins/sync-scroll";
@@ -66,7 +66,7 @@ interface MarkdownOptions {
     failure: (msg: string) => void
   ) => void;
 
-  onClickImage?: (path: string) => void;
+  onPreview?: (path: string) => void;
 
   onChange?: (mdText: string, htmlText: string) => void;
 }
@@ -79,7 +79,7 @@ export class MarkdownEditor {
 
   public editorBody?: HTMLElement;
 
-  public preview?: MarkdownEditorPreview;
+  public previewManager?: EditorPreviewManager;
 
   public toolbarManager: EditorToolbarManager;
 
@@ -111,11 +111,11 @@ export class MarkdownEditor {
     this.pluginManager = createEditorPluginManager(this);
 
     const updateCallback = debounce((val: string) => {
-      this.preview?.setContent(val);
+       this.previewManager?.setContent(val);
 
       this.pluginManager.update();
-      this.sidebarManager.updateHeading(this.preview?.queryAllHeadings() || []);
-      this.options?.onChange?.(val, this.preview?.parserdHtmlText || "");
+      this.sidebarManager.updateHeading( this.previewManager?.queryAllHeadings() || []);
+      this.options?.onChange?.(val,  this.previewManager?.parserdHtmlText || "");
     }, 80);
 
     this.toolbarManager = new EditorToolbarManager({});
@@ -127,20 +127,20 @@ export class MarkdownEditor {
 
     this.sidebarManager = new SidebarManager({
       onClickHeading: (heading) => {
-        const scrollTop = getScroll(this.preview?.$el!, true);
+        const scrollTop = getScroll( this.previewManager?.$el!, true);
 
         const targetElement = heading.el;
 
         if (!targetElement) return;
 
-        const eleOffsetTop = getOffsetTop(targetElement, this.preview?.$el!);
+        const eleOffsetTop = getOffsetTop(targetElement,  this.previewManager?.$el!);
         let y = scrollTop + eleOffsetTop;
 
-        this.preview?.setAniming(true);
+         this.previewManager?.setAniming(true);
         scrollTo(y, {
-          getContainer: () => this.preview?.$el!,
+          getContainer: () =>  this.previewManager?.$el!,
           callback: () => {
-            this.preview?.setAniming(false);
+             this.previewManager?.setAniming(false);
           },
         });
       },
@@ -151,9 +151,9 @@ export class MarkdownEditor {
 
   setContent(text: string) {
     this.editorManager.setContent(text);
-    this.preview?.setContent(text);
+     this.previewManager?.setContent(text);
     this.pluginManager.update();
-    this.sidebarManager.updateHeading(this.preview?.queryAllHeadings() || []);
+    this.sidebarManager.updateHeading( this.previewManager?.queryAllHeadings() || []);
   }
 
   getContent() {
@@ -229,12 +229,12 @@ export class MarkdownEditor {
 
     this.editorBody = editorBody;
 
-    const previewInstance = new MarkdownEditorPreview({
+    const previewInstance = new EditorPreviewManager({
       parserOptions: this.options.parserOptions,
-      onClickImage: this.options.onClickImage
+      onPreview: this.options.onPreview
     });
     await previewInstance.init();
-    this.preview = previewInstance;
+     this.previewManager = previewInstance;
 
     editorBody.appendChild(previewInstance.create());
 
@@ -250,7 +250,7 @@ export class MarkdownEditor {
 
     this.scrollManager = new EditorScrollManager(
       this.editorManager,
-      this.preview,
+       this.previewManager,
       {
         onHeadingAnchorChange: (currentAnchor) => {
           this.sidebarManager.updateActiveHeading(currentAnchor?.id || "");
@@ -328,7 +328,7 @@ export class MarkdownEditor {
 }
 
 function createdEditorAfter(editor: MarkdownEditor) {
-  editor.preview?.setContent(editor.content);
+  editor.previewManager?.setContent(editor.content);
   editor.pluginManager.update();
   editor.options?.setup?.();
 }

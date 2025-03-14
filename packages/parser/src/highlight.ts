@@ -10,7 +10,8 @@ import {
   createHighlighterCore,
   enableDeprecationWarnings,
   HighlighterCoreOptions,
-  createOnigurumaEngine
+  createOnigurumaEngine,
+  ShikiError,
 } from "shiki";
 
 import presetThemes from "./preset/theme";
@@ -37,9 +38,20 @@ export async function createHighlighter(options?: HighlighterProps) {
     langs: options?.languages ? options.languages : [...presetLangs],
     engine: createOnigurumaEngine(() => import("shiki/dist/wasm.mjs")),
   });
-
   function highlight(str: string, lang: string, attrs: string) {
     lang = getRealLang(lang);
+
+    // 先判断是否有这个语言
+    try {
+      const loadedLang = highlighter.getLanguage(lang);
+
+      if (!loadedLang) {
+        lang = "";
+      }
+    } catch (e) {
+      console.warn((e as ShikiError).message);
+      lang = "";
+    }
 
     const highlighted = highlighter.codeToHtml(str, {
       lang: lang,
