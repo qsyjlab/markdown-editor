@@ -15,6 +15,7 @@ interface TooltipOptions extends ComputePositionConfig {
   offset: number;
   showArrow?: boolean;
   appendTo?: HTMLElement;
+  hideAfterDestory?: boolean;
   createAfter?: (element: HTMLElement) => void;
 }
 
@@ -39,6 +40,7 @@ export class Tooltip {
       offset: 10,
       lazy: true,
       showArrow: true,
+      hideAfterDestory: true,
     };
 
     // 合并默认配置和传入的配置
@@ -112,11 +114,17 @@ export class Tooltip {
   hideTooltip() {
     if (!this.$el) return;
     this.$el.classList.remove("visible");
+
+    if (this.config?.hideAfterDestory) {
+      this.$el.remove();
+      this.$el = null;
+    }
   }
 
   // 初始化事件监听
   init() {
     this.triggerElement.addEventListener("mouseenter", () => {
+      console.log("tirgger");
       this.showTooltip();
     });
 
@@ -128,6 +136,7 @@ export class Tooltip {
   destroy() {
     if (!this.$el) return;
     this.$el.remove();
+    this.$el = null;
   }
 }
 
