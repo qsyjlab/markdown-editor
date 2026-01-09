@@ -16,6 +16,7 @@ export interface MarkdownEditorPreviewOpitons {
 
 export class MarkdownEditorPreview {
   public $el?: HTMLElement;
+  public contentEl?: HTMLElement;
   public parser?: Awaited<ReturnType<typeof createMarkdownParser>>;
 
   public parserdHtmlText: string;
@@ -52,16 +53,17 @@ export class MarkdownEditorPreview {
   async init() {
     // @ts-ignore
     import('@md-doc-editor/theme/dist/index.css')
+    
     this.parser = await createMarkdownParser(this.options?.parserOptions);
-
-
   }
 
   create() {
-    this.$el = document.createElement("div");
-    this.$el.classList.add("md-editor-preview-body");
+    this.contentEl = document.createElement("div");
+    this.contentEl.classList.add("md-editor-preview-body");
 
-    bindPreviewEvent(this.$el, this.options);
+    bindPreviewEvent(this.contentEl, this.options);
+
+    this.$el = this.contentEl;
 
     return this.$el;
   }
@@ -72,16 +74,16 @@ export class MarkdownEditorPreview {
   }
 
   render() {
-    if (!this.$el) return;
-    this.$el.innerHTML = this.parserdHtmlText;
+    if (!this.contentEl) return;
+    this.contentEl.innerHTML = this.parserdHtmlText;
 
-    bindPreviewEvent(this.$el, this.options);
+    bindPreviewEvent(this.contentEl, this.options);
 
     this._headings = this.queryAllHeadings();
   }
 
   queryAllHeadings(): MarkdownHeading[] {
-    const headings = this.$el?.querySelectorAll("h1,h2,h3,h4,h5,h6") || [];
+    const headings = this.contentEl?.querySelectorAll("h1,h2,h3,h4,h5,h6") || [];
     return Array.from(headings).map((heading) => {
       const level = parseInt(heading.tagName[1], 10);
       return {

@@ -26,6 +26,8 @@ export interface MarkdownParserProps {
 
   languageAlias?: HighlighterProps["languageAlias"];
 
+  theme?: HighlighterProps["theme"];
+
   enableLineNumber?: boolean;
 
   /**
@@ -49,6 +51,7 @@ export async function createMarkdownParser(props?: MarkdownParserProps) {
   const { highlight, dispose } = await createHighlighter({
     languageAlias: props?.languageAlias,
     languages: props?.languages,
+    theme: props?.theme,
   });
 
   const instance: MarkdownIt = new MarkdownIt({

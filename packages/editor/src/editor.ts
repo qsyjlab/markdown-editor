@@ -7,33 +7,15 @@ import {
   EditorPluginManager,
   createEditorPluginManager,
 } from "./plugin";
-import {
-  boldPlugin,
-  clearPlugin,
-  codePlugin,
-  contentPlugin,
-  headerPlugin,
-  LazyImagePlugin,
-  linkPlugin,
-  quotePlugin,
-  splitLinePlugin,
-  strickoutPlugin,
-  tablePlugin,
-  uploadImagePlugin,
-} from "./plugins";
+import { defaultPlugins } from "./default-plugins";
 import { EditorToolbarManager } from "./toolbar";
 import { CodemirrorManager } from "./code-mirror";
 import { InsertCallback } from "./code-mirror/interface";
-import { taskPlugin } from "./plugins/task";
 import { SidebarManager } from "./sidebar-manager";
 import { EditorPreviewManager } from './preview-manager'
 import { debounce } from "lodash-es";
 import { EditorScrollManager } from "./scroll-manager";
-import { syncScrollPlugin } from "./plugins/sync-scroll";
 import { getOffsetTop, getScroll, scrollTo, useId } from "./utils";
-import { toggleLayoutPlugin } from "./plugins/toggle-layout";
-import { fullscreenPlugin } from "./plugins/full-screen";
-import { hisotryPlugin } from "./plugins/history";
 
 import "./style/editor.scss";
 
@@ -69,6 +51,8 @@ interface MarkdownOptions {
   onPreview?: (path: string) => void;
 
   onChange?: (mdText: string, htmlText: string) => void;
+
+  theme?: "light" | "dark";
 }
 
 export class MarkdownEditor {
@@ -106,6 +90,10 @@ export class MarkdownEditor {
 
     this.options = mergedDefaultOptions(options);
     this.container = this.options.container;
+
+    if (this.options.theme) {
+      this.setTheme(this.options.theme);
+    }
 
     this.content = "";
     this.pluginManager = createEditorPluginManager(this);
@@ -180,31 +168,22 @@ export class MarkdownEditor {
     this.setClientId(this.clientId);
     this.toolbarManager.setClientId(this.clientId);
 
-    const plugins: EditorPluginFn[] = [
-      LazyImagePlugin,
-      clearPlugin,
-      boldPlugin,
-      strickoutPlugin,
-      linkPlugin,
-      codePlugin,
-      quotePlugin,
-      splitLinePlugin,
-      headerPlugin,
-      uploadImagePlugin,
-      tablePlugin,
-      taskPlugin,
-      contentPlugin,
-      syncScrollPlugin,
-      toggleLayoutPlugin,
-      fullscreenPlugin,
-      hisotryPlugin,
-    ];
+    const plugins: EditorPluginFn[] = [...defaultPlugins];
 
     if (this.options.plugins && this.options.plugins.length) {
       plugins.push(...this.options.plugins);
     }
 
     this.pluginManager.registerPlugins(plugins);
+
+    Object.values(this.pluginManager.plugins).forEach((plugin) => {
+      if (plugin.toolbar) {
+        this.toolbarManager.register({
+          name: plugin.name,
+          ...(plugin.toolbar as Required<typeof plugin.toolbar>),
+        });
+      }
+    });
 
     if (this.toolbarManager) {
       this.toolbarManager.renderAll(this.iconManager);
@@ -316,6 +295,10 @@ export class MarkdownEditor {
   setClientId(id: string) {
     this.clientId = id;
     this.editorContainer?.setAttribute("md-editor-client-id", id);
+  }
+
+  setTheme(theme: "light" | "dark") {
+    this.container.setAttribute("md-theme", theme);
   }
 
   destory() {

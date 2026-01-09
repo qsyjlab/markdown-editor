@@ -51,6 +51,21 @@ export interface EditorPlugin extends Record<string, any> {
   name:string
   init?: () => void;
 
+  toolbar?: {
+    icon: string;
+    label: string;
+    activeLabel?: string;
+    inActiveLabel?: string;
+    type?: "button" | "dropdown";
+    dropTrigger?: "mouseover";
+    fetch?: (
+      callback: (menus: { label: string; name: string; onAction: () => void }[]) => void
+    ) => void;
+    onAction?: () => void;
+    defaultState?: Record<string, any>;
+    position?: 'left' | 'right';
+  }
+
   onClick?: () => void;
   update?: () => void;
 

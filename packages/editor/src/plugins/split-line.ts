@@ -6,8 +6,8 @@ export function splitLinePlugin(editor: MarkdownEditor): EditorPlugin {
 
   editor.iconManager.register({
     name,
-    type: "html",
-    html: generateSvg('<path d="M213.333333 512a42.666667 42.666667 0 0 1 42.666667-42.666667h512a42.666667 42.666667 0 1 1 0 85.333334H256a42.666667 42.666667 0 0 1-42.666667-42.666667z"></path>'),
+    type: "svg",
+    svg: generateSvg('<path d="M128 512a42.666667 42.666667 0 0 1 42.666667-42.666667h682.666666a42.666667 42.666667 0 1 1 0 85.333334H170.666667a42.666667 42.666667 0 0 1-42.666667-42.666667z"></path>')
   });
 
   editor.toolbarManager?.register({

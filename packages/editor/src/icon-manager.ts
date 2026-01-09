@@ -1,9 +1,9 @@
 export interface IconConfig {
   name: string;
-  type: "html" | "font" | "image";
+  type: "svg" | "font" | "image";
   src?: string;
   className?: string;
-  html?: string;
+  svg?: string;
 }
 
 export function createIconManager(): IconManager {
@@ -20,9 +20,9 @@ export function createIconManager(): IconManager {
 
       icon.className = `md-editor-icon icon-${config.type}-${config.name}`;
 
-      if (config.type === "html") {
-        if (config.html) {
-          icon.innerHTML = config.html;
+      if (config.type === "svg") {
+        if (config.svg) {
+          icon.innerHTML = config.svg;
         }
       } else if (config.type === "font" && config.className) {
         const fontIcon = document.createElement("i");

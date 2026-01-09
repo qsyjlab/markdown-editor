@@ -9,30 +9,6 @@ interface EditorToolbarManagerOptions {
   rightToolbar?: string[];
 }
 
-const defaultLeftToolbar = [
-  "clear",
-  "undo",
-  "redo",
-  "bold",
-  "strickout",
-  "link",
-  "code",
-  "quote",
-  "splitLine",
-  "header",
-  "uploadImage",
-  "table",
-  "task",
-];
-
-const defaultRightToolbar = [
-  "content",
-  "syncScroll",
-  "onlyEditable",
-  "onlyPreview",
-  "fullscreen",
-];
-
 export class EditorToolbarManager {
   private buttons: Record<string, EditorToolbarButtonConfig> = {};
 
@@ -52,14 +28,6 @@ export class EditorToolbarManager {
 
   constructor(options?: EditorToolbarManagerOptions) {
     this.options = options || {};
-
-    if (!this.options.leftToolbar) {
-      this.options.leftToolbar = [...defaultLeftToolbar];
-    }
-
-    if (!this.options.rightToolbar) {
-      this.options.rightToolbar = [...defaultRightToolbar];
-    }
 
     const $el = document.createElement("div");
 
@@ -226,21 +194,37 @@ export class EditorToolbarManager {
   }
 
   renderAll(iconManager: IconManager) {
-    // 渲染右边工具栏按钮，按数组顺序
-    this.options?.rightToolbar?.forEach((buttonName) => {
-      const button = this.buttons[buttonName];
-      if (button) {
-        this.render(button, iconManager, "right");
-      }
-    });
+    // 渲染右边工具栏按钮
+    if (this.options?.rightToolbar && this.options.rightToolbar.length > 0) {
+      this.options.rightToolbar.forEach((buttonName) => {
+        const button = this.buttons[buttonName];
+        if (button) {
+          this.render(button, iconManager, "right");
+        }
+      });
+    } else {
+      Object.values(this.buttons).forEach((button) => {
+        if (button.position === 'right') {
+          this.render(button, iconManager, "right");
+        }
+      });
+    }
 
-    // 渲染左边工具栏按钮，按数组顺序
-    this.options?.leftToolbar?.forEach((buttonName) => {
-      const button = this.buttons[buttonName];
-      if (button) {
-        this.render(button, iconManager, "left");
-      }
-    });
+    // 渲染左边工具栏按钮
+    if (this.options?.leftToolbar && this.options.leftToolbar.length > 0) {
+      this.options.leftToolbar.forEach((buttonName) => {
+        const button = this.buttons[buttonName];
+        if (button) {
+          this.render(button, iconManager, "left");
+        }
+      });
+    } else {
+      Object.values(this.buttons).forEach((button) => {
+        if (button.position !== 'right') {
+          this.render(button, iconManager, "left");
+        }
+      });
+    }
   }
 
   setClientId(id: string) {
@@ -287,6 +271,8 @@ export interface EditorToolbarButtonConfig {
   onAction: () => void;
 
   defaultState?: EditorToolbarButtonState;
+  
+  position?: 'left' | 'right';
 }
 
 export type EditorToolbarDropdownItemConfig = Pick<
