@@ -44,6 +44,7 @@
   --md-code-block-border: #c2c2c4;
   --md-code-block-gutter: #e2e2e3;
   --md-code-block-bg-soft: rgba(142, 150, 170, 0.14);
+  --md-code-line-number-bg: #eff0f1;
 
 
   // 代码比较
@@ -102,7 +103,7 @@
   --md-custom-block-info-bg: rgba(107, 114, 128, 0.16); // gray-500
   --md-custom-block-info-text: var(--md-text-color);
   --md-custom-block-info-title: #d1d5db; // gray-300
-  --md-custom-block-info-border: rgba(107, 114, 128, 0.5);
+  --md-custom-block-info-border: transparent;
 
   --md-custom-block-tip-bg: var(--md-theme-primary-soft);
   --md-custom-block-tip-text: var(--md-text-color);
@@ -134,6 +135,7 @@
   --md-code-block-border: #3a3a3a;
   --md-code-block-gutter: #2d2d2d;
   --md-code-block-bg-soft: rgba(148, 163, 184, 0.2);
+  --md-code-line-number-bg: #262626;
 
   /** code block copy button */
   --md-code-copy-code-border-color: #3a3a3a;

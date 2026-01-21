@@ -32,7 +32,7 @@ onMounted(() => {
 function initMarkdownEditor() {
   markdownEditor = new MarkdownEditor({
     container: document.getElementById("container") as HTMLElement,
-    height: "99vh",
+    height: "93vh",
     parserOptions: {
       // languages: [...presetLang, () => import("@shikijs/langs/json")],
     },
