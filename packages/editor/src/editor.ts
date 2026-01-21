@@ -208,8 +208,16 @@ export class MarkdownEditor {
 
     this.editorBody = editorBody;
 
+    const parserOptions = {
+      ...this.options.parserOptions,
+      theme: {
+        light: "github-light",
+        dark: "github-dark",
+      },
+    }
+
     const previewInstance = new EditorPreviewManager({
-      parserOptions: this.options.parserOptions,
+      parserOptions: parserOptions,
       onPreview: this.options.onPreview
     });
     await previewInstance.init();

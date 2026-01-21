@@ -18,9 +18,9 @@ export function preWrapperPlugin(
     const lang = extractLang(token.info);
 
     return (
-      `<div class="language-${lang}${active} code ">` +
-      `<button title="${options.codeCopyButtonTitle}" class="copy"></button>` +
-      `<span class="lang">${lang}</span>` +
+      `<div class="language-${lang}${active} md-code-block ">` +
+      `<button title="${options.codeCopyButtonTitle}" class="md-copy-btn"></button>` +
+      `<span class="md-code-lang">${lang}</span>` +
       fence(...args) +
       "</div>"
     );
@@ -42,3 +42,5 @@ export * from "./line-number";
 export * from "./container";
 export * from "./anchor";
 export * from './image'
+export * from "./table";
+export * from "./list";

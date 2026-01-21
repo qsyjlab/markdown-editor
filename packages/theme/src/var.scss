@@ -36,8 +36,6 @@
   --md-theme-warning-soft: rgba(var(--md--theme-warning-rgb), 0.14);
   --md-code-line-warning-color: rgba(var(--md--theme-warning-rgb), 0.14);
 
-  --md-theme-info-color: #b8272c;
-
 
   
 
@@ -60,4 +58,109 @@
 
   /** lang */
   --md-code-lang-color: #929295;
+}
+
+[md-theme="dark"] {
+  --md-text-color: #e4e4e7;
+  --md-text-color-2: #a1a1aa;
+  --md-text-color-3: #71717a;
+
+  --md--theme-primary-rgb: 88, 166, 255;
+  --md--theme-warning-rgb: 251, 191, 36;
+  --md--theme-info-rgb: 148, 163, 184;
+
+  --md-theme-primary-color: rgba(var(--md--theme-primary-rgb), 1);
+  --md-theme-primary-color-2: #60a5fa;
+  --md-theme-primary-color-3: #93c5fd;
+  --md-theme-primary-soft: rgba(var(--md--theme-primary-rgb), 0.2);
+
+  --md-theme-success-color: #34d399;
+  --md-theme-success-dark-color: rgba(16, 185, 129, 0.2);
+
+  --md-theme-danger-color: #f87171;
+  --md-theme-danger-color-2: #fb7185;
+  --md-theme-danger-color-3: #fda4af;
+  --md-theme-danger-soft: rgba(244, 63, 94, 0.2);
+
+  --md-theme-important-color: #a78bfa;
+  --md-theme-important-color-2: #c4b5fd;
+  --md-theme-important-color-3: #ddd6fe;
+  --md-theme-important-soft: rgba(159, 122, 234, 0.2);
+
+  --md-theme-info-color: #94a3b8;
+  --md-theme-info-color-2: #cbd5e1;
+  --md-theme-info-color-3: #e2e8f0;
+  --md-theme-info-soft: rgba(148, 163, 184, 0.2);
+
+  --md-theme-warning-color: rgba(var(--md--theme-warning-rgb), 1);
+  --md-theme-warning-color-2: #fbbf24;
+  --md-theme-warning-color-3: #fcd34d;
+  --md-theme-warning-soft: rgba(var(--md--theme-warning-rgb), 0.2);
+  --md-code-line-warning-color: rgba(var(--md--theme-warning-rgb), 0.2);
+
+  /** custom block colors (VitePress style dark mode) */
+  --md-custom-block-info-bg: rgba(107, 114, 128, 0.16); // gray-500
+  --md-custom-block-info-text: var(--md-text-color);
+  --md-custom-block-info-title: #d1d5db; // gray-300
+  --md-custom-block-info-border: rgba(107, 114, 128, 0.5);
+
+  --md-custom-block-tip-bg: var(--md-theme-primary-soft);
+  --md-custom-block-tip-text: var(--md-text-color);
+  --md-custom-block-tip-title: var(--md-theme-primary-color);
+  --md-custom-block-tip-border: rgba(var(--md--theme-primary-rgb), 0.5);
+
+  --md-custom-block-warning-bg: var(--md-theme-warning-soft);
+  --md-custom-block-warning-text: var(--md-text-color);
+  --md-custom-block-warning-title: var(--md-theme-warning-color);
+  --md-custom-block-warning-border: rgba(var(--md--theme-warning-rgb), 0.5);
+
+  --md-custom-block-danger-bg: var(--md-theme-danger-soft);
+  --md-custom-block-danger-text: var(--md-text-color);
+  --md-custom-block-danger-title: var(--md-theme-danger-color);
+  --md-custom-block-danger-border: rgba(244, 63, 94, 0.5);
+
+  --md-custom-block-note-bg: var(--md-custom-block-info-bg);
+  --md-custom-block-note-text: var(--md-custom-block-info-text);
+  --md-custom-block-note-title: var(--md-custom-block-info-title);
+  --md-custom-block-note-border: var(--md-custom-block-info-border);
+
+  --md-custom-block-details-bg: var(--md-custom-block-info-bg);
+  --md-custom-block-details-text: var(--md-custom-block-info-text);
+  --md-custom-block-details-title: var(--md-custom-block-info-title);
+  --md-custom-block-details-border: var(--md-custom-block-info-border);
+
+  /** code block */
+  --md-code-block-bg: #1e1e1e;
+  --md-code-block-border: #3a3a3a;
+  --md-code-block-gutter: #2d2d2d;
+  --md-code-block-bg-soft: rgba(148, 163, 184, 0.2);
+
+  /** code block copy button */
+  --md-code-copy-code-border-color: #3a3a3a;
+  --md-code-copy-code-bg: #2d2d2d;
+  --md-code-copy-code-hover-border-color: #555;
+  --md-code-copy-code-hover-bg: #3a3a3a;
+  --md-code-copy-code-active-text: #e4e4e7;
+  
+  --md-icon-copy: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='rgba(161,161,170,1)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'%3E%3Crect width='8' height='4' x='8' y='2' rx='1' ry='1'/%3E%3Cpath d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'/%3E%3C/svg%3E");
+  --md-icon-copied: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='rgba(161,161,170,1)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'%3E%3Crect width='8' height='4' x='8' y='2' rx='1' ry='1'/%3E%3Cpath d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'/%3E%3Cpath d='m9 14 2 2 4-4'/%3E%3C/svg%3E");
+
+  /** table */
+  --md-table-row-bg: #1e1e1e;
+  --md-table-row-stripe-bg: #262626;
+  --md-table-border-color: #3a3a3a;
+  --md-table-cell-text-color: #e4e4e7;
+
+  // 代码比较
+  --md-code-line-diff-add-color: var(--md-theme-success-dark-color);
+  --md-code-line-diff-add-symbol-color: var(--md-theme-success-color);
+
+  --md-code-line-diff-remove-color: var(--md-theme-danger-soft);
+  --md-code-line-diff-remove-symbol-color: var(--md-theme-danger-color);
+
+  /** shiki */
+  --md-code-line-highlight-color: rgba(148, 163, 184, 0.2);
+
+  /** lang */
+  --md-code-lang-color: #71717a;
 }

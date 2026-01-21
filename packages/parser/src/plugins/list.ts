@@ -1,9 +1,6 @@
 import MarkdownIt from "markdown-it";
-import markdownItTaskLists from "markdown-it-task-lists";
 
-export function createTasksPlugin(md: MarkdownIt) {
-  md.use(markdownItTaskLists, { label: true, labelAfter: true });
-
+export const listPlugin = (md: MarkdownIt) => {
   const addClass = (
     tokens: any[],
     idx: number,
@@ -13,10 +10,7 @@ export function createTasksPlugin(md: MarkdownIt) {
     previousRender: any
   ) => {
     const token = tokens[idx];
-    const classes = token.attrGet("class") || "";
-    if (classes.includes("contains-task-list")) {
-      token.attrJoin("class", "md-task-list");
-    }
+    token.attrJoin("class", "md-list");
     return previousRender(tokens, idx, options, env, self);
   };
 
@@ -39,4 +33,27 @@ export function createTasksPlugin(md: MarkdownIt) {
   md.renderer.rules.ordered_list_open = (tokens, idx, options, env, self) => {
     return addClass(tokens, idx, options, env, self, previousRenderOrdered);
   };
-}
+
+  const addItemClass = (
+    tokens: any[],
+    idx: number,
+    options: any,
+    env: any,
+    self: any,
+    previousRender: any
+  ) => {
+    const token = tokens[idx];
+    token.attrJoin("class", "md-list-item");
+    return previousRender(tokens, idx, options, env, self);
+  };
+
+  const previousRenderListItem =
+    md.renderer.rules.list_item_open ||
+    function (tokens, idx, options, env, self) {
+      return self.renderToken(tokens, idx, options);
+    };
+
+  md.renderer.rules.list_item_open = (tokens, idx, options, env, self) => {
+    return addItemClass(tokens, idx, options, env, self, previousRenderListItem);
+  };
+};

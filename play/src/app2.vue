@@ -32,7 +32,7 @@ onMounted(() => {
 function initMarkdownEditor() {
   markdownEditor = new MarkdownEditor({
     container: document.getElementById("container") as HTMLElement,
-    height: "550px",
+    height: "99vh",
     parserOptions: {
       // languages: [...presetLang, () => import("@shikijs/langs/json")],
     },
@@ -49,6 +49,7 @@ function initMarkdownEditor() {
     setup: () => {
       markdownEditor?.setContent(text);
     },
+    theme: "dark",
   });
 
   // const markdownEditor2 = new MarkdownEditor({

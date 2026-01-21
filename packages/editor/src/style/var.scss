@@ -2,3 +2,8 @@
   --md-editor-border-color: #eee;
   --md-editor-primary-color: rgba(52, 81, 178, 1);
 }
+
+[md-theme="dark"] {
+  --md-editor-border-color: #3a3a3a;
+  --md-editor-primary-color: rgba(88, 166, 255, 1);
+}

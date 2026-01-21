@@ -217,7 +217,7 @@ export default function preview(originEl: HTMLElement) {
 
   function createMask() {
     const maskInstance = document.createElement("div");
-    maskInstance.classList.add("md-editor-image-prview-modal");
+    maskInstance.classList.add("md-editor-image-preview-modal");
 
     return maskInstance;
   }

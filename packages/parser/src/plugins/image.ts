@@ -18,6 +18,6 @@ export function imagePlugin(md: MarkdownIt, options: Options = {}){
       token.attrSet('data-src',  url)
       token.attrSet('src',  '')
     }
-    return `<span class="image-block">${imageRule(tokens, idx, options, env, self)}</span>`
+    return `<span class="md-image-block">${imageRule(tokens, idx, options, env, self)}</span>`
   };
 };

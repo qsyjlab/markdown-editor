@@ -5,12 +5,11 @@
   --md-table-cell-text-color: var(--md-text-color-2);
 }
 
-.md-editor {
-  table {
-    border-collapse: collapse;
-    margin: 20px 0;
-    overflow-x: auto;
-  }
+.md-table {
+  border-collapse: collapse;
+  margin: 20px 0;
+  overflow-x: auto;
+  display: block; // Markdown tables often need this for overflow
 
   tr {
     background-color: var(--md-table-row-bg);
@@ -47,9 +46,10 @@
   :where([dir="rtl"]) th {
     text-align: right;
   }
-  hr {
-    margin: 16px 0;
-    border: none;
-    border-top: 1px solid var(--md-table-row-stripe-bg);
-  }
+}
+
+.md-editor-preview-body hr {
+  margin: 16px 0;
+  border: none;
+  border-top: 1px solid var(--md-table-row-stripe-bg);
 }

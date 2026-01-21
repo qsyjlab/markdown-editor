@@ -9,6 +9,8 @@ import {
   createContainerPlugin,
   createAnchorPlugin,
   imagePlugin,
+  tablePlugin,
+  listPlugin,
 } from "./plugins";
 
 import {
@@ -87,6 +89,8 @@ export async function createMarkdownParser(props?: MarkdownParserProps) {
   } as HeadersPluginOptions);
   instance.use(imagePlugin);
   instance.use(createTasksPlugin);
+  instance.use(tablePlugin);
+  instance.use(listPlugin);
 
   props?.extend?.(instance);
 

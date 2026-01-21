@@ -52,7 +52,7 @@ export class MarkdownEditorPreview {
 
   async init() {
     // @ts-ignore
-    import('@md-doc-editor/theme/dist/index.css')
+    import('@md-doc-editor/theme')
     
     this.parser = await createMarkdownParser(this.options?.parserOptions);
   }

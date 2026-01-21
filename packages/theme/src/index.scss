@@ -6,15 +6,24 @@
 @use "./head.scss";
 @use "./copy.scss";
 @use "./image.scss";
-@use './list.scss';
-@use './task.scss';
+@use "./list.scss";
+@use "./task.scss";
 
-.md-editor-preview-body{
-  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
-    Liberation Mono, monospace;
+.md-editor-preview-body {
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    SF Mono,
+    Menlo,
+    Consolas,
+    Liberation Mono,
+    monospace;
 
   font-size: 16px;
-  .code {
+
+  color: var(--md-text-color);
+
+  .md-code-block {
     width: 100%;
     box-sizing: border-box;
     position: relative;
@@ -33,7 +42,7 @@
       }
     }
 
-    .lang {
+    .md-code-lang {
       text-align: right;
     }
   }
@@ -46,32 +55,32 @@
     min-width: 100%;
     line-height: 1.7;
     font-size: 0.875em;
-    color: #67676c;
+    color: var(--md-text-color-2);
     transition: color 0.5s;
     box-sizing: border-box;
   }
 
   // 代码变更
-  [class*="language-"] code .diff.remove {
+  [class*="language-"] code .md-diff.remove {
     background-color: var(--md-code-line-diff-remove-color);
     opacity: 0.7;
   }
 
-  [class*="language-"] code .diff.remove::before {
+  [class*="language-"] code .md-diff.remove::before {
     content: "-";
     color: var(--md-code-line-diff-remove-symbol-color);
   }
 
-  [class*="language-"] code .diff.add {
+  [class*="language-"] code .md-diff.add {
     background-color: var(--md-code-line-diff-add-color);
   }
 
-  [class*="language-"] code .diff.add::before {
+  [class*="language-"] code .md-diff.add::before {
     content: "+";
     color: var(--md-code-line-diff-add-symbol-color);
   }
 
-  [class*="language-"] code .diff {
+  [class*="language-"] code .md-diff {
     transition: background-color 0.5s;
     margin: 0 -24px;
     padding: 0 24px;
@@ -80,7 +89,7 @@
     box-sizing: border-box;
   }
 
-  [class*="language-"] code .highlighted {
+  [class*="language-"] code .md-highlighted {
     background-color: var(--md-code-line-highlight-color);
     transition: background-color 0.5s;
     margin: 0px -24px;
@@ -90,15 +99,15 @@
     box-sizing: border-box;
   }
 
-  [class*="language-"] code .highlighted.error {
+  [class*="language-"] code .md-highlighted.error {
     background-color: var(--md-theme-danger-soft);
   }
 
-  [class*="language-"] code .highlighted.warning {
+  [class*="language-"] code .md-highlighted.warning {
     background-color: var(--md-code-line-warning-color);
   }
 
-  .highlighted-word {
+  .md-highlighted-word {
     background-color: var(--md-code-block-bg);
     border: 1px solid var(--md-code-block-border);
     padding: 1px 3px;
@@ -108,7 +117,7 @@
 
   // 语言
 
-  [class*="language-"] > span.lang {
+  [class*="language-"] > span.md-code-lang {
     position: absolute;
     top: 5px;
     right: 12px;
@@ -118,23 +127,27 @@
     -webkit-user-select: none;
     user-select: none;
     color: var(--md-code-lang-color);
-    transition: color 0.4s, opacity 0.4s;
+    transition:
+      color 0.4s,
+      opacity 0.4s;
   }
 
-  div[class*="language-"].line-numbers-mode {
+  div[class*="language-"].md-line-numbers-mode {
     /*rtl:ignore*/
     padding-left: 32px;
   }
 
-  .line-numbers-wrapper {
+  .md-line-numbers-wrapper {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     line-height: 1.7;
     font-size: 0.875em;
-    color: #67676c;
-    transition: border-color 0.5s, color 0.5s;
+    color: var(--md-text-color-2);
+    transition:
+      border-color 0.5s,
+      color 0.5s;
     padding-top: 26px;
     width: 32px;
     border-right: 1px solid var(--md-code-block-gutter);
@@ -147,7 +160,9 @@
     border-radius: 4px;
     padding: 3px 6px;
     background-color: var(--md-code-block-bg-soft);
-    transition: color 0.25s, background-color 0.5s;
+    transition:
+      color 0.25s,
+      background-color 0.5s;
     color: var(--md-theme-primary-color);
   }
 
@@ -167,10 +182,6 @@
   p,
   summary {
     margin: 16px 0;
-  }
-
-  p {
-    line-height: 28px;
   }
 
   blockquote {
@@ -193,37 +204,50 @@
     color: var(--md-theme-primary-color);
     text-decoration: underline;
     text-underline-offset: 2px;
-    transition: color 0.25s, opacity 0.25s;
+    transition:
+      color 0.25s,
+      opacity 0.25s;
     margin: 0;
   }
 
   /** 自定义代码块 */
 
-  .custom-block {
+  .md-custom-block {
     margin: 16px 0;
   }
 
-  .custom-block p {
+  .md-custom-block p {
     margin: 8px 0;
     line-height: 24px;
   }
 
-  .custom-block p:first-child {
+  .md-custom-block p:first-child {
     margin: 0;
   }
 
-  .custom-block div[class*="language-"] {
+  .md-custom-block div[class*="language-"] {
     margin: 8px 0;
     border-radius: 8px;
   }
 
-  .custom-block div[class*="language-"] code {
+  .md-custom-block div[class*="language-"] code {
     font-weight: 400;
     background-color: transparent;
   }
 
-  .custom-block .vp-code-group .tabs {
+  .md-custom-block .md-code-group .md-code-group-tabs {
     margin: 0;
     border-radius: 8px 8px 0 0;
   }
+}
+
+// shiki 暗黑模式颜色适配
+[md-theme="dark"] .shiki,
+[md-theme="dark"] .shiki span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  /* 可选，如果你还希望同步字体样式 */
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
 }

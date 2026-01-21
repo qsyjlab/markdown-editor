@@ -30,15 +30,15 @@ export function lineNumberPlugin (md: MarkdownIt, enable = false) {
       const lineNumbersCode = [...Array(lines.length - 1)]
         .map(
           (_, index) =>
-            `<span class="line-number">${index + startLineNumber}</span><br>`
+            `<span class="md-line-number">${index + startLineNumber}</span><br>`
         )
         .join('')
-  
-      const lineNumbersWrapperCode = `<div class="line-numbers-wrapper" aria-hidden="true">${lineNumbersCode}</div>`
-  
+
+      const lineNumbersWrapperCode = `<div class="md-line-numbers-wrapper" aria-hidden="true">${lineNumbersCode}</div>`
+
       const finalCode = rawCode
         .replace(/<\/div>$/, `${lineNumbersWrapperCode}</div>`)
-        .replace(/"(language-[^"]*?)"/, '"$1 line-numbers-mode"')
+        .replace(/"(language-[^"]*?)"/, '"$1 md-line-numbers-mode"')
       return finalCode
     }
   }

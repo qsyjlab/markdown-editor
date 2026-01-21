@@ -2,7 +2,7 @@ export function bindCodeGroupsEvent(container?:HTMLElement | Document) {
 
   const target = container || document
 
-  target.querySelectorAll(".md-code-group > .blocks").forEach((el) => {
+  target.querySelectorAll(".md-code-group > .md-code-group-blocks").forEach((el) => {
     Array.from(el.children).forEach((child) => {
       child.classList.remove("active");
     });
@@ -13,15 +13,15 @@ export function bindCodeGroupsEvent(container?:HTMLElement | Document) {
   window.addEventListener("click", (e) => {
     const el = e.target as HTMLInputElement;
 
-    if (el.matches(".md-code-group input")) {
-      // input <- .tabs <- .vp-code-group
+    if (el.matches(".md-code-group-tabs input")) {
+      // input <- .md-code-group-tabs <- .md-code-group
       const group = el.parentElement?.parentElement;
       if (!group) return;
 
       const i = Array.from(group.querySelectorAll("input")).indexOf(el);
       if (i < 0) return;
 
-      const blocks = group.querySelector(".blocks");
+      const blocks = group.querySelector(".md-code-group-blocks");
       if (!blocks) return;
 
       const current = Array.from(blocks.children).find((child) =>

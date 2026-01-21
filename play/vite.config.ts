@@ -1,10 +1,31 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import visualizer from "rollup-plugin-visualizer";
+import path from "path";
 
 export default defineConfig({
   optimizeDeps: {
     exclude: ["@md-doc-editor/editor"],
+  },
+  resolve: {
+    alias: {
+      "@md-doc-editor/editor": path.resolve(
+        __dirname,
+        "../packages/editor/src/index.ts"
+      ),
+      // "@md-doc-editor/editor/preview": path.resolve(
+      //   __dirname,
+      //   "../packages/editor/src/preview/index.ts"
+      // ),
+      "@md-doc-editor/parser": path.resolve(
+        __dirname,
+        "../packages/parser/src/index.ts"
+      ),
+      "@md-doc-editor/theme": path.resolve(
+        __dirname,
+        "../packages/theme/src/index.scss"
+      ),
+    },
   },
   plugins: [
     vue(),

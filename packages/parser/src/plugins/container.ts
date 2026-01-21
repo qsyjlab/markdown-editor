@@ -86,8 +86,8 @@ function createContainer(
         if (token.nesting === 1) {
           const title = md.renderInline(info || defaultTitle, {});
           if (klass === "details")
-            return `<details class="${klass} custom-block"${attrs}><summary>${title}</summary>\n`;
-          return `<div class="${klass} custom-block"${attrs}><p class="custom-block-title">${title}</p>\n`;
+            return `<details class="${klass} md-custom-block"${attrs}><summary>${title}</summary>\n`;
+          return `<div class="${klass} md-custom-block"${attrs}><p class="md-custom-block-title">${title}</p>\n`;
         } else return klass === "details" ? `</details>\n` : `</div>\n`;
       },
     },
@@ -137,7 +137,7 @@ function createCodeGroup(md: MarkdownIt): ContainerArgs {
             }
           }
 
-          return `<div class="md-code-group"><div class="tabs">${tabs}</div><div class="blocks">\n`
+          return `<div class="md-code-group"><div class="md-code-group-tabs">${tabs}</div><div class="md-code-group-blocks">\n`
         }
         return `</div></div>\n`
       }

@@ -81,6 +81,7 @@
     display: flex;
     justify-content: space-between;
     background-color: white;
+    color: #3c3c43;
 
     .md-editor-dropdown {
       height: 30px;
@@ -144,14 +145,112 @@
   }
 }
 
-.icon-button {
+[md-theme="dark"] {
+  .md-editor {
+    ::-webkit-scrollbar-thumb {
+      background-color: #555;
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: #2a2a2a;
+    }
+
+    .md-editor-body {
+      background-color: #1a1a1a;
+    }
+
+    .md-editor-toolbar {
+      background-color: #1e1e1e;
+      border-bottom-color: var(--md-editor-border-color);
+      color: #e4e4e7;
+    }
+
+    .md-editor-toolbar-item {
+      &:hover,
+      &.is-active {
+        color: var(--md-editor-primary-color);
+        background: #2a2a2a;
+      }
+    }
+
+    .md-editor-editable {
+      background-color: #1a1a1a;
+      border-right-color: var(--md-editor-border-color);
+    }
+
+    .md-editor-preview {
+      background-color: #1e1e1e;
+      color: var(--md-text-color);
+    }
+
+    .md-editor-sidebar {
+      background-color: #1e1e1e;
+      border-left-color: var(--md-editor-border-color);
+    }
+
+    .md-editor-toc-item {
+      color: #a1a1aa;
+
+      &.is-active,
+      &:hover {
+        color: var(--md-editor-primary-color);
+        background-color: #2a2a2a;
+      }
+    }
+
+    // CodeMirror dark theme
+    .cm-editor {
+      background-color: #1a1a1a;
+      color: #e4e4e7;
+
+      .cm-scroller {
+        background-color: #1a1a1a;
+      }
+
+      .cm-content {
+        color: #e4e4e7;
+      }
+
+      .cm-gutters {
+        background-color: #1a1a1a;
+        border-right-color: var(--md-editor-border-color);
+      }
+
+      .cm-lineNumbers .cm-gutterElement {
+        color: #71717a;
+      }
+
+      .cm-activeLine {
+        background-color: #2a2a2a;
+      }
+
+      .cm-activeLineGutter {
+        background-color: #2a2a2a;
+      }
+
+      .cm-selectionBackground {
+        background-color: rgba(88, 166, 255, 0.3);
+      }
+
+      .cm-focused {
+        outline: none;
+      }
+
+      .cm-cursor {
+        border-left-color: #e4e4e7;
+      }
+    }
+  }
+}
+
+.md-icon-button {
   background: none;
   border: none;
   font-size: 20px;
   cursor: pointer;
 }
 
-.icon-button:focus {
+.md-icon-button:focus {
   outline: none;
 }
 

@@ -32,7 +32,7 @@ export async function createHighlighter(options?: HighlighterProps) {
     light: "github-light",
     dark: "github-dark",
   };
-
+  
   const highlighter = await createHighlighterCore({
     themes: presetThemes,
     langs: options?.languages ? options.languages : [...presetLangs],
@@ -64,7 +64,7 @@ export async function createHighlighter(options?: HighlighterProps) {
         transformerMetaHighlight(),
       ],
       ...(typeof theme === "object" && "light" in theme && "dark" in theme
-        ? { themes: theme, defaultColor: false }
+        ? { themes: theme }
         : { theme, defaultColor: true }),
     });
 

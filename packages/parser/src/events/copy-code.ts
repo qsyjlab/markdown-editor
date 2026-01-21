@@ -21,7 +21,7 @@ interface BindCopyCodeEventParams {
 export function bindCopyCodeEvent(params?: BindCopyCodeEventParams) {
   const {
     successDelay = 1000,
-    ignoredNodes = [".md-copy-ignore", ".diff.remove"],
+    ignoredNodes = [".md-copy-ignore", ".md-diff.remove"],
     $el = document,
   } = params || {};
 
@@ -29,7 +29,7 @@ export function bindCopyCodeEvent(params?: BindCopyCodeEventParams) {
 
   function eventHandler(e: MouseEvent) {
     const el = e.target as HTMLElement;
-    if (el.matches('div[class*="language-"] > button.copy')) {
+    if (el.matches('div[class*="language-"] > button.md-copy-btn')) {
       const parent = el.parentElement;
       const sibling = el.nextElementSibling?.nextElementSibling;
       if (!parent || !sibling) {

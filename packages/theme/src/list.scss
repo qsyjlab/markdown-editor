@@ -1,22 +1,20 @@
-ul,
-ol {
+.md-list {
   padding-left: 1.25rem;
   margin: 16px 0;
 }
 
-ul {
+ul.md-list {
   list-style: disc;
 }
 
-ol {
+ol.md-list {
   list-style: decimal;
 }
 
-li + li {
+.md-list-item + .md-list-item {
   margin-top: 8px;
 }
 
-li > ol,
-li > ul {
+.md-list-item > .md-list {
   margin: 8px 0 0;
 }
