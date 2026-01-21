@@ -1,9 +1,27 @@
 :root {
   --md-editor-border-color: #eee;
   --md-editor-primary-color: rgba(52, 81, 178, 1);
+  --md-editor-font-size: 16px;
+  
+  // selection
+  --md-editor-selection-bg: rgba(52, 81, 178, 0.15);
+  
+  // link
+  --md-editor-link-color: var(--md-editor-primary-color);
+  --md-editor-link-url-color: #9ca3af;
 }
 
 [md-theme="dark"] {
-  --md-editor-border-color: #3a3a3a;
+  --md-editor-border-color: #454545;
   --md-editor-primary-color: rgba(88, 166, 255, 1);
+
+  // selection
+  --md-editor-selection-bg: rgba(88, 166, 255, 0.25);
+
+  // link
+  --md-editor-link-color: var(--md-editor-primary-color);
+  --md-editor-link-url-color: #a1a1aa;
+
+  // editor bg
+  --md-editor-bg-color: #333;
 }

@@ -8,11 +8,12 @@
 .md-editor {
   width: 100%;
   border: 1px solid var(--md-editor-border-color);
-  border-radius: 5px;
+  border-radius: 6px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   min-height: 0;
+  overflow: hidden;
 
   &.is-fullscreen {
     position: fixed;
@@ -43,6 +44,7 @@
 
   .cm-editor {
     height: 100%;
+    font-size: var(--md-editor-font-size);
   }
 
   &-body {
@@ -103,7 +105,7 @@
       display: inline-block;
       padding: 5px 5px;
       cursor: pointer;
-      border-radius: 5px;
+      border-radius: 4px;
       margin-right: 10px;
 
       &:hover,
@@ -131,6 +133,7 @@
     padding: 10px;
     overflow: auto;
     background-color: white;
+    font-size: var(--md-editor-font-size);
   }
 
   &-sidebar {
@@ -141,6 +144,10 @@
       flex-shrink: 0;
       display: block;
       width: 280px;
+      // border-radius: 6px;
+      // margin: 5px;
+      // height: calc(100% - 10px) !important;
+      // border: 1px solid var(--md-editor-border-color);
     }
   }
 }
@@ -156,7 +163,7 @@
     }
 
     .md-editor-body {
-      background-color: #1a1a1a;
+      background-color: var(--md-editor-bg-color);
     }
 
     .md-editor-toolbar {
@@ -174,7 +181,7 @@
     }
 
     .md-editor-editable {
-      background-color: #1a1a1a;
+      background-color: var(--md-editor-bg-color);
       border-right-color: var(--md-editor-border-color);
     }
 
@@ -200,11 +207,11 @@
 
     // CodeMirror dark theme
     .cm-editor {
-      background-color: #1a1a1a;
+      background-color: var(--md-editor-bg-color);
       color: #e4e4e7;
 
       .cm-scroller {
-        background-color: #1a1a1a;
+        background-color: var(--md-editor-bg-color);
       }
 
       .cm-content {
@@ -212,7 +219,7 @@
       }
 
       .cm-gutters {
-        background-color: #1a1a1a;
+        background-color: var(--md-editor-bg-color);
         border-right-color: var(--md-editor-border-color);
       }
 
@@ -229,7 +236,7 @@
       }
 
       .cm-selectionBackground {
-        background-color: rgba(88, 166, 255, 0.3);
+        background-color: var(--md-editor-selection-bg) !important;
       }
 
       .cm-focused {
@@ -240,6 +247,22 @@
         border-left-color: #e4e4e7;
       }
     }
+  }
+}
+
+.cm-editor {
+  .cm-selectionBackground {
+    background-color: var(--md-editor-selection-bg) !important;
+  }
+  
+  .cm-md-link-text {
+    color: var(--md-editor-link-color);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .cm-md-link-url {
+    color: var(--md-editor-link-url-color);
   }
 }
 

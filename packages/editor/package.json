@@ -30,6 +30,7 @@
     "@codemirror/state": "^6.5.1",
     "@codemirror/view": "^6.36.2",
     "@floating-ui/dom": "^1.6.13",
+    "@lezer/highlight": "^1.2.3",
     "@md-doc-editor/parser": "workspace:^",
     "@md-doc-editor/theme": "workspace:^",
     "codemirror": "^6.0.1",

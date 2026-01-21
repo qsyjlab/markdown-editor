@@ -23,6 +23,7 @@ import {
 } from "@codemirror/autocomplete";
 
 import { lintKeymap } from "@codemirror/lint";
+import { markdownTheme } from "./theme";
 
 
 export const basicSetup = (() => [
@@ -34,6 +35,7 @@ export const basicSetup = (() => [
   EditorState.allowMultipleSelections.of(true),
   indentOnInput(),
   syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+  markdownTheme,
   bracketMatching(),
   closeBrackets(),
   autocompletion(),
