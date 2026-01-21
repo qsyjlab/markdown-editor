@@ -11,6 +11,7 @@ import {
   imagePlugin,
   tablePlugin,
   listPlugin,
+  sourceLinePlugin,
 } from "./plugins";
 
 import {
@@ -91,6 +92,7 @@ export async function createMarkdownParser(props?: MarkdownParserProps) {
   instance.use(createTasksPlugin);
   instance.use(tablePlugin);
   instance.use(listPlugin);
+  instance.use(sourceLinePlugin);
 
   props?.extend?.(instance);
 

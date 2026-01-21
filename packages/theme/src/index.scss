@@ -8,6 +8,7 @@
 @use "./image.scss";
 @use "./list.scss";
 @use "./task.scss";
+@use "./code.scss";
 
 .md-editor-preview-body {
   font-family:
@@ -19,162 +20,8 @@
     Liberation Mono,
     monospace;
 
-  font-size: 16px;
-
   color: var(--md-text-color);
-
-  .md-code-block {
-    width: 100%;
-    box-sizing: border-box;
-    position: relative;
-    border-radius: 10px;
-    background-color: var(--md-code-block-bg);
-    overflow-x: auto;
-    transition: background-color 0.5s;
-    margin: 16px 0;
-
-    code {
-      position: relative;
-
-      span {
-        color: var(--shiki-light, inherit);
-        line-height: 1.7;
-      }
-    }
-
-    .md-code-lang {
-      text-align: right;
-    }
-  }
-
-  [class*="language-"] code {
-    display: block;
-    padding: 0 24px;
-    box-sizing: border-box;
-    width: fit-content;
-    min-width: 100%;
-    line-height: 1.7;
-    font-size: 0.875em;
-    color: var(--md-text-color-2);
-    transition: color 0.5s;
-    box-sizing: border-box;
-  }
-
-  // 代码变更
-  [class*="language-"] code .md-diff.remove {
-    background-color: var(--md-code-line-diff-remove-color);
-    opacity: 0.7;
-  }
-
-  [class*="language-"] code .md-diff.remove::before {
-    content: "-";
-    color: var(--md-code-line-diff-remove-symbol-color);
-  }
-
-  [class*="language-"] code .md-diff.add {
-    background-color: var(--md-code-line-diff-add-color);
-  }
-
-  [class*="language-"] code .md-diff.add::before {
-    content: "+";
-    color: var(--md-code-line-diff-add-symbol-color);
-  }
-
-  [class*="language-"] code .md-diff {
-    transition: background-color 0.5s;
-    margin: 0 -24px;
-    padding: 0 24px;
-    width: calc(100% + 48px);
-    display: inline-block;
-    box-sizing: border-box;
-  }
-
-  [class*="language-"] code .md-highlighted {
-    background-color: var(--md-code-line-highlight-color);
-    transition: background-color 0.5s;
-    margin: 0px -24px;
-    padding: 0 24px;
-    width: calc(100% + 48px);
-    display: inline-block;
-    box-sizing: border-box;
-  }
-
-  [class*="language-"] code .md-highlighted.error {
-    background-color: var(--md-theme-danger-soft);
-  }
-
-  [class*="language-"] code .md-highlighted.warning {
-    background-color: var(--md-code-line-warning-color);
-  }
-
-  .md-highlighted-word {
-    background-color: var(--md-code-block-bg);
-    border: 1px solid var(--md-code-block-border);
-    padding: 1px 3px;
-    margin: -1px -3px;
-    border-radius: 4px;
-  }
-
-  // 语言
-
-  [class*="language-"] > span.md-code-lang {
-    position: absolute;
-    top: 5px;
-    right: 12px;
-    z-index: 2;
-    font-size: 16px;
-    font-weight: 500;
-    -webkit-user-select: none;
-    user-select: none;
-    color: var(--md-code-lang-color);
-    transition:
-      color 0.4s,
-      opacity 0.4s;
-  }
-
-  div[class*="language-"].md-line-numbers-mode {
-    /*rtl:ignore*/
-    padding-left: 32px;
-  }
-
-  .md-line-numbers-wrapper {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    line-height: 1.7;
-    font-size: 0.875em;
-    color: var(--md-text-color-2);
-    transition:
-      border-color 0.5s,
-      color 0.5s;
-    padding-top: 26px;
-    width: 32px;
-    border-right: 1px solid var(--md-code-block-gutter);
-    background-color: var(--md-code-line-number-bg);
-    z-index: 3;
-    text-align: center;
-    overflow: hidden;
-  }
-
-  :not(pre) > code {
-    border-radius: 4px;
-    padding: 3px 6px;
-    background-color: var(--md-code-block-bg-soft);
-    transition:
-      color 0.25s,
-      background-color 0.5s;
-    color: var(--md-theme-primary-color);
-  }
-
-  [class*="language-"] pre {
-    position: relative;
-    z-index: 1;
-    margin: 0;
-    padding: 26px 0;
-    background: transparent;
-    overflow-x: auto;
-  }
+  font-size: 16px;
 
   p {
     line-height: 28px;
@@ -247,8 +94,10 @@
 [md-theme="dark"] .shiki span {
   color: var(--shiki-dark) !important;
   background-color: var(--shiki-dark-bg) !important;
-  /* 可选，如果你还希望同步字体样式 */
-  font-style: var(--shiki-dark-font-style) !important;
-  font-weight: var(--shiki-dark-font-weight) !important;
-  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+
+.shiki {
+  color: var(--shiki-light);
+  background-color: var(--md-code-block-bg)!important;
 }

@@ -85,36 +85,31 @@ export class EditorScrollManager {
 
       if (!editableIns) return;
 
-      const matchHtmlTags =
-        "p, h1, h2, h3, h4, h5, h6, ul, ol, li, pre, blockquote, hr, table, tr, iframe, span";
+      const scrollTop = this.editorDom.scrollTop;
+      const topBlock = editableIns.lineBlockAtHeight(scrollTop + 10);
+      const lineNumber = editableIns.state.doc.lineAt(topBlock.from).number;
+      const targetLine = lineNumber - 1;
 
-      // 文档头部, 距离整个浏览器的距离
-      const top = editableIns.documentTop;
-      // 获取可见位置最顶部的内容
-      const topBlock = editableIns.lineBlockAtHeight(Math.abs(top) + 85);
-      const invisibleMarkdown: string = editableIns.state.sliceDoc(
-        0,
-        topBlock.from
-      );
-      const invisibleHtml =
-        this.previewMananger?.parser?.parse(invisibleMarkdown);
+      const elements = previewDom.querySelectorAll("[data-line]");
+      let targetElement: Element | null = null;
 
-      const invisibleDomAll = new DOMParser().parseFromString(
-        invisibleHtml || "",
-        "text/html"
-      );
+      for (let i = 0; i < elements.length; i++) {
+        const el = elements[i];
+        const line = parseInt(el.getAttribute("data-line") || "-1", 10);
+        if (line <= targetLine) {
+          targetElement = el;
+        } else {
+          break;
+        }
+      }
 
-      const editorDoms = invisibleDomAll.body.querySelectorAll(matchHtmlTags);
-
-      const previewDoms = previewDom?.querySelectorAll(matchHtmlTags);
-
-      const tagetDom = previewDoms?.[editorDoms.length];
-
-      tagetDom?.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "nearest",
-      });
+      if (targetElement) {
+        targetElement.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+          inline: "nearest",
+        });
+      }
     }
   }
 

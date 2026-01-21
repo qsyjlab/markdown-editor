@@ -309,6 +309,12 @@ export class MarkdownEditor {
     this.container.setAttribute("md-theme", theme);
   }
 
+  toggleTheme() {
+    const theme = this.container.getAttribute("md-theme");
+    const newTheme = theme === "dark" ? "light" : "dark";
+    this.setTheme(newTheme);
+  }
+
   destory() {
     this.closeSync();
     this.pluginManager.destroy();

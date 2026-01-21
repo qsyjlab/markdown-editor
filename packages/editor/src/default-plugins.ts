@@ -11,6 +11,7 @@ import {
   strickoutPlugin,
   tablePlugin,
   uploadImagePlugin,
+  toggleThemePlugin,
 } from "./plugins";
 import { taskPlugin } from "./plugins/task";
 import { syncScrollPlugin } from "./plugins/sync-scroll";
@@ -37,4 +38,5 @@ export const defaultPlugins: EditorPluginFn[] = [
   toggleLayoutPlugin,
   fullscreenPlugin,
   hisotryPlugin,
+  toggleThemePlugin
 ];
