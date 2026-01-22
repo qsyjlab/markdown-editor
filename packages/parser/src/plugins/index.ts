@@ -45,3 +45,4 @@ export * from './image'
 export * from "./table";
 export * from "./list";
 export * from "./source-line";
+export * from "./scoped-style";

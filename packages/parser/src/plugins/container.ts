@@ -68,7 +68,7 @@ export function createContainerPlugin(
     
 }
 
-type ContainerArgs = [typeof container, string, { render: RenderRule }];
+type ContainerArgs = [any, string, { render: RenderRule }];
 
 function createContainer(
   klass: string,
@@ -86,7 +86,7 @@ function createContainer(
         if (token.nesting === 1) {
           const title = md.renderInline(info || defaultTitle, {});
           if (klass === "details")
-            return `<details class="${klass} md-custom-block"${attrs}><summary>${title}</summary>\n`;
+            return `<details class="${klass} md-custom-block"${attrs}><summary class="md-summary">${title}</summary>\n`;
           return `<div class="${klass} md-custom-block"${attrs}><p class="md-custom-block-title">${title}</p>\n`;
         } else return klass === "details" ? `</details>\n` : `</div>\n`;
       },

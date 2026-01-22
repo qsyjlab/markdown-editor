@@ -12,6 +12,7 @@ import {
   tablePlugin,
   listPlugin,
   sourceLinePlugin,
+  scopedStylePlugin,
 } from "./plugins";
 
 import {
@@ -81,7 +82,7 @@ export async function createMarkdownParser(props?: MarkdownParserProps) {
     }
   );
 
-  // instance.use(createMathPlugin);
+
   instance.use(attrsPlugin);
   instance.use(...createAnchorPlugin());
   instance.use(headersPlugin, {
@@ -93,6 +94,7 @@ export async function createMarkdownParser(props?: MarkdownParserProps) {
   instance.use(tablePlugin);
   instance.use(listPlugin);
   instance.use(sourceLinePlugin);
+  instance.use(scopedStylePlugin);
 
   props?.extend?.(instance);
 

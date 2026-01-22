@@ -22,71 +22,71 @@
 
   color: var(--md-text-color);
   font-size: 16px;
+}
 
-  p {
-    line-height: 28px;
-  }
+.md-p {
+  line-height: 28px;
+}
 
-  p,
-  summary {
-    margin: 16px 0;
-  }
+.md-p,
+.md-summary {
+  margin: 16px 0;
+}
 
-  blockquote {
-    margin: 16px 0;
-    border-left: 2px solid var(--md-code-block-border);
-    padding-left: 16px;
-    transition: border-color 0.5s;
-    color: var(--md-text-color-2);
-  }
+.md-blockquote {
+  margin: 16px 0;
+  border-left: 2px solid var(--md-code-block-border);
+  padding-left: 16px;
+  transition: border-color 0.5s;
+  color: var(--md-text-color-2);
+}
 
-  blockquote > p {
-    margin: 0;
-    font-size: 16px;
-    transition: color 0.5s;
-  }
+.md-blockquote > .md-p {
+  margin: 0;
+  font-size: 16px;
+  transition: color 0.5s;
+}
 
-  a.externa-link {
-    font-size: 16px;
-    font-weight: bold;
-    color: var(--md-theme-primary-color);
-    text-decoration: underline;
-    text-underline-offset: 2px;
-    transition:
-      color 0.25s,
-      opacity 0.25s;
-    margin: 0;
-  }
+.externa-link {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--md-theme-primary-color);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition:
+    color 0.25s,
+    opacity 0.25s;
+  margin: 0;
+}
 
-  /** 自定义代码块 */
+/** 自定义代码块 */
 
-  .md-custom-block {
-    margin: 16px 0;
-  }
+.md-custom-block {
+  margin: 16px 0;
+}
 
-  .md-custom-block p {
-    margin: 8px 0;
-    line-height: 24px;
-  }
+.md-custom-block .md-p {
+  margin: 8px 0;
+  line-height: 24px;
+}
 
-  .md-custom-block p:first-child {
-    margin: 0;
-  }
+.md-custom-block .md-p:first-child {
+  margin: 0;
+}
 
-  .md-custom-block div[class*="language-"] {
-    margin: 8px 0;
-    border-radius: 8px;
-  }
+.md-custom-block div[class*="language-"] {
+  margin: 8px 0;
+  border-radius: 8px;
+}
 
-  .md-custom-block div[class*="language-"] code {
-    font-weight: 400;
-    background-color: transparent;
-  }
+.md-custom-block div[class*="language-"] code {
+  font-weight: 400;
+  background-color: transparent;
+}
 
-  .md-custom-block .md-code-group .md-code-group-tabs {
-    margin: 0;
-    border-radius: 8px 8px 0 0;
-  }
+.md-custom-block .md-code-group .md-code-group-tabs {
+  margin: 0;
+  border-radius: 8px 8px 0 0;
 }
 
 // shiki 暗黑模式颜色适配

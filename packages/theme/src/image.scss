@@ -2,23 +2,23 @@
   display: inline-block;
   max-width: 100%;
 
-  &:has(img[loading="lazy"]) {
+  &:has(.md-img[loading="lazy"]) {
     width: 100%;
     min-height: 200px;
     border-radius: 10px;
     background-color: var(--md-code-block-bg);
   }
 
-  img {
+  .md-img {
     max-width: 100%;
   }
-  img[loading="lazy"]:not(img.loaded) {
+  .md-img[loading="lazy"]:not(.md-img.loaded) {
   
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
   }
 
-  img.loaded {
+  .md-img.loaded {
     opacity: 1;
     animation: fadeIn 0.5s ease-out;
   }

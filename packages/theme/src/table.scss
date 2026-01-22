@@ -5,29 +5,33 @@
   --md-table-cell-text-color: var(--md-text-color-2);
 }
 
+.md-table-container {
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
 .md-table {
   border-collapse: collapse;
-  margin: 20px 0;
-  overflow-x: auto;
-  display: block; // Markdown tables often need this for overflow
+  width: 100%;
+  // table-layout: auto;
 
-  tr {
+  .md-tr {
     background-color: var(--md-table-row-bg);
     border-top: 1px solid var(--md-table-border-color);
     transition: background-color 0.5s;
   }
 
-  tr:nth-child(2n) {
+  .md-tr:nth-child(2n) {
     background-color: var(--md-table-row-stripe-bg);
   }
 
-  th,
-  td {
+  .md-th,
+  .md-td {
     border: 1px solid var(--md-table-border-color);
     padding: 8px 16px;
   }
 
-  th {
+  .md-th {
     text-align: left;
     font-size: 14px;
     font-weight: 600;
@@ -35,20 +39,20 @@
     background-color: var(--md-table-row-stripe-bg);
   }
 
-  td {
+  .md-td {
     font-size: 14px;
   }
 
-  :where([dir="ltr"]) th {
+  :where([dir="ltr"]) .md-th {
     text-align: left;
   }
 
-  :where([dir="rtl"]) th {
+  :where([dir="rtl"]) .md-th {
     text-align: right;
   }
 }
 
-.md-editor-preview-body hr {
+.md-hr {
   margin: 16px 0;
   border: none;
   border-top: 1px solid var(--md-table-row-stripe-bg);

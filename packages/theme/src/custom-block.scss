@@ -209,18 +209,18 @@
   font-weight: 600;
 }
 
-.md-custom-block p + p {
+.md-custom-block .md-p + .md-p {
   margin: 8px 0;
 }
 
-.md-custom-block.details summary {
+.md-custom-block.details .md-summary {
   margin: 0 0 8px;
   font-weight: 700;
   cursor: pointer;
   user-select: none;
 }
 
-.md-custom-block.details summary + p {
+.md-custom-block.details .md-summary + .md-p {
   margin: 8px 0;
 }
 
@@ -240,8 +240,8 @@
   font-size: var(--md-custom-block-font-size);
 }
 
-.md-custom-block.md-custom-block th,
-.md-custom-block.md-custom-block blockquote > p {
+.md-custom-block.md-custom-block .md-th,
+.md-custom-block.md-custom-block .md-blockquote > .md-p {
   font-size: var(--md-custom-block-font-size);
   color: inherit;
 }

@@ -2,24 +2,24 @@
   --md-header-anchor-symbol: "#";
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+.md-h1,
+.md-h2,
+.md-h3,
+.md-h4,
+.md-h5,
+.md-h6 {
   position: relative;
   font-weight: 600;
   outline: none;
 }
 
-h1 {
+.md-h1 {
   letter-spacing: -0.02em;
   line-height: 40px;
   font-size: 28px;
 }
 
-h2 {
+.md-h2 {
   margin: 48px 0 16px;
   padding-top: 24px;
   letter-spacing: -0.02em;
@@ -27,14 +27,14 @@ h2 {
   font-size: 24px;
 }
 
-h3 {
+.md-h3 {
   margin: 32px 0 0;
   letter-spacing: -0.01em;
   line-height: 28px;
   font-size: 20px;
 }
 
-h4 {
+.md-h4 {
   margin: 24px 0 0;
   letter-spacing: -0.01em;
   line-height: 24px;
@@ -55,21 +55,21 @@ h4 {
   content: var(--md-header-anchor-symbol);
 }
 
-h1:hover .header-anchor,
-h1 .header-anchor:focus,
-h2:hover .header-anchor,
-h2 .header-anchor:focus,
-h3:hover .header-anchor,
-h3 .header-anchor:focus,
-h4:hover .header-anchor,
-h4 .header-anchor:focus,
-h5:hover .header-anchor,
-h5 .header-anchor:focus,
-h6:hover .header-anchor,
-h6 .header-anchor:focus {
+.md-h1:hover .header-anchor,
+.md-h1 .header-anchor:focus,
+.md-h2:hover .header-anchor,
+.md-h2 .header-anchor:focus,
+.md-h3:hover .header-anchor,
+.md-h3 .header-anchor:focus,
+.md-h4:hover .header-anchor,
+.md-h4 .header-anchor:focus,
+.md-h5:hover .header-anchor,
+.md-h5 .header-anchor:focus,
+.md-h6:hover .header-anchor,
+.md-h6 .header-anchor:focus {
   opacity: 1;
 }
 
-h2 .header-anchor {
+.md-h2 .header-anchor {
   top: 24px;
 }

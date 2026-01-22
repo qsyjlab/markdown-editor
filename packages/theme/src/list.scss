@@ -3,18 +3,18 @@
   margin: 16px 0;
 }
 
-ul.md-list {
+.md-ul {
   list-style: disc;
 }
 
-ol.md-list {
+.md-ol {
   list-style: decimal;
 }
 
-.md-list-item + .md-list-item {
+.md-li + .md-li {
   margin-top: 8px;
 }
 
-.md-list-item > .md-list {
+.md-li > .md-list {
   margin: 8px 0 0;
 }
