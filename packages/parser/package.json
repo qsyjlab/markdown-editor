@@ -17,6 +17,9 @@
     "dist",
     "package.json"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@esbuild-kit/cjs-loader": "^2.4.4",
     "@rollup/plugin-alias": "^5.1.1",

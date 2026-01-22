@@ -18,6 +18,9 @@
     ".": "./dist/index.js",
     "./preview": "./dist/preview/index.js"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [],
   "author": "",
   "dependencies": {
