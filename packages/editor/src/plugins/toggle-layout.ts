@@ -69,7 +69,6 @@ export function toggleLayoutPlugin(editor: MarkdownEditor): EditorPlugin {
         isActive: false,
       });
     },
-    position: 'right',
   });
 
   return {

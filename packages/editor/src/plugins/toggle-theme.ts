@@ -17,7 +17,6 @@ export function toggleThemePlugin(editor: MarkdownEditor): EditorPlugin {
     onAction: () => {
       editor.toggleTheme();
     },
-    position: 'right',
   });
 
   return {

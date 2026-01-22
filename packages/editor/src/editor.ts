@@ -354,6 +354,29 @@ function mergedDefaultOptions(options: MarkdownOptions) {
     {} as MarkdownOptions,
     {
       isSyncScoll: true,
+      leftToolbar: [
+        "undo",
+        "redo",
+        "clear",
+        "header",
+        "bold",
+        "strickout",
+        "quote",
+        "link",
+        "table",
+        "code",
+        "splitLine",
+        "task",
+        "uploadImage",
+      ],
+      rightToolbar: [
+        "syncScroll",
+        "onlyEditable",
+        "onlyPreview",
+        "fullscreen",
+        "toggle-theme",
+        "content",
+      ],
     },
     options
   );
