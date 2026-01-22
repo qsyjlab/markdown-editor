@@ -16,7 +16,8 @@
   ],
   "exports": {
     ".": "./dist/index.js",
-    "./preview": "./dist/preview/index.js"
+    "./preview": "./dist/preview/index.js",
+    "./ui": "./dist/ui/index.js"
   },
   "publishConfig": {
     "access": "public"
