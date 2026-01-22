@@ -1,6 +1,6 @@
 {
   "name": "@md-doc-editor/editor",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",
@@ -31,8 +31,8 @@
     "@codemirror/view": "^6.36.2",
     "@floating-ui/dom": "^1.6.13",
     "@lezer/highlight": "^1.2.3",
-    "@md-doc-editor/theme": "workspace:^",
     "@md-doc-editor/parser": "workspace:^",
+    "@md-doc-editor/theme": "workspace:^",
     "codemirror": "^6.0.1",
     "lodash-es": "^4.17.21"
   },
