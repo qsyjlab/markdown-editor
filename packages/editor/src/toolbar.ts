@@ -247,6 +247,7 @@ export class EditorToolbarManager {
     document.body
       .querySelector(`[md-doc-editor-popper-client-id="${this.clientId}"]`)
       ?.remove();
+
   }
 }
 

@@ -1,7 +1,7 @@
 .md-editor-form {
   &-item {
     &__label {
-      color: rgba(34, 47, 62, 0.7);
+      color: var(--md-text-color, #303133);
       display: block;
       font-size: 14px;
       font-style: normal;
@@ -10,10 +10,17 @@
       padding: 0 8px 0 0;
       text-transform: none;
       white-space: nowrap;
+      transition: color 0.3s;
     }
 
     &__content {
         width: auto;
     }
+  }
+}
+
+[md-theme="dark"] {
+  .md-editor-form-item__label {
+    color: var(--md-text-color, #e4e4e7);
   }
 }

@@ -1,15 +1,15 @@
 .md-editor-button {
-    background-color: #006ce7;
+    background-color: var(--md-editor-primary-color, #006ce7);
     background-image: none;
     background-position: 0 0;
     background-repeat: repeat;
-    border-color: #006ce7;
+    border-color: var(--md-editor-primary-color, #006ce7);
     border-radius: 6px;
     border-style: solid;
     border-width: 1px;
     box-shadow: none;
     box-sizing: border-box;
-    color: #fff;
+    color: var(--md-editor-primary-text-color, #fff);
     cursor: pointer;
     display: inline-block;
     font-size: 14px;
@@ -25,4 +25,5 @@
     text-decoration: none;
     text-transform: none;
     white-space: nowrap;
+    transition: background-color 0.3s, border-color 0.3s;
 }

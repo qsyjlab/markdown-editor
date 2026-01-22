@@ -35,6 +35,7 @@ export function toggleLayoutPlugin(editor: MarkdownEditor): EditorPlugin {
         isActive: false,
       });
     },
+    position: 'right',
   });
 
   editor.iconManager.register({
@@ -68,6 +69,7 @@ export function toggleLayoutPlugin(editor: MarkdownEditor): EditorPlugin {
         isActive: false,
       });
     },
+    position: 'right',
   });
 
   return {

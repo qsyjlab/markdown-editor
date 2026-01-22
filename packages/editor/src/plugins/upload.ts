@@ -17,6 +17,7 @@ export function uploadImagePlugin(editor: MarkdownEditor): EditorPlugin {
     label: "图片上传",
     onAction: () => {
       const input = document.createElement("input");
+      input.accept = "image/*";
       input.type = "file";
       input.click();
       input.addEventListener("change", (e) => {

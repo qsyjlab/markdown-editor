@@ -20,6 +20,7 @@ export function tablePlugin(editor: MarkdownEditor): EditorPlugin {
   const dialog = new Dialog({
     title: '插入表格',
     width: '400px',
+    appendTo: editor.container,
     content: () => {
       const form = document.createElement("form");
       form.classList.add("md-editor-form");

@@ -25,6 +25,7 @@ export function contentPlugin(editor: MarkdownEditor): EditorPlugin {
         isActive: !state?.isActive,
       });
     },
+    position: 'right',
   });
 
   return {

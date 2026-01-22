@@ -9,11 +9,14 @@
   // link
   --md-editor-link-color: var(--md-editor-primary-color);
   --md-editor-link-url-color: #9ca3af;
+  
+  --md-editor-primary-text-color: #fff;
 }
 
 [md-theme="dark"] {
   --md-editor-border-color: #454545;
   --md-editor-primary-color: rgba(88, 166, 255, 1);
+  --md-editor-primary-text-color: #333;
 
   // selection
   --md-editor-selection-bg: rgba(88, 166, 255, 0.25);

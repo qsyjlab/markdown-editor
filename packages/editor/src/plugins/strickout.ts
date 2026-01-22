@@ -2,7 +2,6 @@
 
 
 import { MarkdownEditor } from "../editor";
-import { generateSvg } from "../icon";
 import { EditorPlugin } from "../plugin";
 
 
@@ -12,7 +11,7 @@ export function strickoutPlugin(editor: MarkdownEditor): EditorPlugin {
   editor.iconManager.register({
     name,
     type: "svg",
-    svg: generateSvg('<path d="M725.333333 469.333333a42.666667 42.666667 0 0 1 42.666667 42.666667v85.333333a170.666667 170.666667 0 0 1-170.666667 170.666667h-170.666666a42.666667 42.666667 0 1 1 0-85.333333h170.666666a85.333333 85.333333 0 0 0 85.333334-85.333334v-85.333333a42.666667 42.666667 0 0 1 42.666666-42.666667zM298.666667 256a42.666667 42.666667 0 0 1 42.666666 42.666667v85.333333a85.333333 85.333333 0 0 0 85.333334 85.333333h170.666666a42.666667 42.666667 0 1 1 0 85.333334H426.666667A170.666667 170.666667 0 0 1 256 384v-85.333333a42.666667 42.666667 0 0 1 42.666667-42.666667z" fill="currentColor" p-id="1750"></path><path d="M128 512a42.666667 42.666667 0 0 1 42.666667-42.666667h682.666666a42.666667 42.666667 0 1 1 0 85.333334H170.666667a42.666667 42.666667 0 0 1-42.666667-42.666667z"></path>')
+    svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 13.5h-5l-1 3H4l5-13h2l5 13h-2.5l-1-3zm-4.3-2h3.6l-1.8-5.5-1.8 5.5z" fill="currentColor"/><path d="M1 11h22v2H1z" fill="currentColor"/></svg>'
   });
 
   editor.toolbarManager?.register({

@@ -26,6 +26,7 @@ export function fullscreenPlugin(editor: MarkdownEditor): EditorPlugin {
         isActive: editor.layoutState.fullscreen,
       });
     },
+    position: 'right',
   });
 
   return {

@@ -106,7 +106,10 @@ export class MarkdownEditor {
       this.options?.onChange?.(val,  this.previewManager?.parserdHtmlText || "");
     }, 80);
 
-    this.toolbarManager = new EditorToolbarManager({});
+    this.toolbarManager = new EditorToolbarManager({
+      leftToolbar: this.options.leftToolbar,
+      rightToolbar: this.options.rightToolbar,
+    });
     this.editorManager = new CodemirrorManager({
       update: updateCallback,
       onBlur: this.options.onBlur,
@@ -188,6 +191,16 @@ export class MarkdownEditor {
     if (this.toolbarManager) {
       this.toolbarManager.renderAll(this.iconManager);
       this.editorContainer.appendChild(this.toolbarManager.getBody());
+    }
+
+    const currentTheme = this.container.getAttribute("md-theme");
+    if (currentTheme) {
+      const popperContainer = document.body.querySelector(
+        `[md-doc-editor-popper-client-id="${this.clientId}"]`
+      );
+      if (popperContainer) {
+        popperContainer.setAttribute("md-theme", currentTheme);
+      }
     }
 
     // 创建 body
@@ -307,6 +320,12 @@ export class MarkdownEditor {
 
   setTheme(theme: "light" | "dark") {
     this.container.setAttribute("md-theme", theme);
+    const popperContainer = document.body.querySelector(
+      `[md-doc-editor-popper-client-id="${this.clientId}"]`
+    );
+    if (popperContainer) {
+      popperContainer.setAttribute("md-theme", theme);
+    }
   }
 
   toggleTheme() {
