@@ -1,3 +1,3 @@
 export * from './menu'
 export * from './dialog'
-export * from './preview-image'
+export { default as PreviewImage } from './preview-image';
