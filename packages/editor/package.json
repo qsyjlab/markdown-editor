@@ -31,8 +31,8 @@
     "@codemirror/view": "^6.36.2",
     "@floating-ui/dom": "^1.6.13",
     "@lezer/highlight": "^1.2.3",
-    "@md-doc-editor/parser": "workspace:^",
-    "@md-doc-editor/theme": "workspace:^",
+    "@md-doc-editor/parser": "^1.2.1",
+    "@md-doc-editor/theme": "^1.1.1",
     "codemirror": "^6.0.1",
     "lodash-es": "^4.17.21"
   },
@@ -54,5 +54,5 @@
     "rollup-plugin-sass": "^1.15.2",
     "rollup-plugin-terser": "^7.0.2"
   },
-  "gitHead": "cf25d5c97382f7ce10b265d9a279672bfcb220c7"
+  "gitHead": "0797255654ce8bebdb171b7cc5d63b9e225b7f99"
 }

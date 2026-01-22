@@ -25,5 +25,6 @@
     "gulp-autoprefixer": "^9.0.0",
     "gulp-clean-css": "^4.3.0",
     "gulp-sass": "^6.0.0"
-  }
+  },
+  "gitHead": "0797255654ce8bebdb171b7cc5d63b9e225b7f99"
 }

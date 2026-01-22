@@ -47,5 +47,6 @@
     "markdown-it-task-lists": "^2.1.1",
     "nanoid": "^5.0.9",
     "shiki": "^3.0.0"
-  }
+  },
+  "gitHead": "0797255654ce8bebdb171b7cc5d63b9e225b7f99"
 }
