@@ -2,3 +2,13 @@ packages:
   - 'packages/*'
   - play
   - build
+
+# pnpm v10+ 配置项从 package.json 的 "pnpm" 字段迁移至此
+overrides:
+  esbuild: 0.23.1
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - es5-ext
+  - esbuild
+  - nx
