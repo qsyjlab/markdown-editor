@@ -232,11 +232,11 @@ export class EditorToolbarManager {
     this.$el.setAttribute(clientAttrKey, this.clientId);
   }
 
-  destory() {
+  destroy() {
     Object.keys(this.buttonsState).forEach((key) => {
       const state = this.buttonsState[key];
       if (state.dropdown) {
-        state.dropdown.destory();
+        state.dropdown.destroy();
         delete state.dropdown;
       }
 
@@ -248,6 +248,11 @@ export class EditorToolbarManager {
       .querySelector(`[md-doc-editor-popper-client-id="${this.clientId}"]`)
       ?.remove();
 
+  }
+
+  /** @deprecated 拼写错误，请使用 destroy() */
+  destory() {
+    this.destroy();
   }
 }
 

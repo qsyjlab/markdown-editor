@@ -24,7 +24,17 @@ export class Dialog {
 
   $parent: HTMLElement | null = null;
 
-  visbible: boolean;
+  visible: boolean;
+
+  /** @deprecated 拼写错误，请使用 visible */
+  get visbible() {
+    return this.visible;
+  }
+
+  /** @deprecated 拼写错误，请使用 visible */
+  set visbible(val: boolean) {
+    this.visible = val;
+  }
 
   config: DialogProps;
 
@@ -144,9 +154,14 @@ export class Dialog {
     }`;
   }
 
-  destory() {
+  destroy() {
     if (!this.$el) return;
     this.$parent?.removeChild(this.$el);
     this.$el = null;
+  }
+
+  /** @deprecated 拼写错误，请使用 destroy() */
+  destory() {
+    this.destroy();
   }
 }

@@ -14,8 +14,13 @@ export class EditorPreviewManager extends MarkdownEditorPreview {
     return this.$el;
   }
 
-  destory() {
+  destroy() {
     this.$el?.remove();
-    super.destory();
+    super.destroy();
+  }
+
+  /** @deprecated 拼写错误，请使用 destroy() */
+  destory() {
+    this.destroy();
   }
 }

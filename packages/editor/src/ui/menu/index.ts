@@ -30,7 +30,17 @@ export class DropdownMenu {
 
   id: string;
 
-  visbible: boolean;
+  visible: boolean;
+
+  /** @deprecated 拼写错误，请使用 visible */
+  get visbible() {
+    return this.visible;
+  }
+
+  /** @deprecated 拼写错误，请使用 visible */
+  set visbible(val: boolean) {
+    this.visible = val;
+  }
 
   menus: MenuItem[];
 
@@ -60,7 +70,7 @@ export class DropdownMenu {
       this.container.classList.add(props.class);
     }
 
-    this.visbible = false;
+    this.visible false;
     this.menus = props.menus;
     this.triggerElement = props.triggerElement;
     this.createMenu();
@@ -131,7 +141,7 @@ export class DropdownMenu {
     dropdown.style.top = `${buttonRect.bottom + window.scrollY}px`;
 
     dropdown.style.display = "block";
-    this.visbible = true;
+    this.visible true;
   }
 
   hide() {
@@ -140,11 +150,11 @@ export class DropdownMenu {
     if (!dropdown) return;
 
     dropdown.style.display = "none";
-    this.visbible = false;
+    this.visible false;
   }
 
   toggle() {
-    if (this.visbible) {
+    if (this.visible) {
       this.hide();
     } else {
       this.show();
@@ -188,7 +198,7 @@ export class DropdownMenu {
       if (!dropdown) return;
 
       if (
-        this.visbible &&
+        this.visible &&
         !dropdown.contains(e.target as any) &&
         e.target !== button
       ) {
@@ -197,10 +207,15 @@ export class DropdownMenu {
     });
   }
 
-  destory() {
+  destroy() {
 
     if(this.dropdown) {
-      this.appendTo.removeChild(this.dropdown)
+      this.dropdown.remove();
     }
+  }
+
+  /** @deprecated 拼写错误，请使用 destroy() */
+  destory() {
+    this.destroy();
   }
 }

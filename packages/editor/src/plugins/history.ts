@@ -2,7 +2,7 @@ import { MarkdownEditor } from "../editor";
 import { generateSvg } from "../icon";
 import { EditorPlugin } from "../plugin";
 
-export function hisotryPlugin(editor: MarkdownEditor): EditorPlugin {
+export function historyPlugin(editor: MarkdownEditor): EditorPlugin {
   const name = "history";
 
   const undoName = "undo";
@@ -46,3 +46,6 @@ export function hisotryPlugin(editor: MarkdownEditor): EditorPlugin {
     name,
   };
 }
+
+/** @deprecated 拼写错误，请使用 historyPlugin */
+export const hisotryPlugin = historyPlugin;

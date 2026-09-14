@@ -1,6 +1,7 @@
 import { debounce } from "lodash-es";
 import { CodemirrorManager } from "./code-mirror";
 import { MarkdownEditorPreview, MarkdownHeading } from "./preview";
+import { getOffsetTop } from "./utils";
 
 interface ScrollManagerOptions {
   onHeadingAnchorChange?: (
@@ -24,21 +25,32 @@ export class EditorScrollManager {
 
   private options: ScrollManagerOptions;
 
+  /** debounce 后的引用必须保留，removeEventListener 才能真正移除 */
+  private syncScrollDebounced: () => void;
+
+  private listening = false;
+
+  private headingRafId: number | null = null;
+
+  /** data-line 元素缓存，随 preview.contentVersion 失效 */
+  private lineElements: Element[] = [];
+
+  private lineElementsVersion = -1;
+
   constructor(
     codeMirrorManager: CodemirrorManager,
     previewMananger: MarkdownEditorPreview,
     options: ScrollManagerOptions
   ) {
     this.codeMirrorManager = codeMirrorManager;
-    this.editorDom = this.codeMirrorManager!.instance?.scrollDOM!;
+    this.editorDom = this.codeMirrorManager.instance?.scrollDOM!;
     this.previewMananger = previewMananger;
     this.previewDom = this.previewMananger.$el!;
     this.options = options;
 
-    this.previewDom.addEventListener("scroll", () => {
-      if (this.previewMananger.isAniming) return;
-      this.updateHeading();
-    });
+    this.syncScrollDebounced = debounce(() => this.syncScroll(), 60);
+
+    this.previewDom.addEventListener("scroll", this.onPreviewScroll);
   }
 
   get currentAnchor() {
@@ -90,7 +102,7 @@ export class EditorScrollManager {
       const lineNumber = editableIns.state.doc.lineAt(topBlock.from).number;
       const targetLine = lineNumber - 1;
 
-      const elements = previewDom.querySelectorAll("[data-line]");
+      const elements = this.getLineElements();
       let targetElement: Element | null = null;
 
       for (let i = 0; i < elements.length; i++) {
@@ -114,25 +126,60 @@ export class EditorScrollManager {
   }
 
   addListener() {
-    this.editorDom.addEventListener(
-      "scroll",
-      debounce(this.syncScroll, 60).bind(this)
-    );
+    if (this.listening) return;
+    this.listening = true;
+    this.editorDom.addEventListener("scroll", this.syncScrollDebounced);
   }
 
   removeListener() {
-    this.editorDom.removeEventListener("scroll", this.syncScroll);
+    if (!this.listening) return;
+    this.listening = false;
+    this.editorDom.removeEventListener("scroll", this.syncScrollDebounced);
   }
 
   updateHeading() {
     const currentActiveLink = getInternalCurrentAnchor(
       this.previewDom,
-      this.previewMananger.queryAllHeadings(),
+      this.previewMananger.headings,
       20,
       5
     );
+
+    // 锚点未变化时不通知，避免 TOC 重复高亮刷新
+    if (currentActiveLink?.id === this._currentAnchor?.id) return;
+
     this._currentAnchor = currentActiveLink;
     this.options.onHeadingAnchorChange?.(this.currentAnchor);
+  }
+
+  destroy() {
+    this.removeListener();
+    this.previewDom.removeEventListener("scroll", this.onPreviewScroll);
+    if (this.headingRafId !== null) {
+      cancelAnimationFrame(this.headingRafId);
+      this.headingRafId = null;
+    }
+  }
+
+  private onPreviewScroll = () => {
+    if (this.previewMananger.isAniming) return;
+    // rAF 节流：滚动高频事件下每帧最多计算一次当前锚点
+    if (this.headingRafId !== null) return;
+    this.headingRafId = requestAnimationFrame(() => {
+      this.headingRafId = null;
+      this.updateHeading();
+    });
+  };
+
+  private getLineElements(): Element[] {
+    const version = this.previewMananger.contentVersion;
+    if (version !== this.lineElementsVersion) {
+      this.lineElements = Array.from(
+        this.previewDom.querySelectorAll("[data-line]")
+      );
+      this.lineElementsVersion = version;
+    }
+    return this.lineElements;
   }
 }
 
@@ -142,7 +189,7 @@ function getInternalCurrentAnchor(
   _offsetTop = 0,
   _bounds = 5
 ): MarkdownHeading | null {
-  const linkSections: any[] = [];
+  const linkSections: { link: MarkdownHeading; top: number }[] = [];
 
   _links.forEach((link) => {
     const target = link.el;
@@ -162,27 +209,6 @@ function getInternalCurrentAnchor(
     return maxSection.link;
   }
   return null;
-}
-
-function getOffsetTop(
-  element: HTMLElement,
-  container: AnchorContainer
-): number {
-  if (!element.getClientRects().length) {
-    return 0;
-  }
-
-  const rect = element.getBoundingClientRect();
-
-  if (rect.width || rect.height) {
-    if (container === window) {
-      container = document.documentElement;
-      return rect.top - container.clientTop;
-    }
-    return rect.top - (container as HTMLElement).getBoundingClientRect().top;
-  }
-
-  return rect.top;
 }
 
 export type AnchorContainer = HTMLElement | Window;

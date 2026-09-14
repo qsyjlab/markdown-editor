@@ -13,8 +13,8 @@ import { CodemirrorManager } from "./code-mirror";
 import { InsertCallback } from "./code-mirror/interface";
 import { SidebarManager } from "./sidebar-manager";
 import { EditorPreviewManager } from './preview-manager'
-import { debounce } from "lodash-es";
 import { EditorScrollManager } from "./scroll-manager";
+import { createUpdatePipeline, UpdatePipeline } from "./update-pipeline";
 import { getOffsetTop, getScroll, scrollTo, useId } from "./utils";
 
 import "./style/editor.scss";
@@ -28,6 +28,13 @@ interface MarkdownOptions {
 
   plugins?: (() => (editor: MarkdownEditor) => EditorPlugin)[];
 
+  /**
+   * 是否开启编辑/预览滚动同步
+   * @default true
+   */
+  isSyncScroll?: boolean;
+
+  /** @deprecated 拼写错误，请使用 isSyncScroll */
   isSyncScoll?: boolean;
 
   onFocus?: () => void;
@@ -77,6 +84,8 @@ export class MarkdownEditor {
 
   public scrollManager?: EditorScrollManager;
 
+  public updatePipeline: UpdatePipeline;
+
   public clientId: string = "";
 
   public layoutState = {
@@ -98,40 +107,37 @@ export class MarkdownEditor {
     this.content = "";
     this.pluginManager = createEditorPluginManager(this);
 
-    const updateCallback = debounce((val: string) => {
-       this.previewManager?.setContent(val);
-
-      this.pluginManager.update();
-      this.sidebarManager.updateHeading( this.previewManager?.queryAllHeadings() || []);
-      this.options?.onChange?.(val,  this.previewManager?.parserdHtmlText || "");
-    }, 80);
+    this.updatePipeline = createUpdatePipeline(this);
 
     this.toolbarManager = new EditorToolbarManager({
       leftToolbar: this.options.leftToolbar,
       rightToolbar: this.options.rightToolbar,
     });
     this.editorManager = new CodemirrorManager({
-      update: updateCallback,
+      update: (val) => this.updatePipeline.schedule(val),
       onBlur: this.options.onBlur,
       onFocus: this.options.onFocus,
     });
 
     this.sidebarManager = new SidebarManager({
       onClickHeading: (heading) => {
-        const scrollTop = getScroll( this.previewManager?.$el!, true);
+        const previewEl = this.previewManager?.$el;
+        if (!previewEl) return;
+
+        const scrollTop = getScroll(previewEl, true);
 
         const targetElement = heading.el;
 
         if (!targetElement) return;
 
-        const eleOffsetTop = getOffsetTop(targetElement,  this.previewManager?.$el!);
-        let y = scrollTop + eleOffsetTop;
+        const eleOffsetTop = getOffsetTop(targetElement, previewEl);
+        const y = scrollTop + eleOffsetTop;
 
-         this.previewManager?.setAniming(true);
+        this.previewManager?.setAniming(true);
         scrollTo(y, {
-          getContainer: () =>  this.previewManager?.$el!,
+          getContainer: () => previewEl,
           callback: () => {
-             this.previewManager?.setAniming(false);
+            this.previewManager?.setAniming(false);
           },
         });
       },
@@ -141,10 +147,14 @@ export class MarkdownEditor {
   }
 
   setContent(text: string) {
+    this.content = text;
+    // dispatch 增量替换，保留撤销历史；docChanged 会再调度一次管线更新（块缓存命中，开销极小）
     this.editorManager.setContent(text);
-     this.previewManager?.setContent(text);
+
+    // 立即渲染，保证编程式更新的即时性
+    this.previewManager?.setContent(text);
     this.pluginManager.update();
-    this.sidebarManager.updateHeading( this.previewManager?.queryAllHeadings() || []);
+    this.sidebarManager.updateHeading(this.previewManager?.headings ?? []);
   }
 
   getContent() {
@@ -164,7 +174,7 @@ export class MarkdownEditor {
   }
 
   async createEditor() {
-    this.editorContainer = document.createElement("div", {});
+    this.editorContainer = document.createElement("div");
     this.editorContainer.classList.add("md-editor");
     this.editorContainer.style.height = this.options.height || "auto";
 
@@ -234,7 +244,7 @@ export class MarkdownEditor {
       onPreview: this.options.onPreview
     });
     await previewInstance.init();
-     this.previewManager = previewInstance;
+    this.previewManager = previewInstance;
 
     editorBody.appendChild(previewInstance.create());
 
@@ -250,7 +260,7 @@ export class MarkdownEditor {
 
     this.scrollManager = new EditorScrollManager(
       this.editorManager,
-       this.previewManager,
+      this.previewManager,
       {
         onHeadingAnchorChange: (currentAnchor) => {
           this.sidebarManager.updateActiveHeading(currentAnchor?.id || "");
@@ -258,7 +268,11 @@ export class MarkdownEditor {
       }
     );
 
-    if (this.options.isSyncScoll) {
+    // isSyncScroll 为修正后的选项名，isSyncScoll 为 v1 兼容回退
+    const syncScrollEnabled =
+      this.options.isSyncScroll ?? this.options.isSyncScoll ?? true;
+
+    if (syncScrollEnabled) {
       this.openSync();
     } else {
       this.closeSync();
@@ -267,18 +281,15 @@ export class MarkdownEditor {
   }
 
   toggleFullscreen(value?: boolean) {
-    if (value !== void 0) {
-      this.layoutState.fullscreen = value;
-      return;
-    }
-    this.layoutState.fullscreen = !this.layoutState.fullscreen;
+    this.layoutState.fullscreen =
+      value !== undefined ? value : !this.layoutState.fullscreen;
 
     if (!this.editorContainer) return;
     if (this.layoutState.fullscreen) {
-      this.editorContainer?.classList.add("is-fullscreen");
+      this.editorContainer.classList.add("is-fullscreen");
       this.editorContainer.style.height = "";
     } else {
-      this.editorContainer?.classList.remove("is-fullscreen");
+      this.editorContainer.classList.remove("is-fullscreen");
       this.editorContainer.style.height = this.options.height || "auto";
     }
   }
@@ -311,6 +322,7 @@ export class MarkdownEditor {
 
   closeSync() {
     this.scrollManager?.setSync(false);
+    this.scrollManager?.removeListener();
   }
 
   setClientId(id: string) {
@@ -334,12 +346,20 @@ export class MarkdownEditor {
     this.setTheme(newTheme);
   }
 
-  destory() {
+  destroy() {
+    this.updatePipeline.cancel();
     this.closeSync();
+    this.scrollManager?.destroy();
     this.pluginManager.destroy();
-    this.toolbarManager.destory();
-    this.editorManager.destory();
+    this.toolbarManager.destroy();
+    this.editorManager.destroy();
+    this.previewManager?.destroy();
     this.editorContainer?.remove();
+  }
+
+  /** @deprecated 拼写错误，请使用 destroy() */
+  destory() {
+    this.destroy();
   }
 }
 

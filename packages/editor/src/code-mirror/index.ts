@@ -26,7 +26,7 @@ export class CodemirrorManager {
   }
 
   create(el: HTMLElement) {
-    let startState = this.mergeState();
+    const startState = this.mergeState();
     this.instance = new EditorView({ state: startState, parent: el });
   }
 
@@ -63,7 +63,7 @@ export class CodemirrorManager {
   }
 
   mergeState(config: EditorStateConfig = {}) {
-    let startState = EditorState.create({
+    const startState = EditorState.create({
       extensions: [
         placeholder("请输入"),
         basicSetup,
@@ -90,11 +90,23 @@ export class CodemirrorManager {
     return startState;
   }
 
+  /**
+   * 增量替换整个文档：通过 dispatch 而非 setState，
+   * 保留撤销历史、光标（clamp 到新文档范围）与滚动位置。
+   * docChanged 事件自然进入统一更新管线。
+   */
   setContent(val: string) {
-    const state = this.mergeState({
-      doc: val,
+    if (!this.instance) return;
+    const view = this.instance;
+    const selection = view.state.selection.main;
+
+    view.dispatch({
+      changes: { from: 0, to: view.state.doc.length, insert: val },
+      selection: {
+        anchor: Math.min(selection.anchor, val.length),
+        head: Math.min(selection.head, val.length),
+      },
     });
-    this.instance?.setState(state);
   }
 
   undo() {
@@ -109,8 +121,13 @@ export class CodemirrorManager {
     redo(this.instance);
   }
 
-  destory(){
-    this.instance?.destroy()
-    this.instance = null
+  destroy() {
+    this.instance?.destroy();
+    this.instance = null;
+  }
+
+  /** @deprecated 拼写错误，请使用 destroy() */
+  destory() {
+    this.destroy();
   }
 }
