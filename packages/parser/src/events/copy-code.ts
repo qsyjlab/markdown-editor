@@ -18,6 +18,11 @@ interface BindCopyCodeEventParams {
   ignoredNodes?: string[];
 }
 
+/**
+ * 以事件委托方式绑定代码复制按钮点击。
+ * 容器内动态插入的代码块自动生效，无需重复绑定。
+ * @returns 清理函数，移除监听器
+ */
 export function bindCopyCodeEvent(params?: BindCopyCodeEventParams) {
   const {
     successDelay = 1000,
@@ -72,18 +77,11 @@ export function bindCopyCodeEvent(params?: BindCopyCodeEventParams) {
     }
   }
 
-  $el.addEventListener("click", (e) => {
+  $el.addEventListener("click", eventHandler);
 
-    e.stopPropagation()
-
-    eventHandler(e as MouseEvent);
-  });
-
-  function stopEventListener() {
-    window.removeEventListener("click", eventHandler);
-  }
-
-  return stopEventListener;
+  return () => {
+    $el.removeEventListener("click", eventHandler);
+  };
 }
 
 async function copyToClipboard(text: string) {

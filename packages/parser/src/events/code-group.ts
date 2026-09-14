@@ -1,16 +1,14 @@
-export function bindCodeGroupsEvent(container?:HTMLElement | Document) {
+/**
+ * 代码组 tab 切换（事件委托）。
+ *
+ * v1 的问题：每次渲染都往 window 上挂一个 click 监听器且永不移除。
+ * 现在监听器落在容器上并返回清理函数；首个 tab 的选中态由渲染器
+ * 直接输出（checked / active），不再依赖绑定时的 DOM 重置。
+ */
+export function bindCodeGroupsEvent(container?: HTMLElement | Document) {
+  const target = container || document;
 
-  const target = container || document
-
-  target.querySelectorAll(".md-code-group > .md-code-group-blocks").forEach((el) => {
-    Array.from(el.children).forEach((child) => {
-      child.classList.remove("active");
-    });
-    el.children[0].classList.add("active");
-
-  });
-  
-  window.addEventListener("click", (e) => {
+  function eventHandler(e: MouseEvent) {
     const el = e.target as HTMLInputElement;
 
     if (el.matches(".md-code-group-tabs input")) {
@@ -38,5 +36,11 @@ export function bindCodeGroupsEvent(container?:HTMLElement | Document) {
       const label = group?.querySelector(`label[for="${el.id}"]`);
       label?.scrollIntoView({ block: "nearest" });
     }
-  });
+  }
+
+  target.addEventListener("click", eventHandler);
+
+  return () => {
+    target.removeEventListener("click", eventHandler);
+  };
 }
