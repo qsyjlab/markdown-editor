@@ -1,0 +1,120 @@
+# md-doc-editor 功能大纲与拓展路线（Roadmap）
+
+> 配套：[概要设计 ARCHITECTURE.md](./ARCHITECTURE.md)
+> 状态标记：✅ 已有 / 🔧 v2 重构中补齐 / 🆕 规划中 / 🔮 远期
+
+---
+
+## 1. 现有能力盘点
+
+### 1.1 编辑（editor 包）
+- ✅ CodeMirror 6 编辑内核（markdown 语法包、行折叠、占位符）
+- ✅ 工具栏：撤销/重做、清空、H1–H6、加粗、删除线、引用、链接、表格、代码、分隔线、任务列表、图片上传
+- ✅ 布局：双栏 / 仅编辑 / 仅预览、全屏
+- ✅ 同步滚动（编辑 ↔ 预览，基于 `data-line` 源码行映射）
+- ✅ TOC 大纲侧栏 + 滚动跟随高亮
+- ✅ 亮/暗主题切换（`md-theme` 属性驱动）
+- ✅ 插件机制（init / toolbar / update / destroy）
+
+### 1.2 解析（parser 包）
+- ✅ markdown-it 核心 + attrs / anchor / headers 扩展
+- ✅ Shiki 代码高亮（38+ 语言、双主题、diff/高亮记号 transformer）
+- ✅ 自定义容器（tip / info / warning / danger / details）与代码组（tab 切换）
+- ✅ 代码行号、复制按钮、代码语言徽标
+- ✅ 图片懒加载 + 点击预览（缩放/平移）
+- ✅ 外链新窗口打开、表格容器、任务列表
+- ✅ 源码行映射（`data-line`）、BEM 化 scoped 类名（`md-*`）
+- 🔧 块级增量解析、流式渲染会话、块级 DOM patch（v2 本次交付）
+
+### 1.3 主题（theme 包）
+- ✅ CSS 变量体系（`--md-*` ≈90 个 token）+ 亮暗双态
+- 🔧 Shiki 双主题变量化、去 `!important`（v2 本次交付）
+
+## 2. 功能补全计划（近期）
+
+按"编辑体验 → 渲染能力 → 工程化"排序：
+
+### 2.1 编辑体验
+| 功能 | 说明 | 优先级 |
+|---|---|---|
+| 🆕 字数/字符统计 | onChange 元数据附带，工具栏可选展示 | P1 |
+| 🆕 粘贴/拖拽图片增强 | 粘贴板图片、拖拽文件统一走 `imagesUploadHandler`，带占位符与失败回滚 | P1 |
+| 🆕 查找替换 | CodeMirror search 面板集成进编辑器 chrome | P2 |
+| 🆕 快捷键中心 | Cmd/Ctrl+B/I/K 等标准键位 + 自定义注册 | P2 |
+| 🆕 自动保存草稿 | 可选 adapter：localStorage / IndexedDB，崩溃恢复 | P2 |
+
+### 2.2 渲染能力
+| 功能 | 说明 | 优先级 |
+|---|---|---|
+| 🆕 Mermaid 图表 | 作为 parser 可选插件（按需 import，块级缓存天然兼容） | P1 |
+| 🆕 数学公式 | 恢复 math 支持（KaTeX 按需加载，替代已删除的 mathjax3 死代码），默认关闭 | P1 |
+| 🆕 脚注/上下标/标记 | markdown-it-footnote / sup / sub / mark 插件集，可选项 | P2 |
+| 🆕 导出 HTML | 自包含单文件导出（内联 theme CSS） | P2 |
+| 🔮 导出 PDF/图片 | 基于导出 HTML + print 样式 | P3 |
+| 🆕 ESM 按需加载语言 | Shiki 语言按需注册 API 已具备，补文档与细粒度 bundling | P2 |
+
+### 2.3 工程化
+| 事项 | 说明 | 优先级 |
+|---|---|---|
+| 🔧 单元测试 | vitest：块切分/哈希/patch 纯函数先行，渲染回归快照 | P1（v2 起步） |
+| 🆕 CI | GitHub Actions：build + type-check + test | P1 |
+| 🔧 类型收紧 | 去除 `theme?: any`、`@ts-nocheck`，`noImplicitAny` 开启 | P1（v2 起步） |
+| 🆕 dts 一致性检查 | 发布前 API 面快照对比（防拼写再次入库） | P3 |
+
+## 3. 拓展方向
+
+### 3.1 AI 能力（确定方向，v2 已铺底座）
+
+v2 的增量解析 + 流式渲染 + 稳定 DOM 是 AI 功能的**底座**。在其上分三层拓展：
+
+**L1 流式渲染（v2 已交付）**
+- `parser.createStreamingSession()` / `preview.appendStreaming(chunk)`：AI 逐 token 输出实时渲染，只重绘活动块。
+
+**L2 AI 写作动作（下一阶段，🆕）**
+- 内置动作集：续写、润色、改写、翻译、摘要、代码解释/生成注释；
+- 统一抽象 `AIProvider` 接口（由宿主注入模型调用，编辑器不绑定任何厂商）：
+
+```ts
+interface AIProvider {
+  complete(req: {
+    action: string;              // "continue" | "polish" | ...
+    selection?: string;          // 选区内容
+    context: string;             // 光标前/后文（由编辑器裁剪）
+    signal?: AbortSignal;
+  }): AsyncIterable<string>;     // 流式 delta
+}
+```
+
+- 交互形态：选区浮动菜单（复用 floating-ui 的 Tooltip/Dropdown 体系）+ 行内"生成中"占位块；
+- 流式结果直接写入编辑器（走 UpdatePipeline），预览端零额外成本。
+
+**L3 AI 深度集成（远期，🔮）**
+- 行内 diff 预览：AI 修改以"建议"形式呈现，逐块接受/拒绝（块级 patch 天然支持按块着色）；
+- AI 命令面板（Cmd+K）：自然语言指令 → 编辑操作；
+- 上下文工程：TOC/大纲 + 选区 + 当前块自动裁剪为 prompt 上下文；
+- 多模态：截图 → mermaid/表格、语音输入。
+
+### 3.2 协作（🔮 远期）
+- Yjs CRDT 挂接 CodeMirror（官方 y-codemirror.next），预览端天然兼容增量管线；
+- 需要：文档模型升级为 CRDT doc（编辑器侧），渲染侧不变 —— v2 的"渲染只依赖完整文本"设计使协作层对渲染透明。
+
+### 3.3 插件生态（🆕 中期）
+- 插件生命周期补全为 `init / update / destroy / commands / shortcuts`；
+- 提供事件总线（`editor.on("change" | "selectionChange" | "blockRendered")`）；
+- UI 组件（Dialog/Dropdown/Tooltip）独立导出为 `@md-doc-editor/ui`，供第三方插件复用；
+- parser 侧插件包规范：`defineParserPlugin({ md, highlighter, hooks })`。
+
+### 3.4 主题体系（🆕 中期）
+- token 分层：primitive（色板）→ semantic（文本/背景/边框）→ component（`--md-code-block-*`）；
+- 支持运行时注册第三方主题包（`editor.registerTheme("nord", tokens)`）；
+- 内容排版主题与编辑器 chrome 主题解耦（主题包可只覆盖其一）。
+
+## 4. 里程碑建议
+
+| 里程碑 | 内容 | 依赖 |
+|---|---|---|
+| **M1（本分支）** | 性能重构 + 流式底座 + 事件/拼写/主题修复 | — |
+| **M2** | AIProvider 抽象 + 选区 AI 动作 + 测试/CI 基建 | M1 |
+| **M3** | Mermaid/KaTeX/导出 HTML + 草稿自动保存 + 插件生态规范化 | M1 |
+| **M4** | 行内 diff 接受/拒绝 + 命令面板 | M2 |
+| **M5** | 协作（Yjs）+ 第三方主题包 | M2/M3 |
