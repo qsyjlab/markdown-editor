@@ -1,6 +1,11 @@
-
 import { createApp } from 'vue'
 
-import App from './app2.vue'
+import EditorDemo from './app2.vue'
+import AiStreamDemo from './ai-demo.vue'
 
-createApp(App).mount("#app")
+// ?demo=ai 进入 AI 流式渲染演示，默认进入编辑器演示
+const App = new URLSearchParams(window.location.search).get('demo') === 'ai'
+  ? AiStreamDemo
+  : EditorDemo
+
+createApp(App).mount('#app')

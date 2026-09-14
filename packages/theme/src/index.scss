@@ -47,7 +47,8 @@
   transition: color 0.5s;
 }
 
-.externa-link {
+.externa-link,
+.external-link {
   font-size: 16px;
   font-weight: bold;
   color: var(--md-theme-primary-color);
@@ -89,15 +90,18 @@
   border-radius: 8px 8px 0 0;
 }
 
-// shiki 暗黑模式颜色适配
-[md-theme="dark"] .shiki,
-[md-theme="dark"] .shiki span {
-  color: var(--shiki-dark) !important;
-  background-color: var(--shiki-dark-bg) !important;
+// shiki 亮暗模式：parser 以 defaultColor:false 输出，颜色全部经 CSS 变量提供，
+// 无需 !important 对抗行内样式（STYLE_GUIDE 第 5 节）
+.shiki,
+.shiki span {
+  color: var(--shiki-light);
 }
 
-
 .shiki {
-  color: var(--shiki-light);
-  background-color: var(--md-code-block-bg)!important;
+  background-color: var(--md-code-block-bg);
+}
+
+[md-theme="dark"] .shiki,
+[md-theme="dark"] .shiki span {
+  color: var(--shiki-dark);
 }
