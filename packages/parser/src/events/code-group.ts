@@ -8,7 +8,7 @@
 export function bindCodeGroupsEvent(container?: HTMLElement | Document) {
   const target = container || document;
 
-  function eventHandler(e: MouseEvent) {
+  function eventHandler(e: Event) {
     const el = e.target as HTMLInputElement;
 
     if (el.matches(".md-code-group-tabs input")) {
@@ -38,9 +38,10 @@ export function bindCodeGroupsEvent(container?: HTMLElement | Document) {
     }
   }
 
-  target.addEventListener("click", eventHandler);
+  const clickHandler: EventListener = eventHandler;
+  target.addEventListener("click", clickHandler);
 
   return () => {
-    target.removeEventListener("click", eventHandler);
+    target.removeEventListener("click", clickHandler);
   };
 }

@@ -93,7 +93,6 @@ export class EditorScrollManager {
       this.previewDom.scrollTop = this.previewDom.scrollHeight;
     } else {
       const editableIns = this.codeMirrorManager.instance;
-      const previewDom = this.previewDom;
 
       if (!editableIns) return;
 

@@ -17,8 +17,11 @@ export interface EditorToolbarButtonState {
   dropdown?: DropdownMenu;
 }
 
+/** 注册后必含 name 的按钮配置 */
+type RegisteredButton = EditorToolbarButtonConfig & { name: string };
+
 export class EditorToolbarManager {
-  private buttons: Record<string, EditorToolbarButtonConfig> = {};
+  private buttons: Record<string, RegisteredButton> = {};
 
   private $el: HTMLElement;
 
@@ -75,7 +78,7 @@ export class EditorToolbarManager {
   }
 
   render(
-    button: EditorToolbarButtonConfig,
+    button: RegisteredButton,
     iconManager: IconManager,
     to?: "left" | "right"
   ) {

@@ -69,9 +69,19 @@ describe("hashBlock", () => {
 });
 
 describe("diffBlocks", () => {
-  it("中段修改只暴露中间区间", () => {
+  it("中段单块替换只暴露该块", () => {
     const prev = ["a", "b", "c", "d"].map(hashBlock);
     const next = ["a", "b2", "c", "d"].map(hashBlock);
+    expect(diffBlocks(prev, next)).toEqual({
+      changedFrom: 1,
+      changedTo: 2,
+      removedTo: 2,
+    });
+  });
+
+  it("中段多块连续替换暴露整个区间", () => {
+    const prev = ["a", "b", "c", "d"].map(hashBlock);
+    const next = ["a", "b2", "c2", "d"].map(hashBlock);
     expect(diffBlocks(prev, next)).toEqual({
       changedFrom: 1,
       changedTo: 3,

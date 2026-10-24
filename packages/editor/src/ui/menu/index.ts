@@ -60,7 +60,7 @@ export class DropdownMenu {
       this.container.classList.add(props.class);
     }
 
-    this.visible false;
+    this.visible = false;
     this.menus = props.menus;
     this.triggerElement = props.triggerElement;
     this.createMenu();
@@ -131,7 +131,7 @@ export class DropdownMenu {
     dropdown.style.top = `${buttonRect.bottom + window.scrollY}px`;
 
     dropdown.style.display = "block";
-    this.visible true;
+    this.visible = true;
   }
 
   hide() {
@@ -140,7 +140,7 @@ export class DropdownMenu {
     if (!dropdown) return;
 
     dropdown.style.display = "none";
-    this.visible false;
+    this.visible = false;
   }
 
   toggle() {

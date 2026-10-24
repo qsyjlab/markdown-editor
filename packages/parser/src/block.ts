@@ -55,6 +55,11 @@ export function splitMarkdownBlocks(text: string): string[] {
     if (fenceMatch) {
       const marker = fenceMatch[1];
       if (!fence) {
+        // 围栏开始是块边界：悬挂中的前一块必须先落盘
+        if (pendingBlank) {
+          flush();
+          pendingBlank = false;
+        }
         fence = marker[0].repeat(marker.length);
       } else if (
         marker[0] === fence[0] &&
@@ -63,7 +68,6 @@ export function splitMarkdownBlocks(text: string): string[] {
       ) {
         fence = null;
       }
-      pendingBlank = false;
       current.push(line);
       continue;
     }

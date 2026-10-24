@@ -28,3 +28,4 @@ dist-ssr
 # rollup-plugin-visualizer generate file
 .visualizer.html
 .output
+package-lock.json

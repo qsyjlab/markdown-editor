@@ -45,7 +45,9 @@ export class BlockPatcher {
 
     // 先移除旧区间节点，再插入新节点（anchor 引用的旧后继节点不受影响）
     for (let i = changedFrom; i < removedTo; i++) {
-      for (const node of this.nodeGroups![i]) node.remove();
+      for (const node of this.nodeGroups![i]) {
+        (node as ChildNode).remove();
+      }
     }
 
     for (const group of newGroups) {

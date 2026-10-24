@@ -24,7 +24,7 @@ export const defaultPlugins: EditorPluginFn[] = [
   LazyImagePlugin,
   clearPlugin,
   boldPlugin,
-  strickoutPlugin,
+  strikeoutPlugin,
   linkPlugin,
   codePlugin,
   quotePlugin,

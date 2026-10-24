@@ -32,7 +32,7 @@ export function bindCopyCodeEvent(params?: BindCopyCodeEventParams) {
 
   const timeoutIdMap: WeakMap<HTMLElement, any> = new WeakMap();
 
-  function eventHandler(e: MouseEvent) {
+  function eventHandler(e: Event) {
     const el = e.target as HTMLElement;
     if (el.matches('div[class*="language-"] > button.md-copy-btn')) {
       const parent = el.parentElement;
@@ -77,10 +77,11 @@ export function bindCopyCodeEvent(params?: BindCopyCodeEventParams) {
     }
   }
 
-  $el.addEventListener("click", eventHandler);
+  const clickHandler: EventListener = eventHandler;
+  $el.addEventListener("click", clickHandler);
 
   return () => {
-    $el.removeEventListener("click", eventHandler);
+    $el.removeEventListener("click", clickHandler);
   };
 }
 
