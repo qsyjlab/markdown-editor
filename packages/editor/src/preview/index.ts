@@ -1,14 +1,18 @@
 import {
   createMarkdownParser,
-  bindCodeGroupsEvent,
-  bindCopyCodeEvent,
-  bindLazyLoadImageEvent,
+  BlockPatcher,
+  MarkdownParser,
+  bindPreviewEvents,
+  PreviewEventsBinding,
+  StreamingRenderer,
   MarkdownParserProps,
+  ParsedBlock,
+  hydrateMermaid,
 } from "@md-doc-editor/parser";
 
 import preview from "../ui/preview-image";
 
-export interface MarkdownEditorPreviewOpitons {
+export interface MarkdownEditorPreviewOptions {
   parserOptions?: MarkdownParserProps;
 
   onPreview?(src: string, event: MouseEvent): void;
@@ -17,21 +21,37 @@ export interface MarkdownEditorPreviewOpitons {
 export class MarkdownEditorPreview {
   public $el?: HTMLElement;
   public contentEl?: HTMLElement;
-  public parser?: Awaited<ReturnType<typeof createMarkdownParser>>;
+  public parser?: MarkdownParser;
 
-  public parserdHtmlText: string;
+  /** 渲染的完整 HTML */
+  public parsedHtmlText = "";
+
+  /** 每次内容实际变化时自增，供滚动同步等做缓存失效 */
+  public contentVersion = 0;
 
   protected _headings: MarkdownHeading[] = [];
 
-  protected _currentAnchor: MarkdownHeading | null = null;
-
   protected _isAniming = false;
 
-  protected options?: MarkdownEditorPreviewOpitons;
+  protected options?: MarkdownEditorPreviewOptions;
 
-  constructor(options?: MarkdownEditorPreviewOpitons) {
-    this.parserdHtmlText = "";
+  private patcher?: BlockPatcher;
+
+  private events?: PreviewEventsBinding;
+
+  private streamSession?: StreamingRenderer;
+
+  private text = "";
+
+  /** 本预览持有的块指纹（diff 基准）。parseIncremental 无状态，由消费方持有 */
+  private prevHashes: string[] = [];
+
+  constructor(options?: MarkdownEditorPreviewOptions) {
     this.options = options;
+  }
+
+  get parsedHtml() {
+    return this.parsedHtmlText;
   }
 
   get isAniming() {
@@ -50,10 +70,12 @@ export class MarkdownEditorPreview {
     return this._currentAnchor;
   }
 
+  protected _currentAnchor: MarkdownHeading | null = null;
+
   async init() {
-    // @ts-ignore
-    import('@md-doc-editor/theme')
-    
+    // @ts-ignore 主题包入口为 CSS，仅作为副作用加载
+    import("@md-doc-editor/theme");
+
     this.parser = await createMarkdownParser(this.options?.parserOptions);
   }
 
@@ -61,25 +83,112 @@ export class MarkdownEditorPreview {
     this.contentEl = document.createElement("div");
     this.contentEl.classList.add("md-editor-preview-body");
 
-    bindPreviewEvent(this.contentEl, this.options);
+    // 事件只在容器创建时绑定一次：委托模式对后续动态插入的节点持续生效
+    this.patcher = new BlockPatcher(this.contentEl);
+    this.events = bindPreviewEvents(this.contentEl, {
+      onImagePreview: (src, e) => {
+        if (this.options?.onPreview) {
+          this.options.onPreview(src, e);
+        } else {
+          preview(e.target as HTMLElement);
+        }
+      },
+    });
 
     this.$el = this.contentEl;
 
     return this.$el;
   }
 
+  /**
+   * 全量设置内容：块级增量解析 + 块级 DOM patch，
+   * 未变化的块节点保持原样（不触发图片重载、不丢失滚动状态）。
+   */
   setContent(text: string) {
-    this.parserdHtmlText = this.parser?.parse(text) || "";
-    this.render();
+    this.text = text;
+    this.streamSession = undefined;
+
+    if (!this.parser || !this.patcher) return;
+
+    const result = this.parser.parseIncremental(text, this.prevHashes);
+    this.prevHashes = result.hashes;
+    this.applyResult(
+      result.blocks,
+      result.changedFrom,
+      result.changedTo,
+      result.removedTo,
+      result.html
+    );
   }
 
-  render() {
-    if (!this.contentEl) return;
-    this.contentEl.innerHTML = this.parserdHtmlText;
+  /**
+   * 流式追加内容（AI 逐 chunk 输出场景）：
+   * 只重渲染"进行中的最后一块"，已完成块 DOM 恒定。
+   */
+  appendStreaming(chunk: string) {
+    if (!this.parser || !this.patcher) return;
 
-    bindPreviewEvent(this.contentEl, this.options);
+    if (!this.streamSession) {
+      this.streamSession = this.parser.createStreamingSession();
+      this.streamSession.setText(this.text);
+    }
 
+    const range = this.streamSession.append(chunk);
+    this.text = this.streamSession.getText();
+    // 流式会话的指纹即本预览的新基准，后续 setContent 的 diff 不会错位
+    this.prevHashes = this.streamSession.getHashes();
+    this.applyResult(
+      this.streamSession.getBlocks(),
+      range.changedFrom,
+      range.changedTo,
+      range.removedTo,
+      this.streamSession.getHtml()
+    );
+  }
+
+  /** 结束流式会话并定稿渲染 */
+  finishStreaming() {
+    if (!this.streamSession) return;
+    this.setContent(this.text);
+  }
+
+  /**
+   * 事件刷新入口（供插件在内容 patch 后调用）：
+   * 目前用于增量观察新出现的懒加载图片块。
+   */
+  refreshEvents() {
+    this.events?.refresh();
+  }
+
+  private applyResult(
+    blocks: ParsedBlock[],
+    changedFrom: number,
+    changedTo: number,
+    removedTo: number,
+    html: string
+  ) {
+    if (!this.patcher) return;
+
+    this.patcher.apply(blocks, changedFrom, changedTo, removedTo);
+    this.parsedHtmlText = html;
+
+    // 纯删除（changedFrom === changedTo < removedTo）也视为内容变化
+    if (changedFrom === changedTo && removedTo === changedFrom) return;
+
+    this.contentVersion++;
     this._headings = this.queryAllHeadings();
+    this.events?.refresh();
+
+    // mermaid 开启时渲染新增图表块（hydrateMermaid 内部只处理 pending 块）
+    if (this.options?.parserOptions?.mermaid && this.contentEl) {
+      // 主题从本预览容器向上找，避免多编辑器时取到页面上其它实例的主题
+      const theme =
+        this.$el?.closest?.("[md-theme]")?.getAttribute("md-theme") ??
+        document.querySelector("[md-theme]")?.getAttribute("md-theme");
+      void hydrateMermaid(this.contentEl, {
+        theme: theme === "dark" ? "dark" : "default",
+      });
+    }
   }
 
   queryAllHeadings(): MarkdownHeading[] {
@@ -95,31 +204,17 @@ export class MarkdownEditorPreview {
     });
   }
 
-  destory() {
-    this.parser?.destory();
+  destroy() {
+    this.events?.destroy();
+    this.events = undefined;
+    this.patcher?.destroy();
+    this.patcher = undefined;
+    this.streamSession = undefined;
+    this.prevHashes = [];
+    this.parser?.destroy();
+    this.parser = undefined;
     this.$el?.remove();
   }
-}
-
-function bindPreviewEvent(
-  container: HTMLElement | Document,
-  options?: MarkdownEditorPreviewOpitons
-) {
-  bindCodeGroupsEvent(container);
-  bindCopyCodeEvent({
-    $el: container,
-  });
-
-  bindLazyLoadImageEvent({
-    $el: container,
-    onClick(src, e) {
-      if (options?.onPreview) {
-        options.onPreview(src, e);
-      } else {
-        preview(e.target as HTMLElement);
-      }
-    },
-  });
 }
 
 export interface MarkdownHeading {

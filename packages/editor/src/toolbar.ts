@@ -2,6 +2,7 @@ import { clientAttrKey } from "./constants/attrs-key";
 import { IconManager } from "./icon-manager";
 import { DropdownMenu } from "./ui";
 import { Tooltip } from "./ui/tooltip";
+import type { EditorToolbarButtonConfig } from "./plugin";
 
 interface EditorToolbarManagerOptions {
   leftToolbar?: string[];
@@ -9,20 +10,24 @@ interface EditorToolbarManagerOptions {
   rightToolbar?: string[];
 }
 
+/** 按钮运行时状态（含内部持有的 tooltip / dropdown 实例） */
+export interface EditorToolbarButtonState {
+  isActive?: boolean;
+  tooltip?: Tooltip;
+  dropdown?: DropdownMenu;
+}
+
+/** 注册后必含 name 的按钮配置 */
+type RegisteredButton = EditorToolbarButtonConfig & { name: string };
+
 export class EditorToolbarManager {
-  private buttons: Record<string, EditorToolbarButtonConfig> = {};
+  private buttons: Record<string, RegisteredButton> = {};
 
   private $el: HTMLElement;
 
   private clientId: string = "";
 
-  private buttonsState: Record<
-    string,
-    EditorToolbarButtonState & {
-      tooltip?: Tooltip;
-      dropdown?: DropdownMenu;
-    }
-  > = {};
+  private buttonsState: Record<string, EditorToolbarButtonState> = {};
 
   private options?: EditorToolbarManagerOptions;
 
@@ -72,8 +77,13 @@ export class EditorToolbarManager {
     return state;
   }
 
+  /** 触发已注册按钮的动作（快捷键复用工具栏行为，如 Mod-K 插入链接） */
+  runAction(name: string) {
+    this.buttons[name]?.onAction?.();
+  }
+
   render(
-    button: EditorToolbarButtonConfig,
+    button: RegisteredButton,
     iconManager: IconManager,
     to?: "left" | "right"
   ) {
@@ -189,7 +199,7 @@ export class EditorToolbarManager {
     }
   }
 
-  register(button: EditorToolbarButtonConfig) {
+  register(button: EditorToolbarButtonConfig & { name: string }) {
     this.buttons[button.name] = button;
   }
 
@@ -232,11 +242,11 @@ export class EditorToolbarManager {
     this.$el.setAttribute(clientAttrKey, this.clientId);
   }
 
-  destory() {
+  destroy() {
     Object.keys(this.buttonsState).forEach((key) => {
       const state = this.buttonsState[key];
       if (state.dropdown) {
-        state.dropdown.destory();
+        state.dropdown.destroy();
         delete state.dropdown;
       }
 
@@ -251,40 +261,10 @@ export class EditorToolbarManager {
   }
 }
 
-export interface EditorToolbarButtonConfig {
-  name: string;
-  label: string;
-
-  activeLabel?: string;
-
-  inActiveLabel?: string;
-
-  icon: string;
-  /**
-   * @default button
-   */
-  type?: "button" | "dropdown";
-
-  dropTrigger?: "mouseover";
-  fetch?: (
-    callback: (menus: EditorToolbarDropdownItemConfig[]) => void
-  ) => void;
-  onAction: () => void;
-
-  defaultState?: EditorToolbarButtonState;
-  
-  position?: 'left' | 'right';
-}
-
 export type EditorToolbarDropdownItemConfig = Pick<
   EditorToolbarButtonConfig,
   "label" | "name" | "onAction"
 >;
-
-export interface EditorToolbarButtonState {
-  isActive?: boolean;
-  [key: string]: any;
-}
 
 function getCurrentLabel(button: EditorToolbarButtonConfig, isActive = false) {
   if (isActive && button.activeLabel) {

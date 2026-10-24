@@ -921,3 +921,28 @@ export default defineConfig({
 ```
 
 请查看[配置参考：站点配置](../reference/site-config#markdown)来获取完整的可配置属性列表。
+
+## 数学公式（KaTeX）
+
+行内公式 $E = mc^2$，块级公式：
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+$$
+
+## Mermaid 图表
+
+```mermaid
+flowchart LR
+  A[Markdown] --> B{parser}
+  B -->|块级增量| C[预览渲染]
+  B -->|流式会话| D[AI 输出]
+  C --> E((无闪烁))
+  D --> E
+```
+
+## 扩展语法
+
+高亮==标记==、下标 H~2~O、上标 E=mc^2^，以及脚注[^1]。
+
+[^1]: 这是一个脚注。

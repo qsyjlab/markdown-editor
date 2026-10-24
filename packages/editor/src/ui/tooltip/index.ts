@@ -124,7 +124,6 @@ export class Tooltip {
   // 初始化事件监听
   init() {
     this.triggerElement.addEventListener("mouseenter", () => {
-      console.log("tirgger");
       this.showTooltip();
     });
 

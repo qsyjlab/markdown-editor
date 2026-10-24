@@ -1,45 +1,91 @@
 <template>
+  <div class="demo-nav">
+    <a href="./?demo=editor">编辑器 Demo</a>
+    <span>|</span>
+    <a href="./?demo=ai">AI 流式渲染 Demo</a>
+    <button class="demo-export" @click="markdownEditor?.downloadHtml('markdown-export')">
+      导出 HTML
+    </button>
+    <span class="demo-tip">Mod-B/I 加粗斜体 · Mod-K 链接 · Mod-F 查找替换 · Mod-S 存草稿</span>
+  </div>
   <div id="container"></div>
-
-  <div id="container2"></div>
 </template>
 <script setup lang="ts">
-// import {
+import { MarkdownEditor, type AIProvider } from "@md-doc-editor/editor";
 
-// } from "@md-doc-editor/parser";
-
-import {
-  MarkdownEditor,
-  createMarkdownParser,
-  bindCodeGroupsEvent,
-  bindCopyCodeEvent,
-  bindLazyLoadImageEvent,
-} from "@md-doc-editor/editor";
-
-import { nextTick, onMounted, ref } from "vue";
+import { onMounted } from "vue";
 import { text } from "./markdown";
-
-const html = ref("");
 
 let markdownEditor: MarkdownEditor | null;
 
 onMounted(() => {
   initMarkdownEditor();
-
-  // initMarkdown();
 });
+
+/**
+ * Mock AI Provider：按词流式输出 canned 内容。
+ * 真实场景替换为 fetch SSE / 任意 LLM SDK，编辑器侧代码不变。
+ */
+const mockProvider: AIProvider = {
+  async *complete({ action, selection, signal }) {
+    const reply =
+      action === "polish"
+        ? polish(selection)
+        : action === "translate"
+          ? translate(selection)
+          : continueWriting(selection);
+
+    for (const word of reply.split(/(?<=\s)/)) {
+      if (signal?.aborted) return;
+      await sleep(60);
+      yield word;
+    }
+  },
+};
+
+const CONTINUATION = `
+
+## AI 续写的内容
+
+这段文字由 Mock Provider 流式生成：编辑器把模型输出按块写入文档，
+已完成块的渲染被缓存冻结，正在生成的最后一块实时重绘。
+
+- 整段 AI 输出合并为\`单个撤销步骤\`（Ctrl+Z 一次撤回）
+- 中途可停止，已生成内容保留
+- 异常自动回滚，文档不会停留在半截状态
+
+\`\`\`ts
+// 选中文本后试试工具栏里的 "AI 助手 → 润色 / 翻译"
+editor.ai.runAction("continue");
+\`\`\`
+`;
+
+function continueWriting(selection: string) {
+  return selection ? `（基于选区续写）${CONTINUATION}` : CONTINUATION;
+}
+
+function polish(selection: string) {
+  return `**${selection.trim()}** ——（Mock 润色：加强了语气并保留原意）`;
+}
+
+function translate(selection: string) {
+  return `（Mock 译文）${selection.trim()}`;
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function initMarkdownEditor() {
   markdownEditor = new MarkdownEditor({
     container: document.getElementById("container") as HTMLElement,
-    height: "93vh",
+    height: "88vh",
+    // 草稿自动保存：刷新页面可恢复上次编辑内容
+    autoSave: true,
     parserOptions: {
-      // languages: [...presetLang, () => import("@shikijs/langs/json")],
-    },
-
-    onChange(mdText, htmlText) {
-      // console.log("mdText", mdText);
-      // console.log("htmlText", htmlText)
+      math: true,
+      mermaid: true,
+      extraMarks: true,
     },
     imagesUploadHandler: (file, success) => {
       const url = rawFileToObjectURL(file);
@@ -52,41 +98,18 @@ function initMarkdownEditor() {
     theme: "dark",
   });
 
-  // const markdownEditor2 = new MarkdownEditor({
-  //   container: document.getElementById("container2") as HTMLElement,
-  //   height: "550px",
-  //   onChange(mdText, htmlText) {
-  //     console.log("mdText", mdText);
-  //     console.log("htmlText", htmlText)
-  //   },
-  //   imagesUploadHandler: (file, success) => {
-  //     const url = rawFileToObjectURL(file);
-  //     success(url);
-  //   },
-  //   setup: () => {
-  //     markdownEditor2?.setContent(text);
-  //   },
-  // });
+  markdownEditor.ai.setProvider(mockProvider);
+
+  // 暴露到 window 便于调试与自动化验证
+  (window as unknown as Record<string, unknown>).markdownEditor = markdownEditor;
+
+  markdownEditor.on("aiStreamEnd", ({ action, aborted }) => {
+    console.log(`[ai] ${action} ${aborted ? "aborted" : "done"}`);
+  });
 }
 
 function rawFileToObjectURL(file: File) {
   return URL.createObjectURL(new Blob([file], { type: file.type }));
-}
-
-async function initMarkdown() {
-  const parser = await createMarkdownParser({
-    enableLineNumber: false,
-  });
-  html.value = parser.parse(text);
-  nextTick(() => {
-    bindCodeGroupsEvent();
-    bindCopyCodeEvent();
-    bindLazyLoadImageEvent({
-      onClick: (src) => {
-        console.log("src", src);
-      },
-    });
-  });
 }
 </script>
 <style scoped>
@@ -94,52 +117,17 @@ async function initMarkdown() {
   padding: 20px;
 }
 
-input[type="checkbox" i] {
+.demo-export {
+  margin-left: auto;
+  padding: 2px 10px;
   cursor: pointer;
-  position: relative;
-  width: 18px;
-  height: 18px;
-  font-size: 20px;
-  -webkit-appearance: none; /* 去掉默认的复选框样式 */
-  -moz-appearance: none;
-  appearance: none;
-  border: 2px solid #ccc; /* 设置边框 */
-  border-radius: 3px; /* 圆角 */
-  background-color: #fff; /* 默认背景 */
-}
-input[type="checkbox"] {
-  cursor: pointer;
-  position: relative;
-  width: 18px;
-  height: 18px;
-  font-size: 20px;
-  -webkit-appearance: none; /* 去掉默认的复选框样式 */
-  -moz-appearance: none;
-  appearance: none;
-  border: 2px solid #ccc; /* 设置边框 */
-  border-radius: 3px; /* 圆角 */
-  background-color: #fff; /* 默认背景 */
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  background: #f6f8fa;
 }
 
-input[type="checkbox"]::after {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 18px;
-  height: 18px;
-  display: inline-block;
-  visibility: visible;
-  padding-left: 0;
-  text-align: center;
-  content: " "; /* 默认内容为空 */
-  border-radius: 3px;
-}
-
-input[type="checkbox"]:checked::after {
-  content: "✓"; /* 选中时显示勾号 */
-  color: #fff;
+.demo-tip {
   font-size: 12px;
-  font-weight: 700;
-  background-color: #ff4014; /* 选中时的背景色 */
+  color: #656d76;
 }
 </style>

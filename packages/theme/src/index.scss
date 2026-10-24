@@ -47,7 +47,7 @@
   transition: color 0.5s;
 }
 
-.externa-link {
+.external-link {
   font-size: 16px;
   font-weight: bold;
   color: var(--md-theme-primary-color);
@@ -89,15 +89,55 @@
   border-radius: 8px 8px 0 0;
 }
 
-// shiki 暗黑模式颜色适配
-[md-theme="dark"] .shiki,
-[md-theme="dark"] .shiki span {
-  color: var(--shiki-dark) !important;
-  background-color: var(--shiki-dark-bg) !important;
+// shiki 亮暗模式：parser 以 defaultColor:false 输出，颜色全部经 CSS 变量提供，
+// 无需 !important 对抗行内样式（STYLE_GUIDE 第 5 节）
+.shiki,
+.shiki span {
+  color: var(--shiki-light);
 }
 
-
 .shiki {
-  color: var(--shiki-light);
-  background-color: var(--md-code-block-bg)!important;
+  background-color: var(--md-code-block-bg);
+}
+
+[md-theme="dark"] .shiki,
+[md-theme="dark"] .shiki span {
+  color: var(--shiki-dark);
+}
+
+// mermaid 图表：居中展示；无运行时（未安装 mermaid）时以源码优雅降级
+.md-mermaid {
+  margin: 16px 0;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+
+  svg {
+    max-width: 100%;
+  }
+}
+
+.md-mermaid .md-mermaid-source {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: var(--md-code-block-bg);
+  overflow-x: auto;
+  text-align: left;
+}
+
+// 扩展语法（extraMarks）：高亮标记与脚注
+mark {
+  padding: 0 2px;
+  border-radius: 3px;
+  background-color: rgba(255, 212, 0, 0.4);
+  color: inherit;
+}
+
+.footnotes {
+  margin-top: 32px;
+  padding-top: 12px;
+  border-top: 1px solid var(--md-code-block-border, #d0d7de);
+  font-size: 14px;
+  color: var(--md-text-color-2, #57606a);
 }

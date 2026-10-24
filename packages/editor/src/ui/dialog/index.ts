@@ -24,13 +24,13 @@ export class Dialog {
 
   $parent: HTMLElement | null = null;
 
-  visbible: boolean;
+  visible: boolean;
 
   config: DialogProps;
 
   constructor(props?: DialogProps) {
     this.config = Object.assign({}, defaultDialogConfig, props);
-    this.visbible = false;
+    this.visible = false;
 
     this.$parent = this.config?.appendTo || document.body;
   }
@@ -123,16 +123,16 @@ export class Dialog {
       this.create();
     }
     if (!this.$el) return;
-    this.visbible = true;
+    this.visible = true;
     this.$el.style.display = "block";
   }
 
   close() {
     if (!this.$el) return;
-    this.visbible = false;
+    this.visible = false;
     this.$el.style.display = "none";
     if (this.config.destroyOnClose) {
-      this.destory();
+      this.destroy();
     }
   }
 
@@ -144,7 +144,7 @@ export class Dialog {
     }`;
   }
 
-  destory() {
+  destroy() {
     if (!this.$el) return;
     this.$parent?.removeChild(this.$el);
     this.$el = null;

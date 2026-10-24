@@ -23,15 +23,12 @@
     "@md-doc-editor/parser": "workspace:^",
     "@md-doc-editor/theme": "workspace:^"
   },
-  "pnpm": {
-    "overrides": {
-      "esbuild": "0.23.1"
-    },
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "es5-ext",
-      "esbuild",
-      "nx"
-    ]
+  "workspaces": [
+    "packages/*",
+    "play",
+    "build"
+  ],
+  "overrides": {
+    "@types/lodash": "4.17.23"
   }
 }

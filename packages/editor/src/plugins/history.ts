@@ -2,7 +2,7 @@ import { MarkdownEditor } from "../editor";
 import { generateSvg } from "../icon";
 import { EditorPlugin } from "../plugin";
 
-export function hisotryPlugin(editor: MarkdownEditor): EditorPlugin {
+export function historyPlugin(editor: MarkdownEditor): EditorPlugin {
   const name = "history";
 
   const undoName = "undo";

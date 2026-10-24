@@ -1,18 +1,12 @@
-import { bindLazyLoadImageEvent } from "@md-doc-editor/parser";
 import { MarkdownEditor } from "../editor";
-import preview from "../ui/preview-image";
 
 export function LazyImagePlugin(editor: MarkdownEditor) {
   return {
-    name:'lazy-image',
+    name: "lazy-image",
     update: () => {
-      if (!editor.previewManager?.$el) return;
-      bindLazyLoadImageEvent({
-        $el: editor.previewManager.$el,
-        onClick(src, e) {
-          preview(e.target as HTMLElement)
-        },
-      });
+      // 懒加载观察由预览容器统一维护（bindPreviewEvents），这里只做增量刷新，
+      // 修复 v1 每次更新重复创建 IntersectionObserver 的泄漏
+      editor.previewManager?.refreshEvents();
     },
   };
 }

@@ -1,24 +1,25 @@
 {
-    "name": "@md-doc-editor/play",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "dev": "node -v && vite dev",
-        "build": "vite build",
-        "preview": "vite preview",
-        "dev:node18": "nvm use 18.15.0 && pnpm run dev"
-    },
-    "keywords": [],
-    "author": "",
-    "devDependencies": {
-        "@vitejs/plugin-vue": "5",
-        "rollup-plugin-visualizer": "^5.14.0",
-        "typescript": "^5.7.2",
-        "vite": "^5.4.11"
-    },
-    "dependencies": {
-        "@shikijs/langs": "^2.1.0",
-        "vue": "^3.5.13"
-    }
+  "name": "@md-doc-editor/play",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node -v && vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "dev:node18": "nvm use 18.15.0 && pnpm run dev"
+  },
+  "keywords": [],
+  "author": "",
+  "devDependencies": {
+    "@vitejs/plugin-vue": "5",
+    "rollup-plugin-visualizer": "^5.14.0",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11"
+  },
+  "dependencies": {
+    "@shikijs/langs": "^2.1.0",
+    "vue": "^3.5.13",
+    "mermaid": "^11.4.0"
+  }
 }

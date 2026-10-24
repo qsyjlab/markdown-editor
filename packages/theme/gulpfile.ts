@@ -17,8 +17,8 @@ export function buildThemeChalk() {
 }
 
 export function watch() {
-  Logger.info("Parser Dev watching...");
-  gulpWatch("src/**/*.ts", buildThemeChalk);
+  Logger.info("Theme Dev watching...");
+  gulpWatch("src/**/*.scss", buildThemeChalk);
 }
 
 export default series(buildThemeChalk);

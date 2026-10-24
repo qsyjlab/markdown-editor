@@ -1,4 +1,4 @@
-import { MarkdownEditor } from "./editor";
+import type { MarkdownEditor } from "./editor";
 
 export function createEditorPluginManager(
   editor: MarkdownEditor
@@ -25,7 +25,6 @@ export function createEditorPluginManager(
         const pluginResult = plugin(editor)
         this.add(pluginResult.name, pluginResult)
         pluginResult.init?.()
-    
       });
     }
   };
@@ -35,36 +34,37 @@ export function createEditorPluginManager(
 export interface EditorPluginManager {
   update: () => void;
 
-  destroy: ()=> void
+  destroy: () => void
 
   plugins: Record<string, EditorPlugin>;
 
   add: (name: string, api: EditorPlugin) => void;
 
   registerPlugins: (plugins: EditorPluginFn[]) => void;
-
-
-
 }
-export interface EditorPlugin extends Record<string, any> {
 
-  name:string
+export interface EditorToolbarButtonConfig {
+  /** 工具栏按钮标识（注册时可省略，默认取插件 name） */
+  name?: string;
+  icon: string;
+  label: string;
+  activeLabel?: string;
+  inActiveLabel?: string;
+  type?: "button" | "dropdown";
+  dropTrigger?: "mouseover";
+  fetch?: (
+    callback: (menus: { label: string; name: string; onAction: () => void }[]) => void
+  ) => void;
+  onAction?: () => void;
+  defaultState?: { isActive?: boolean };
+  position?: 'left' | 'right';
+}
+
+export interface EditorPlugin {
+  name: string;
   init?: () => void;
 
-  toolbar?: {
-    icon: string;
-    label: string;
-    activeLabel?: string;
-    inActiveLabel?: string;
-    type?: "button" | "dropdown";
-    dropTrigger?: "mouseover";
-    fetch?: (
-      callback: (menus: { label: string; name: string; onAction: () => void }[]) => void
-    ) => void;
-    onAction?: () => void;
-    defaultState?: Record<string, any>;
-    position?: 'left' | 'right';
-  }
+  toolbar?: EditorToolbarButtonConfig;
 
   onClick?: () => void;
   update?: () => void;
@@ -73,4 +73,4 @@ export interface EditorPlugin extends Record<string, any> {
 }
 
 
-export type EditorPluginFn=  (editor: MarkdownEditor) => EditorPlugin
+export type EditorPluginFn = (editor: MarkdownEditor) => EditorPlugin

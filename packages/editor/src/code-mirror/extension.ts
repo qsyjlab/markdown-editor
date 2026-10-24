@@ -15,7 +15,7 @@ import {
   bracketMatching,
 } from "@codemirror/language";
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
-import { highlightSelectionMatches } from "@codemirror/search";
+import { search, searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 import {
   closeBrackets,
   autocompletion,
@@ -41,9 +41,11 @@ export const basicSetup = (() => [
   autocompletion(),
   highlightActiveLine(),
   highlightSelectionMatches(),
+  search(),
   keymap.of([
     ...defaultKeymap,
     ...historyKeymap,
+    ...searchKeymap,
     ...completionKeymap,
     ...lintKeymap,
   ]),
