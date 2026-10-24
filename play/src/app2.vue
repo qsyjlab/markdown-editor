@@ -7,7 +7,7 @@
   <div id="container"></div>
 </template>
 <script setup lang="ts">
-import { MarkdownEditor } from "@md-doc-editor/editor";
+import { MarkdownEditor, type AIProvider } from "@md-doc-editor/editor";
 
 import { onMounted } from "vue";
 import { text } from "./markdown";
@@ -17,6 +17,60 @@ let markdownEditor: MarkdownEditor | null;
 onMounted(() => {
   initMarkdownEditor();
 });
+
+/**
+ * Mock AI Provider：按词流式输出 canned 内容。
+ * 真实场景替换为 fetch SSE / 任意 LLM SDK，编辑器侧代码不变。
+ */
+const mockProvider: AIProvider = {
+  async *complete({ action, selection, signal }) {
+    const reply =
+      action === "polish"
+        ? polish(selection)
+        : action === "translate"
+          ? translate(selection)
+          : continueWriting(selection);
+
+    for (const word of reply.split(/(?<=\s)/)) {
+      if (signal?.aborted) return;
+      await sleep(60);
+      yield word;
+    }
+  },
+};
+
+const CONTINUATION = `
+
+## AI 续写的内容
+
+这段文字由 Mock Provider 流式生成：编辑器把模型输出按块写入文档，
+已完成块的渲染被缓存冻结，正在生成的最后一块实时重绘。
+
+- 整段 AI 输出合并为\`单个撤销步骤\`（Ctrl+Z 一次撤回）
+- 中途可停止，已生成内容保留
+- 异常自动回滚，文档不会停留在半截状态
+
+\`\`\`ts
+// 选中文本后试试工具栏里的 "AI 助手 → 润色 / 翻译"
+editor.ai.runAction("continue");
+\`\`\`
+`;
+
+function continueWriting(selection: string) {
+  return selection ? `（基于选区续写）${CONTINUATION}` : CONTINUATION;
+}
+
+function polish(selection: string) {
+  return `**${selection.trim()}** ——（Mock 润色：加强了语气并保留原意）`;
+}
+
+function translate(selection: string) {
+  return `（Mock 译文）${selection.trim()}`;
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function initMarkdownEditor() {
   markdownEditor = new MarkdownEditor({
@@ -31,6 +85,12 @@ function initMarkdownEditor() {
       markdownEditor?.setContent(text);
     },
     theme: "dark",
+  });
+
+  markdownEditor.ai.setProvider(mockProvider);
+
+  markdownEditor.on("aiStreamEnd", ({ action, aborted }) => {
+    console.log(`[ai] ${action} ${aborted ? "aborted" : "done"}`);
   });
 }
 
