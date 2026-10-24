@@ -115,12 +115,33 @@ editor.ai.registerAction({
 - 支持运行时注册第三方主题包（`editor.registerTheme("nord", tokens)`）；
 - 内容排版主题与编辑器 chrome 主题解耦（主题包可只覆盖其一）。
 
-## 4. 里程碑建议
+## 4. 里程碑（状态盘点：refactor/v2-breaking，23 commits）
 
-| 里程碑 | 内容 | 依赖 |
+| 里程碑 | 内容 | 状态 |
 |---|---|---|
-| **M1（本分支）** | 性能重构 + 流式底座 + 事件/拼写/主题修复 | — |
-| **M2** | AIProvider 抽象 + 选区 AI 动作 + 测试/CI 基建 | M1 |
-| **M3** | Mermaid/KaTeX/导出 HTML + 草稿自动保存 + 插件生态规范化 | M1 |
-| **M4** | 行内 diff 接受/拒绝 + 命令面板 | M2 |
-| **M5** | 协作（Yjs）+ 第三方主题包 | M2/M3 |
+| **M1 性能重构** | 块级增量解析 / 流式渲染会话 / BlockPatcher / 事件与监听器修复 / 去 !important 主题 | ✅ 已交付 |
+| **M1.5 Breaking 清理** | 拼写 API 移除、类型收紧、EventBus、单测基建（vitest 28 用例） | ✅ 已交付 |
+| **M2 AI 写作层** | AIProvider 抽象、动作系统、流式写入（单撤销步骤）、选区浮动菜单、Mock 演示 | ✅ 已交付 |
+| **M3 渲染能力** | KaTeX / Mermaid（优雅降级）/ 导出 HTML / extraMarks 扩展语法 | ✅ 已交付 |
+| **M3.5 编辑体验** | toggleWrap 格式化、快捷键、查找替换、草稿自动保存、CI | ✅ 已交付 |
+| **架构审查** | diff 状态所有权 / 容器感知切分 / abort 语义 / 主题作用域 四项修正 | ✅ 已交付 |
+| **M-合流发版** | 合并 refactor 分支 → master，版本 v2.0.0（breaking 升 major），lerna publish | ⏳ 待用户确认发版时机 |
+| **M4 AI 深度** | 行内 diff 建议（逐块接受/拒绝）、AI 命令面板（Cmd+K）、行内生成中占位块 | 🔜 下一阶段 |
+| **M5 生态与协作** | Yjs 协作、主题 token 分层与运行时注册、`@md-doc-editor/ui` 独立包、defineParserPlugin 规范 | 🔮 远期 |
+
+### 4.1 技术债清单（随迭代消化）
+
+| 项 | 说明 | 优先级 |
+|---|---|---|
+| editor.scss 硬编码色值 | `.md-editor-toc-item:hover`、状态栏、AI 菜单的亮色值未走 CSS 变量，暗色下对比度差 | P1（M4 前顺手修） |
+| 冒烟验证收尾 | AI 流式页（?demo=ai）、选区菜单真实点击、主题切换、草稿恢复、查找面板、导出下载尚未在浏览器实测 | P1 |
+| noImplicitAny 全开 | tsconfig 逐步收紧（gen-types 当前宽松） | P2 |
+| Shiki 语言按需加载 | API 已具备，补文档与按需 bundling 示例 | P2 |
+| dts API 面快照 | 发布前对比 d.ts，防拼写再次入库 | P3 |
+| 导出 PDF/图片 | 基于导出 HTML + print 样式 | P3 |
+
+### 4.2 当前会话环境备注
+
+- dev server：`npx vite dev` 运行于 http://localhost:5177（后台进程），验证完可停
+- 本机 pnpm 9/11 安装死锁（代理+AV+句柄泄漏），本机用 npm+npmmirror 直装；CI（Linux）走 pnpm 正常
+- `package.json` 的 `workspaces`/`overrides` 字段是 npm 兼容层，pnpm 不受影响
