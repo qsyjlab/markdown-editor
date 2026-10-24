@@ -6,6 +6,7 @@
     <button class="demo-export" @click="markdownEditor?.downloadHtml('markdown-export')">
       导出 HTML
     </button>
+    <span class="demo-tip">Mod-B/I 加粗斜体 · Mod-K 链接 · Mod-F 查找替换 · Mod-S 存草稿</span>
   </div>
   <div id="container"></div>
 </template>
@@ -79,6 +80,8 @@ function initMarkdownEditor() {
   markdownEditor = new MarkdownEditor({
     container: document.getElementById("container") as HTMLElement,
     height: "88vh",
+    // 草稿自动保存：刷新页面可恢复上次编辑内容
+    autoSave: true,
     parserOptions: {
       math: true,
       mermaid: true,
@@ -117,5 +120,10 @@ function rawFileToObjectURL(file: File) {
   border: 1px solid #d0d7de;
   border-radius: 6px;
   background: #f6f8fa;
+}
+
+.demo-tip {
+  font-size: 12px;
+  color: #656d76;
 }
 </style>

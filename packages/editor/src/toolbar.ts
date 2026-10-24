@@ -77,6 +77,11 @@ export class EditorToolbarManager {
     return state;
   }
 
+  /** 触发已注册按钮的动作（快捷键复用工具栏行为，如 Mod-K 插入链接） */
+  runAction(name: string) {
+    this.buttons[name]?.onAction?.();
+  }
+
   render(
     button: RegisteredButton,
     iconManager: IconManager,

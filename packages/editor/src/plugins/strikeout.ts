@@ -1,8 +1,7 @@
-
-
-
 import { MarkdownEditor } from "../editor";
 import { EditorPlugin } from "../plugin";
+import { toggleWrap } from "../utils/format";
+
 
 
 export function strikeoutPlugin(editor: MarkdownEditor): EditorPlugin {
@@ -18,21 +17,7 @@ export function strikeoutPlugin(editor: MarkdownEditor): EditorPlugin {
     name,
     icon: name,
     label: "删除线",
-    onAction: () => {
-      editor.insert((params)=> {
-
-        const { selectedText, start, end } = params
-
-        const prefix = "~~";
-        const suffix = "~~";
-        return {
-          formattedText: prefix + selectedText + suffix,
-          start: start + prefix.length,
-          end: end + prefix.length
-        }
-      
-      })
-    },
+    onAction: () => toggleWrap(editor, "~~"),
   });
 
   return {

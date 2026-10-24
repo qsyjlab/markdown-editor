@@ -1,5 +1,6 @@
 import {
   boldPlugin,
+  italicPlugin,
   clearPlugin,
   codePlugin,
   contentPlugin,
@@ -25,6 +26,7 @@ export const defaultPlugins: EditorPluginFn[] = [
   LazyImagePlugin,
   clearPlugin,
   boldPlugin,
+  italicPlugin,
   strikeoutPlugin,
   linkPlugin,
   codePlugin,

@@ -37,11 +37,11 @@
 ### 2.1 编辑体验
 | 功能 | 说明 | 优先级 |
 |---|---|---|
-| 🆕 字数/字符统计 | onChange 元数据附带，工具栏可选展示 | P1 |
-| 🆕 粘贴/拖拽图片增强 | 粘贴板图片、拖拽文件统一走 `imagesUploadHandler`，带占位符与失败回滚 | P1 |
-| 🆕 查找替换 | CodeMirror search 面板集成进编辑器 chrome | P2 |
-| 🆕 快捷键中心 | Cmd/Ctrl+B/I/K 等标准键位 + 自定义注册 | P2 |
-| 🆕 自动保存草稿 | 可选 adapter：localStorage / IndexedDB，崩溃恢复 | P2 |
+| ✅ 字数/字符统计（已交付） | `getStats()` + 工具栏状态栏（随 change 刷新） | P1 |
+| ✅ 粘贴/拖拽图片（已交付） | 粘贴板图片、拖拽文件统一走 `imagesUploadHandler` | P1 |
+| ✅ 查找替换（已交付） | CodeMirror search 面板（Mod-F / `editor.openSearch()`） | P2 |
+| ✅ 快捷键中心（已交付） | Mod-B/I/Shift-X 格式化切换（可解包）、Mod-K 链接、Mod-S 存草稿；`options.hotkeys` 注入自定义 | P2 |
+| ✅ 自动保存草稿（已交付） | `options.autoSave`：localStorage 防抖保存 + 初始化恢复 + `clearDraft()` | P2 |
 
 ### 2.2 渲染能力
 | 功能 | 说明 | 优先级 |

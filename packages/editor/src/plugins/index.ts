@@ -1,6 +1,7 @@
 export * from './lazy-image'
 export * from './clear'
 export * from './bold'
+export * from './italic'
 export * from './strikeout'
 export * from  './link'
 export * from './code'

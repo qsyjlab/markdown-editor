@@ -27,6 +27,8 @@ export type {
 } from "./ai/provider";
 import { getOffsetTop, getScroll, scrollTo, useId } from "./utils";
 import { exportHtml, downloadHtml, type ExportHtmlOptions } from "./utils/export-html";
+import { toggleWrap } from "./utils/format";
+import { DraftSaver, type DraftSaverOptions } from "./draft-saver";
 
 import "./style/editor.scss";
 
@@ -64,6 +66,12 @@ export interface EditorOptions {
    * @default true
    */
   aiSelectionMenu?: boolean;
+
+  /**
+   * 草稿自动保存（localStorage，防抖）。崩溃/误关后初始化时自动恢复；
+   * setup() 中的显式 setContent 会覆盖恢复的草稿。
+   */
+  autoSave?: boolean | DraftSaverOptions;
 
   onFocus?: () => void;
 
@@ -132,6 +140,8 @@ export class MarkdownEditor {
 
   private statusBarEl: HTMLElement | null = null;
 
+  private draftSaver: DraftSaver | null = null;
+
   constructor(public options: EditorOptions) {
     this.clientId = useId().toString();
 
@@ -161,6 +171,24 @@ export class MarkdownEditor {
         this.options.onFocus?.();
         this.eventBus.emit("focus", undefined);
       },
+      hotkeys: [
+        { key: "Mod-b", run: () => (toggleWrap(this, "**"), true) },
+        { key: "Mod-i", run: () => (toggleWrap(this, "*"), true) },
+        { key: "Mod-Shift-x", run: () => (toggleWrap(this, "~~"), true) },
+        {
+          key: "Mod-k",
+          run: () => (this.toolbarManager.runAction("link"), true),
+        },
+        {
+          key: "Mod-s",
+          preventDefault: true,
+          run: () => {
+            if (!this.draftSaver) return false;
+            this.draftSaver.saveNow();
+            return true;
+          },
+        },
+      ],
     });
 
     this.sidebarManager = new SidebarManager({
@@ -190,6 +218,13 @@ export class MarkdownEditor {
     this.eventBus.on("change", () => this.refreshStatusBar());
 
     this.ai = new EditorAIManager(this);
+
+    if (this.options.autoSave) {
+      this.draftSaver = new DraftSaver(
+        this,
+        typeof this.options.autoSave === "object" ? this.options.autoSave : {}
+      );
+    }
 
     this.createEditor();
   }
@@ -269,6 +304,26 @@ export class MarkdownEditor {
   /** 导出并触发浏览器下载 */
   downloadHtml(filename = "markdown-export") {
     downloadHtml(filename, this.exportHtml());
+  }
+
+  /** 立即保存草稿（开启 autoSave 时可用，快捷键 Mod-S） */
+  saveDraft() {
+    this.draftSaver?.saveNow();
+  }
+
+  /** 清除草稿 */
+  clearDraft() {
+    this.draftSaver?.clear();
+  }
+
+  /** 打开查找替换面板（快捷键 Mod-F） */
+  openSearch() {
+    this.editorManager.openSearch();
+  }
+
+  /** 关闭查找替换面板 */
+  closeSearch() {
+    this.editorManager.closeSearch();
   }
 
   focus() {
@@ -398,6 +453,13 @@ export class MarkdownEditor {
     } else {
       this.closeSync();
     }
+
+    // 草稿恢复先于 setup()：宿主显式 setContent 的内容优先于草稿
+    if (this.draftSaver) {
+      this.draftSaver.restore();
+      this.draftSaver.start();
+    }
+
     createdEditorAfter(this);
   }
 
@@ -479,6 +541,8 @@ export class MarkdownEditor {
     this.updatePipeline.cancel();
     this.aiSelectionMenu?.destroy();
     this.aiSelectionMenu = null;
+    this.draftSaver?.destroy();
+    this.draftSaver = null;
     this.closeSync();
     this.scrollManager?.destroy();
     this.pluginManager.destroy();
@@ -575,6 +639,7 @@ function mergedDefaultOptions(options: EditorOptions) {
         "clear",
         "header",
         "bold",
+        "italic",
         "strikeout",
         "quote",
         "link",

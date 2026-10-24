@@ -224,6 +224,13 @@ AIProvider（任意 LLM）  ──注入──▶ EditorAIManager（editor.ai）
 - **历史友好**：整段流式输出合并为单个撤销步骤；abort 保留已生成内容（半成品可见），异常自动回滚。
 - **选区浮动菜单**（`options.aiSelectionMenu`，默认开）：选中文本浮现 AI 动作条，floating-ui 定位自动翻转避让；动作列表实时取自注册表，无 provider 时不出现。
 
+### 6.8 编辑体验（已交付）
+
+- **格式化切换**：`toggleWrap(editor, prefix)` 识别三种形态（两侧包裹符/选区自带包裹符/未包裹）智能包/解包；bold/italic/strikeout 工具栏与快捷键共用。
+- **快捷键**：Mod-B / Mod-I / Mod-Shift-X（格式化）、Mod-K（链接）、Mod-S（存草稿，仅开启 autoSave 时拦截）、Mod-F（查找替换，CodeMirror searchKeymap）。
+- **查找替换**：`search()` 扩展 + 面板；`editor.openSearch()/closeSearch()`。
+- **草稿自动保存**（`options.autoSave: boolean | { key?, delay? }`）：DraftSaver 监听 change 防抖写 localStorage（默认按 `location.pathname` 分键），初始化时恢复、`saveDraft()/clearDraft()` 手动控制；宿主 `setup()` 显式 setContent 优先于草稿。
+
 ## 7. 主题设计（theme）
 
 - Shiki 双主题改为 `defaultColor: false`：行内只剩 `--shiki-light / --shiki-dark` 变量，暗色切换纯 CSS 变量选择，**移除全部 `!important`**（符合 STYLE_GUIDE 第 5 节）；

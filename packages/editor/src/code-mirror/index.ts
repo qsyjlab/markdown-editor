@@ -5,17 +5,22 @@ import {
   Transaction,
   TransactionSpec,
 } from "@codemirror/state";
+import { keymap, type KeyBinding } from "@codemirror/view";
 import { markdown } from "@codemirror/lang-markdown";
 import { InsertCallback } from "./interface";
 import { basicSetup } from "./extension";
 import { placeholder } from "@codemirror/view";
 import { undo, redo } from "@codemirror/commands";
+import { closeSearchPanel, openSearchPanel } from "@codemirror/search";
 
 interface CodemirrorManagerOptions {
   update?: (content: string) => void;
 
   onFocus?: () => void;
   onBlur?: () => void;
+
+  /** 编辑器级快捷键（格式化/AI/保存等），注册优先级高于内置 keymap */
+  hotkeys?: KeyBinding[];
 }
 
 export interface StreamEditHandle {
@@ -77,6 +82,7 @@ export class CodemirrorManager {
         basicSetup,
         markdown(),
         EditorView.lineWrapping,
+        keymap.of(this.options.hotkeys ?? []),
         EditorView.updateListener.of((v) => {
           if (v.focusChanged) {
             if (v.view.hasFocus) {
@@ -115,6 +121,16 @@ export class CodemirrorManager {
         head: Math.min(selection.head, val.length),
       },
     });
+  }
+
+  /** 打开查找替换面板（等价 Mod-F） */
+  openSearch() {
+    if (this.instance) openSearchPanel(this.instance);
+  }
+
+  /** 关闭查找替换面板 */
+  closeSearch() {
+    if (this.instance) closeSearchPanel(this.instance);
   }
 
   undo() {
