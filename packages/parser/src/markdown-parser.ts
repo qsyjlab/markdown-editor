@@ -2,7 +2,7 @@ import MarkdownIt from "markdown-it";
 import attrsPlugin from "markdown-it-attrs";
 
 import { createHighlighter, HighlighterProps } from "./highlight";
-import { BlockStore, IncrementalResult, hashBlock, splitMarkdownBlocks } from "./block";
+import { BlockStore, IncrementalResult, diffBlocks, hashBlock, splitMarkdownBlocks } from "./block";
 import { StreamingRenderer } from "./streaming";
 import {
   preWrapperPlugin,
@@ -145,7 +145,8 @@ export async function createMarkdownParser(
     dispose();
   };
 
-  function parseIncremental(text: string): IncrementalResult {    const sources = splitMarkdownBlocks(text);
+  function parseIncremental(text: string): IncrementalResult {
+    const sources = splitMarkdownBlocks(text);
     const hashes = sources.map(hashBlock);
     const blocks = sources.map((source, index) => ({
       index,
@@ -153,31 +154,16 @@ export async function createMarkdownParser(
       html: store.renderBlock(source),
     }));
 
-    const result: IncrementalResult = {
-      html: blocks.map((b) => b.html).join("\n"),
-      blocks,
-      changedFrom: 0,
-      changedTo: blocks.length,
-    };
-
-    // 头尾对齐计算变化区间（首次调用视为全变）
-    const maxPrefix = Math.min(prevHashes.length, hashes.length);
-    let prefix = 0;
-    while (prefix < maxPrefix && prevHashes[prefix] === hashes[prefix]) prefix++;
-    const maxSuffix = Math.min(prevHashes.length - prefix, hashes.length - prefix);
-    let suffix = 0;
-    while (
-      suffix < maxSuffix &&
-      prevHashes[prevHashes.length - 1 - suffix] ===
-        hashes[hashes.length - 1 - suffix]
-    ) {
-      suffix++;
-    }
-    result.changedFrom = prefix;
-    result.changedTo = hashes.length - suffix;
+    const { changedFrom, changedTo, removedTo } = diffBlocks(prevHashes, hashes);
 
     prevHashes = hashes;
-    return result;
+    return {
+      html: blocks.map((b) => b.html).join("\n"),
+      blocks,
+      changedFrom,
+      changedTo,
+      removedTo,
+    };
   }
 
   return {

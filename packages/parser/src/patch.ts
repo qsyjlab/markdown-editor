@@ -5,6 +5,12 @@ const BLOCK_ATTR = "data-md-block";
 /**
  * 块级 DOM patch：按块替换变化的顶层节点区间，未变化块节点恒定。
  * 这是 AI 流式渲染"无闪烁"的关键 —— 已完成内容的 DOM 不被重建。
+ *
+ * 区间语义（与 diffBlocks 对齐）：
+ * - 旧区间 [changedFrom, removedTo) 的节点被移除
+ * - 新块 [changedFrom, changedTo) 渲染后插入同一位置
+ * - 纯插入：removedTo === changedFrom < changedTo
+ * - 纯删除：changedTo === changedFrom < removedTo
  */
 export class BlockPatcher {
   /** 与 container 当前 DOM 对齐的块 → 顶层节点列表 */
@@ -14,53 +20,53 @@ export class BlockPatcher {
 
   constructor(private container: HTMLElement) {}
 
-  /**
-   * 应用一次块渲染结果。
-   * @param blocks 本次渲染的全部块
-   * @param changedFrom 变化起始块索引（含）
-   * @param changedTo 变化结束块索引（不含）；[changedFrom, changedTo) 之外的块视为未变化
-   */
-  apply(blocks: ParsedBlock[], changedFrom: number, changedTo: number) {
+  apply(blocks: ParsedBlock[], changedFrom: number, changedTo: number, removedTo: number) {
     const sane =
       this.nodeGroups !== null &&
       changedFrom >= 0 &&
       changedTo >= changedFrom &&
-      changedFrom <= this.nodeGroups.length &&
-      changedTo <= blocks.length;
+      removedTo >= changedFrom &&
+      changedTo <= blocks.length &&
+      removedTo <= this.nodeGroups.length;
 
     if (!sane) {
       this.rebuildAll(blocks);
       return;
     }
 
-    if (changedFrom === changedTo) return;
+    if (changedFrom === changedTo && removedTo === changedFrom) return;
 
-    const anchor = this.nodeGroups![changedTo]?.[0] ?? null;
+    const anchor = this.nodeGroups![removedTo]?.[0] ?? null;
     const newGroups: Node[][] = [];
 
     for (let i = changedFrom; i < changedTo; i++) {
       newGroups.push(this.mount(blocks[i].html, i));
     }
 
-    // 移除旧区间节点
-    for (let i = changedFrom; i < changedTo; i++) {
+    // 先移除旧区间节点，再插入新节点（anchor 引用的旧后继节点不受影响）
+    for (let i = changedFrom; i < removedTo; i++) {
       for (const node of this.nodeGroups![i]) node.remove();
     }
 
-    // 挂载新节点（移除后插入，anchor 仍有效）
     for (const group of newGroups) {
       for (const node of group) {
         this.container.insertBefore(node, anchor);
       }
     }
 
-    this.nodeGroups!.splice(changedFrom, changedTo - changedFrom, ...newGroups);
+    this.nodeGroups!.splice(
+      changedFrom,
+      removedTo - changedFrom,
+      ...newGroups
+    );
 
-    // 块数量变化时，尾部对齐区节点的块索引标记需要修正
-    for (let i = changedTo; i < this.nodeGroups!.length; i++) {
-      for (const node of this.nodeGroups![i]) {
-        if (node.nodeType === 1) {
-          (node as Element).setAttribute(BLOCK_ATTR, String(i));
+    // 区间长度变化时，后继块的索引标记需要修正
+    if (changedTo - changedFrom !== removedTo - changedFrom) {
+      for (let i = changedTo; i < this.nodeGroups!.length; i++) {
+        for (const node of this.nodeGroups![i]) {
+          if (node.nodeType === 1) {
+            (node as Element).setAttribute(BLOCK_ATTR, String(i));
+          }
         }
       }
     }

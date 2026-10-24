@@ -107,7 +107,13 @@ export class MarkdownEditorPreview {
     if (!this.parser || !this.patcher) return;
 
     const result = this.parser.parseIncremental(text);
-    this.applyResult(result.blocks, result.changedFrom, result.changedTo, result.html);
+    this.applyResult(
+      result.blocks,
+      result.changedFrom,
+      result.changedTo,
+      result.removedTo,
+      result.html
+    );
   }
 
   /**
@@ -128,6 +134,7 @@ export class MarkdownEditorPreview {
       this.streamSession.getBlocks(),
       range.changedFrom,
       range.changedTo,
+      range.removedTo,
       this.streamSession.getHtml()
     );
   }
@@ -150,14 +157,16 @@ export class MarkdownEditorPreview {
     blocks: ParsedBlock[],
     changedFrom: number,
     changedTo: number,
+    removedTo: number,
     html: string
   ) {
     if (!this.patcher) return;
 
-    this.patcher.apply(blocks, changedFrom, changedTo);
+    this.patcher.apply(blocks, changedFrom, changedTo, removedTo);
     this.parsedHtmlText = html;
 
-    if (changedFrom === changedTo) return;
+    // 纯删除（changedFrom === changedTo < removedTo）也视为内容变化
+    if (changedFrom === changedTo && removedTo === changedFrom) return;
 
     this.contentVersion++;
     this._headings = this.queryAllHeadings();

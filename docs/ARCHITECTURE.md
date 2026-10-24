@@ -118,7 +118,9 @@ AI 流式输出
 interface IncrementalResult {
   html: string;                 // 拼接后的完整 HTML（兼容旧消费方）
   blocks: ParsedBlock[];        // [{ index, hash, html }]
-  changedFrom: number;          // 与上次相比，从第几个块起变化
+  changedFrom: number;          // 变化起始块索引
+  changedTo: number;            // 新块插入区间终点（ exclusive）
+  removedTo: number;            // 旧块移除区间终点（纯删除时 > changedTo）
 }
 ```
 

@@ -23,9 +23,13 @@ export interface IncrementalResult {
   /** 拼接后的完整 HTML（兼容整体渲染的消费方） */
   html: string;
   blocks: ParsedBlock[];
-  /** 与上一次相比，从该块索引起内容发生变化（含新增），[changedFrom, changedTo) */
+  /** 新块空间：替换区间 [changedFrom, changedTo)，渲染并插入这些块 */
   changedFrom: number;
   changedTo: number;
+  /** 旧块空间：被替换的旧区间 [changedFrom, removedTo)。
+   *  纯删除尾部块时 changedFrom === changedTo 但 removedTo > changedFrom，
+   *  必须据此移除旧 DOM，否则残留已删除内容 */
+  removedTo: number;
 }
 
 /**
@@ -146,13 +150,15 @@ export class BlockStore {
 }
 
 /**
- * 对齐两次块列表：头尾双向比对哈希，返回变化区间。
+ * 对齐两次块列表：头尾双向比对哈希，返回替换区间。
+ * - 新块空间：[changedFrom, changedTo) 为需要渲染插入的块
+ * - 旧块空间：[changedFrom, removedTo) 为需要从 DOM 移除的旧块
  * 在文档中段编辑时，未受影响的块零成本。
  */
 export function diffBlocks(
   prevHashes: string[],
   nextHashes: string[]
-): { changedFrom: number; changedTo: number } {
+): { changedFrom: number; changedTo: number; removedTo: number } {
   const maxPrefix = Math.min(prevHashes.length, nextHashes.length);
   let prefix = 0;
   while (prefix < maxPrefix && prevHashes[prefix] === nextHashes[prefix]) prefix++;
@@ -166,5 +172,9 @@ export function diffBlocks(
     suffix++;
   }
 
-  return { changedFrom: prefix, changedTo: nextHashes.length - suffix };
+  return {
+    changedFrom: prefix,
+    changedTo: nextHashes.length - suffix,
+    removedTo: prevHashes.length - suffix,
+  };
 }

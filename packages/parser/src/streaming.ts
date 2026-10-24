@@ -1,9 +1,10 @@
 import { ParsedBlock, splitMarkdownBlocks, hashBlock, diffBlocks } from "./block";
 
-/** 一次流式更新引起的变化区间 [changedFrom, changedTo) */
+/** 一次流式更新引起的变化区间（新块插入 [from,to)，旧块移除 [from,removedTo)） */
 export interface StreamingChangeRange {
   changedFrom: number;
   changedTo: number;
+  removedTo: number;
 }
 
 /**
@@ -57,7 +58,7 @@ export class StreamingRenderer {
   private update(): StreamingChangeRange {
     const nextSources = splitMarkdownBlocks(this.text);
     const nextHashes = nextSources.map(hashBlock);
-    const { changedFrom, changedTo } = diffBlocks(this.hashes, nextHashes);
+    const { changedFrom, changedTo, removedTo } = diffBlocks(this.hashes, nextHashes);
 
     const nextRendered: string[] = new Array(nextSources.length);
 
@@ -76,6 +77,6 @@ export class StreamingRenderer {
     this.hashes = nextHashes;
     this.rendered = nextRendered;
 
-    return { changedFrom, changedTo };
+    return { changedFrom, changedTo, removedTo };
   }
 }
