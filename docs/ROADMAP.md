@@ -46,10 +46,10 @@
 ### 2.2 渲染能力
 | 功能 | 说明 | 优先级 |
 |---|---|---|
-| 🆕 Mermaid 图表 | 作为 parser 可选插件（按需 import，块级缓存天然兼容） | P1 |
-| 🆕 数学公式 | 恢复 math 支持（KaTeX 按需加载，替代已删除的 mathjax3 死代码），默认关闭 | P1 |
+| ✅ Mermaid 图表（M3 已交付） | parser 可选插件 + `hydrateMermaid`（optional peer，未安装时源码降级），块级 patch 天然增量渲染 | P1 |
+| ✅ 数学公式（M3 已交付） | KaTeX（`math` 选项，`@vscode/markdown-it-katex`），样式由宿主引入 | P1 |
 | 🆕 脚注/上下标/标记 | markdown-it-footnote / sup / sub / mark 插件集，可选项 | P2 |
-| 🆕 导出 HTML | 自包含单文件导出（内联 theme CSS） | P2 |
+| ✅ 导出 HTML（M3 已交付） | `editor.exportHtml()/downloadHtml()`：渲染 HTML + 页面样式快照内联为单文件 | P2 |
 | 🔮 导出 PDF/图片 | 基于导出 HTML + print 样式 | P3 |
 | 🆕 ESM 按需加载语言 | Shiki 语言按需注册 API 已具备，补文档与细粒度 bundling | P2 |
 
