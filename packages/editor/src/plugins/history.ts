@@ -46,6 +46,3 @@ export function historyPlugin(editor: MarkdownEditor): EditorPlugin {
     name,
   };
 }
-
-/** @deprecated 拼写错误，请使用 historyPlugin */
-export const hisotryPlugin = historyPlugin;

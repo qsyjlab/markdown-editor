@@ -173,15 +173,30 @@ session.finish();               // 收尾：强制最后一块定稿渲染
 - heading 签名（`id|level|title` 序列）比对，未变化只更新激活态；
 - 重建走 DocumentFragment + textContent（不使用 innerHTML，防注入）。
 
-### 6.5 兼容性策略
+### 6.5 Breaking Changes（refactor/v2-breaking 分支）
 
-| v1（错误拼写） | v2（正确 API） | 策略 |
-|---|---|---|
-| `destory()` | `destroy()` | 保留 `destory` 别名并标 `@deprecated` |
-| `parserdHtmlText` | `parsedHtml`（getter） | 保留旧字段别名 |
-| `isSyncScoll` option | `isSyncScroll` | `?? ` 回退读取旧 key |
-| `hisotryPlugin` | `historyPlugin` | 保留旧导出别名 |
-| `.externa-link` | `.external-link`（parser 同时输出两个类名） | CSS 同时匹配两个类 |
+经明确授权，v2 重构**不再保留 v1 错误拼写 API**，一次清理到位：
+
+| v1（已移除） | v2（正确 API） |
+|---|---|
+| `destory()` | `destroy()`（所有类统一） |
+| `parserdHtmlText` | `parsedHtml` / `parsedHtmlText` |
+| `isSyncScoll` option | `isSyncScroll` |
+| `hisotryPlugin` | `historyPlugin` |
+| `strickoutPlugin` / 工具栏名 `strickout` | `strikeoutPlugin` / `strikeout` |
+| `MarkdownEditorPreviewOpitons` | `MarkdownEditorPreviewOptions` |
+| `Dialog/DropdownMenu.visbible` | `visible` |
+| `.externa-link` 类名（parser 输出与 CSS） | `.external-link` |
+| `MarkdownOptions` | `EditorOptions` |
+
+### 6.6 v2 新增 API（refactor/v2-breaking）
+
+- **事件总线**：`editor.eventBus`（`on/off/emit`），事件 `change / focus / blur / themeChange / layoutChange / destroy`，类型安全（`EditorEvents` 约束 payload）；`editor.on("change", cb)` 快捷订阅。
+- **AI 流式写入编辑器**：`editor.appendStreaming(chunk)`（CodeMirror dispatch 追加，自然进入更新管线、可撤销）+ `editor.finishStreaming()`；预览侧独立流式仍走 `previewManager.appendStreaming`。
+- **统计**：`editor.getStats()` → `{ characters, words, lines }`（CJK 按字、西文按词）。
+- **状态栏**：`options.statusBar`（默认开）工具栏右侧字数统计，随 change 事件刷新。
+- **粘贴 / 拖拽图片上传**：复用 `imagesUploadHandler`，上传后以 markdown 图片语法插入光标处。
+- **焦点**：`editor.focus() / editor.blur()`；`getContent()` 改为直接读 CodeMirror 文档（防抖窗口内不再返回旧值）。
 
 ## 7. 主题设计（theme）
 

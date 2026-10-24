@@ -77,9 +77,6 @@ export interface MarkdownParser {
   clearCache(): void;
 
   destroy(): void;
-
-  /** @deprecated 拼写错误，请使用 destroy() */
-  destory(): void;
 }
 
 export async function createMarkdownParser(
@@ -190,6 +187,5 @@ export async function createMarkdownParser(
     md: instance,
     clearCache: () => store.clear(),
     destroy,
-    destory: destroy,
   };
 }

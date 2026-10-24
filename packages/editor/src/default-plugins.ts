@@ -8,7 +8,7 @@ import {
   linkPlugin,
   quotePlugin,
   splitLinePlugin,
-  strickoutPlugin,
+  strikeoutPlugin,
   tablePlugin,
   uploadImagePlugin,
   toggleThemePlugin,

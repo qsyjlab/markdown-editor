@@ -4,14 +4,11 @@ export function linkPlugin(md: MarkdownIt) {
   md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
     const token = tokens[idx];
 
-    const lintType = token.attrGet("data-link-type");
+    const linkType = token.attrGet("data-link-type");
 
-    if (lintType !== "anchor") {
+    if (linkType !== "anchor") {
       token.attrSet("target", "_blank");
-      token.attrSet(
-        "class",
-        [token.attrGet("class"), "externa-link"].filter(Boolean).join(" ")
-      );
+      token.attrJoin("class", "external-link");
     }
     return self.renderToken(tokens, idx, options);
   };

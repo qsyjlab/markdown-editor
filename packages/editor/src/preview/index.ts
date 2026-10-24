@@ -11,22 +11,19 @@ import {
 
 import preview from "../ui/preview-image";
 
-export interface MarkdownEditorPreviewOpitons {
+export interface MarkdownEditorPreviewOptions {
   parserOptions?: MarkdownParserProps;
 
   onPreview?(src: string, event: MouseEvent): void;
 }
-
-/** @deprecated 拼写修正别名，见 MarkdownEditorPreviewOpitons */
-export type MarkdownEditorPreviewOptions = MarkdownEditorPreviewOpitons;
 
 export class MarkdownEditorPreview {
   public $el?: HTMLElement;
   public contentEl?: HTMLElement;
   public parser?: MarkdownParser;
 
-  /** 渲染的完整 HTML（兼容字段） */
-  public parserdHtmlText = "";
+  /** 渲染的完整 HTML */
+  public parsedHtmlText = "";
 
   /** 每次内容实际变化时自增，供滚动同步等做缓存失效 */
   public contentVersion = 0;
@@ -35,7 +32,7 @@ export class MarkdownEditorPreview {
 
   protected _isAniming = false;
 
-  protected options?: MarkdownEditorPreviewOpitons;
+  protected options?: MarkdownEditorPreviewOptions;
 
   private patcher?: BlockPatcher;
 
@@ -45,12 +42,12 @@ export class MarkdownEditorPreview {
 
   private text = "";
 
-  constructor(options?: MarkdownEditorPreviewOpitons) {
+  constructor(options?: MarkdownEditorPreviewOptions) {
     this.options = options;
   }
 
   get parsedHtml() {
-    return this.parserdHtmlText;
+    return this.parsedHtmlText;
   }
 
   get isAniming() {
@@ -158,7 +155,7 @@ export class MarkdownEditorPreview {
     if (!this.patcher) return;
 
     this.patcher.apply(blocks, changedFrom, changedTo);
-    this.parserdHtmlText = html;
+    this.parsedHtmlText = html;
 
     if (changedFrom === changedTo) return;
 
@@ -189,11 +186,6 @@ export class MarkdownEditorPreview {
     this.parser?.destroy();
     this.parser = undefined;
     this.$el?.remove();
-  }
-
-  /** @deprecated 拼写错误，请使用 destroy() */
-  destory() {
-    this.destroy();
   }
 }
 

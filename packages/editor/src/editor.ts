@@ -15,11 +15,20 @@ import { SidebarManager } from "./sidebar-manager";
 import { EditorPreviewManager } from './preview-manager'
 import { EditorScrollManager } from "./scroll-manager";
 import { createUpdatePipeline, UpdatePipeline } from "./update-pipeline";
+import { EditorEventBus, EditorEventName, EditorEventHandler } from "./event-bus";
 import { getOffsetTop, getScroll, scrollTo, useId } from "./utils";
 
 import "./style/editor.scss";
 
-interface MarkdownOptions {
+export interface EditorStats {
+  /** 非空白字符数 */
+  characters: number;
+  /** 词数（CJK 字符 + 西文单词） */
+  words: number;
+  lines: number;
+}
+
+export interface EditorOptions {
   container: HTMLElement;
 
   height?: string;
@@ -34,8 +43,11 @@ interface MarkdownOptions {
    */
   isSyncScroll?: boolean;
 
-  /** @deprecated 拼写错误，请使用 isSyncScroll */
-  isSyncScoll?: boolean;
+  /**
+   * 是否显示工具栏右侧字数状态栏
+   * @default true
+   */
+  statusBar?: boolean;
 
   onFocus?: () => void;
 
@@ -47,7 +59,7 @@ interface MarkdownOptions {
   rightToolbar?: string[];
 
   /**
-   * 图片上传
+   * 图片上传（工具栏上传、粘贴、拖拽共用此处理器）
    */
   imagesUploadHandler?: (
     file: File,
@@ -86,6 +98,9 @@ export class MarkdownEditor {
 
   public updatePipeline: UpdatePipeline;
 
+  /** 事件总线：change / focus / blur / themeChange / layoutChange / destroy */
+  public readonly eventBus = new EditorEventBus();
+
   public clientId: string = "";
 
   public layoutState = {
@@ -94,7 +109,9 @@ export class MarkdownEditor {
     fullscreen: false,
   };
 
-  constructor(public options: MarkdownOptions) {
+  private statusBarEl: HTMLElement | null = null;
+
+  constructor(public options: EditorOptions) {
     this.clientId = useId().toString();
 
     this.options = mergedDefaultOptions(options);
@@ -115,8 +132,14 @@ export class MarkdownEditor {
     });
     this.editorManager = new CodemirrorManager({
       update: (val) => this.updatePipeline.schedule(val),
-      onBlur: this.options.onBlur,
-      onFocus: this.options.onFocus,
+      onBlur: () => {
+        this.options.onBlur?.();
+        this.eventBus.emit("blur", undefined);
+      },
+      onFocus: () => {
+        this.options.onFocus?.();
+        this.eventBus.emit("focus", undefined);
+      },
     });
 
     this.sidebarManager = new SidebarManager({
@@ -143,7 +166,18 @@ export class MarkdownEditor {
       },
     });
 
+    this.eventBus.on("change", () => this.refreshStatusBar());
+
     this.createEditor();
+  }
+
+  /** 订阅编辑器事件，返回取消订阅函数 */
+  on<K extends EditorEventName>(event: K, handler: EditorEventHandler<K>): () => void {
+    return this.eventBus.on(event, handler);
+  }
+
+  off<K extends EditorEventName>(event: K, handler: EditorEventHandler<K>) {
+    this.eventBus.off(event, handler);
   }
 
   setContent(text: string) {
@@ -157,12 +191,54 @@ export class MarkdownEditor {
     this.sidebarManager.updateHeading(this.previewManager?.headings ?? []);
   }
 
+  /** 当前文档内容（以 CodeMirror 文档为准，避免防抖窗口内的旧值） */
   getContent() {
-    return this.content;
+    return this.editorManager.instance?.state.doc.toString() ?? this.content;
+  }
+
+  /** 文档统计：字符数 / 词数 / 行数 */
+  getStats(): EditorStats {
+    const text = this.getContent();
+    const characters = text.replace(/\s/g, "").length;
+    // CJK 按字计数，西文按单词计数
+    const cjk = (text.match(/[\u4e00-\u9fff\u3040-\u30ff]/g) || []).length;
+    const latinWords = (
+      text.replace(/[\u4e00-\u9fff\u3040-\u30ff]/g, " ").match(/[a-zA-Z0-9_'-]+/g) || []
+    ).length;
+    const lines = this.editorManager.instance
+      ? this.editorManager.instance.state.doc.lines
+      : text.split("\n").length;
+    return { characters, words: cjk + latinWords, lines };
   }
 
   insert(callback: InsertCallback) {
     this.editorManager.insertAndSelectText(callback);
+  }
+
+  /**
+   * AI 流式写入：将增量 chunk 追加到文档末尾（经 CodeMirror dispatch，
+   * 自然进入统一更新管线做块级增量渲染，支持撤销）。
+   * 预览侧的纯流式渲染可单独使用 previewManager.appendStreaming。
+   */
+  appendStreaming(chunk: string) {
+    const view = this.editorManager.instance;
+    if (!view) return;
+    const end = view.state.doc.length;
+    view.dispatch({ changes: { from: end, to: end, insert: chunk } });
+  }
+
+  /** 结束流式写入：立即 flush 更新管线，保证预览与回调定稿 */
+  finishStreaming() {
+    this.updatePipeline.flush();
+  }
+
+  focus() {
+    this.editorManager.instance?.focus();
+  }
+
+  blur() {
+    const view = this.editorManager.instance;
+    if (view?.hasFocus) view.contentDOM.blur();
   }
 
   undo() {
@@ -193,7 +269,7 @@ export class MarkdownEditor {
       if (plugin.toolbar) {
         this.toolbarManager.register({
           name: plugin.name,
-          ...(plugin.toolbar as Required<typeof plugin.toolbar>),
+          ...plugin.toolbar,
         });
       }
     });
@@ -201,6 +277,10 @@ export class MarkdownEditor {
     if (this.toolbarManager) {
       this.toolbarManager.renderAll(this.iconManager);
       this.editorContainer.appendChild(this.toolbarManager.getBody());
+    }
+
+    if (this.options.statusBar !== false) {
+      this.createStatusBar();
     }
 
     const currentTheme = this.container.getAttribute("md-theme");
@@ -222,6 +302,8 @@ export class MarkdownEditor {
     wrap.classList.add("md-editor-editable");
 
     this.editorManager.create(wrap);
+
+    this.setupImageDropPaste(wrap);
 
     this.editorManager.instance?.dom.addEventListener("mousedown", () => {
       this.scrollManager?.syncScroll();
@@ -268,11 +350,7 @@ export class MarkdownEditor {
       }
     );
 
-    // isSyncScroll 为修正后的选项名，isSyncScoll 为 v1 兼容回退
-    const syncScrollEnabled =
-      this.options.isSyncScroll ?? this.options.isSyncScoll ?? true;
-
-    if (syncScrollEnabled) {
+    if (this.options.isSyncScroll) {
       this.openSync();
     } else {
       this.closeSync();
@@ -284,14 +362,17 @@ export class MarkdownEditor {
     this.layoutState.fullscreen =
       value !== undefined ? value : !this.layoutState.fullscreen;
 
-    if (!this.editorContainer) return;
-    if (this.layoutState.fullscreen) {
-      this.editorContainer.classList.add("is-fullscreen");
-      this.editorContainer.style.height = "";
-    } else {
-      this.editorContainer.classList.remove("is-fullscreen");
-      this.editorContainer.style.height = this.options.height || "auto";
+    if (this.editorContainer) {
+      if (this.layoutState.fullscreen) {
+        this.editorContainer.classList.add("is-fullscreen");
+        this.editorContainer.style.height = "";
+      } else {
+        this.editorContainer.classList.remove("is-fullscreen");
+        this.editorContainer.style.height = this.options.height || "auto";
+      }
     }
+
+    this.emitLayoutChange();
   }
 
   onlyShowEditable() {
@@ -299,6 +380,7 @@ export class MarkdownEditor {
     this.editorBody?.classList.remove("is-only-show-preview");
     this.layoutState.showPreview = false;
     this.layoutState.showToolbar = true;
+    this.emitLayoutChange();
   }
 
   onlyShowPreview() {
@@ -306,6 +388,7 @@ export class MarkdownEditor {
     this.editorBody?.classList.add("is-only-show-preview");
     this.layoutState.showPreview = true;
     this.layoutState.showToolbar = false;
+    this.emitLayoutChange();
   }
 
   resetLayout() {
@@ -313,6 +396,7 @@ export class MarkdownEditor {
     this.editorBody?.classList.remove("is-only-show-preview");
     this.layoutState.showPreview = true;
     this.layoutState.showToolbar = true;
+    this.emitLayoutChange();
   }
 
   openSync() {
@@ -338,6 +422,7 @@ export class MarkdownEditor {
     if (popperContainer) {
       popperContainer.setAttribute("md-theme", theme);
     }
+    this.eventBus.emit("themeChange", { theme });
   }
 
   toggleTheme() {
@@ -347,6 +432,7 @@ export class MarkdownEditor {
   }
 
   destroy() {
+    this.eventBus.emit("destroy", undefined);
     this.updatePipeline.cancel();
     this.closeSync();
     this.scrollManager?.destroy();
@@ -355,11 +441,74 @@ export class MarkdownEditor {
     this.editorManager.destroy();
     this.previewManager?.destroy();
     this.editorContainer?.remove();
+    this.eventBus.clear();
   }
 
-  /** @deprecated 拼写错误，请使用 destroy() */
-  destory() {
-    this.destroy();
+  private emitLayoutChange() {
+    this.eventBus.emit("layoutChange", { ...this.layoutState });
+  }
+
+  private createStatusBar() {
+    const right = this.toolbarManager
+      .getBody()
+      .querySelector(".md-editor-toolbar__right");
+    if (!right) return;
+
+    this.statusBarEl = document.createElement("span");
+    this.statusBarEl.classList.add("md-editor-status");
+    right.appendChild(this.statusBarEl);
+    this.refreshStatusBar();
+  }
+
+  private refreshStatusBar() {
+    if (!this.statusBarEl) return;
+    const { characters, words, lines } = this.getStats();
+    this.statusBarEl.textContent = `${words} 词 · ${characters} 字符 · ${lines} 行`;
+  }
+
+  /**
+   * 粘贴 / 拖拽图片统一走 imagesUploadHandler，
+   * 上传成功后以 markdown 图片语法插入光标处。
+   */
+  private setupImageDropPaste(el: HTMLElement) {
+    const handler = this.options.imagesUploadHandler;
+    if (!handler) return;
+
+    const uploadFiles = (files: File[]) => {
+      files
+        .filter((file) => file.type.startsWith("image/"))
+        .forEach((file) => {
+          handler(
+            file,
+            (path) => {
+              this.insert(({ start, end }) => ({
+                start,
+                end,
+                formattedText: `\n![${file.name}](${path})`,
+              }));
+            },
+            (msg) => {
+              console.error("[md-editor] image upload failed:", msg);
+            }
+          );
+        });
+    };
+
+    el.addEventListener("paste", (e) => {
+      const files = Array.from(e.clipboardData?.files || []);
+      if (!files.length) return;
+      e.preventDefault();
+      uploadFiles(files);
+    });
+
+    el.addEventListener("dragover", (e) => e.preventDefault());
+
+    el.addEventListener("drop", (e) => {
+      const files = Array.from(e.dataTransfer?.files || []);
+      if (!files.length) return;
+      e.preventDefault();
+      uploadFiles(files);
+    });
   }
 }
 
@@ -369,18 +518,19 @@ function createdEditorAfter(editor: MarkdownEditor) {
   editor.options?.setup?.();
 }
 
-function mergedDefaultOptions(options: MarkdownOptions) {
+function mergedDefaultOptions(options: EditorOptions) {
   return Object.assign(
-    {} as MarkdownOptions,
+    {} as EditorOptions,
     {
-      isSyncScoll: true,
+      isSyncScroll: true,
+      statusBar: true,
       leftToolbar: [
         "undo",
         "redo",
         "clear",
         "header",
         "bold",
-        "strickout",
+        "strikeout",
         "quote",
         "link",
         "table",

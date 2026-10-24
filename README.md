@@ -45,6 +45,20 @@ session.append(delta);                // AI 逐 chunk 输出
 - [功能大纲与拓展路线](docs/ROADMAP.md)
 - [样式规范](STYLE_GUIDE.md)
 
-## v2 兼容性说明
+## v2 Breaking Changes（refactor/v2-breaking）
 
-v1 的拼写错误 API（`destory` / `parserdHtmlText` / `isSyncScoll` / `hisotryPlugin` / `.externa-link`）均保留 deprecated 别名，新代码请使用 `destroy` / `parsedHtml` / `isSyncScroll` / `historyPlugin` / `.external-link`。
+v1 的全部错误拼写 API 已一次性移除，迁移对照：
+
+| v1（已移除） | v2 |
+|---|---|
+| `destory()` | `destroy()` |
+| `parserdHtmlText` | `parsedHtml` |
+| `isSyncScoll` | `isSyncScroll` |
+| `hisotryPlugin` | `historyPlugin` |
+| `strickoutPlugin` / `strickout` | `strikeoutPlugin` / `strikeout` |
+| `MarkdownEditorPreviewOpitons` | `MarkdownEditorPreviewOptions` |
+| `visbible` | `visible` |
+| `.externa-link` | `.external-link` |
+| `MarkdownOptions` | `EditorOptions` |
+
+v2 新增：事件总线（`editor.on`）、AI 流式写入（`appendStreaming`）、统计（`getStats`）、状态栏、粘贴/拖拽图片上传，详见 [概要设计](docs/ARCHITECTURE.md)。

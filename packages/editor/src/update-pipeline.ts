@@ -28,7 +28,9 @@ export function createUpdatePipeline(editor: MarkdownEditor): UpdatePipeline {
     // headings 已在预览 patch 后缓存，这里直接复用，避免重复 DOM 查询
     editor.sidebarManager.updateHeading(preview?.headings ?? []);
 
-    editor.options?.onChange?.(value, preview?.parsedHtml ?? "");
+    const html = preview?.parsedHtml ?? "";
+    editor.options?.onChange?.(value, html);
+    editor.eventBus.emit("change", { markdown: value, html });
   };
 
   const debouncedRun = debounce(run, 80);

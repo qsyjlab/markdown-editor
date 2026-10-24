@@ -1,7 +1,7 @@
-import { MarkdownEditorPreview, MarkdownEditorPreviewOpitons } from "./preview";
+import { MarkdownEditorPreview, MarkdownEditorPreviewOptions } from "./preview";
 
 export class EditorPreviewManager extends MarkdownEditorPreview {
-  constructor(options?: MarkdownEditorPreviewOpitons) {
+  constructor(options?: MarkdownEditorPreviewOptions) {
     super(options);
     this.options = options;
   }
@@ -17,10 +17,5 @@ export class EditorPreviewManager extends MarkdownEditorPreview {
   destroy() {
     this.$el?.remove();
     super.destroy();
-  }
-
-  /** @deprecated 拼写错误，请使用 destroy() */
-  destory() {
-    this.destroy();
   }
 }

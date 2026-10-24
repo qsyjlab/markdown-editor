@@ -32,16 +32,6 @@ export class DropdownMenu {
 
   visible: boolean;
 
-  /** @deprecated 拼写错误，请使用 visible */
-  get visbible() {
-    return this.visible;
-  }
-
-  /** @deprecated 拼写错误，请使用 visible */
-  set visbible(val: boolean) {
-    this.visible = val;
-  }
-
   menus: MenuItem[];
 
   triggerElement: HTMLElement | null = null;
@@ -212,10 +202,5 @@ export class DropdownMenu {
     if(this.dropdown) {
       this.dropdown.remove();
     }
-  }
-
-  /** @deprecated 拼写错误，请使用 destroy() */
-  destory() {
-    this.destroy();
   }
 }

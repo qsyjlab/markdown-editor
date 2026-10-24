@@ -2,11 +2,19 @@ import { clientAttrKey } from "./constants/attrs-key";
 import { IconManager } from "./icon-manager";
 import { DropdownMenu } from "./ui";
 import { Tooltip } from "./ui/tooltip";
+import type { EditorToolbarButtonConfig } from "./plugin";
 
 interface EditorToolbarManagerOptions {
   leftToolbar?: string[];
 
   rightToolbar?: string[];
+}
+
+/** 按钮运行时状态（含内部持有的 tooltip / dropdown 实例） */
+export interface EditorToolbarButtonState {
+  isActive?: boolean;
+  tooltip?: Tooltip;
+  dropdown?: DropdownMenu;
 }
 
 export class EditorToolbarManager {
@@ -16,13 +24,7 @@ export class EditorToolbarManager {
 
   private clientId: string = "";
 
-  private buttonsState: Record<
-    string,
-    EditorToolbarButtonState & {
-      tooltip?: Tooltip;
-      dropdown?: DropdownMenu;
-    }
-  > = {};
+  private buttonsState: Record<string, EditorToolbarButtonState> = {};
 
   private options?: EditorToolbarManagerOptions;
 
@@ -189,7 +191,7 @@ export class EditorToolbarManager {
     }
   }
 
-  register(button: EditorToolbarButtonConfig) {
+  register(button: EditorToolbarButtonConfig & { name: string }) {
     this.buttons[button.name] = button;
   }
 
@@ -249,47 +251,12 @@ export class EditorToolbarManager {
       ?.remove();
 
   }
-
-  /** @deprecated 拼写错误，请使用 destroy() */
-  destory() {
-    this.destroy();
-  }
-}
-
-export interface EditorToolbarButtonConfig {
-  name: string;
-  label: string;
-
-  activeLabel?: string;
-
-  inActiveLabel?: string;
-
-  icon: string;
-  /**
-   * @default button
-   */
-  type?: "button" | "dropdown";
-
-  dropTrigger?: "mouseover";
-  fetch?: (
-    callback: (menus: EditorToolbarDropdownItemConfig[]) => void
-  ) => void;
-  onAction: () => void;
-
-  defaultState?: EditorToolbarButtonState;
-  
-  position?: 'left' | 'right';
 }
 
 export type EditorToolbarDropdownItemConfig = Pick<
   EditorToolbarButtonConfig,
   "label" | "name" | "onAction"
 >;
-
-export interface EditorToolbarButtonState {
-  isActive?: boolean;
-  [key: string]: any;
-}
 
 function getCurrentLabel(button: EditorToolbarButtonConfig, isActive = false) {
   if (isActive && button.activeLabel) {

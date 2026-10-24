@@ -125,9 +125,4 @@ export class CodemirrorManager {
     this.instance?.destroy();
     this.instance = null;
   }
-
-  /** @deprecated 拼写错误，请使用 destroy() */
-  destory() {
-    this.destroy();
-  }
 }

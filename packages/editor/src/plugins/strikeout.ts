@@ -5,8 +5,8 @@ import { MarkdownEditor } from "../editor";
 import { EditorPlugin } from "../plugin";
 
 
-export function strickoutPlugin(editor: MarkdownEditor): EditorPlugin {
-  const name = "strickout";
+export function strikeoutPlugin(editor: MarkdownEditor): EditorPlugin {
+  const name = "strikeout";
 
   editor.iconManager.register({
     name,

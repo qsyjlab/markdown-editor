@@ -26,7 +26,7 @@ export function syncScrollPlugin(editor: MarkdownEditor): EditorPlugin {
       });
     },
     defaultState: {
-      isActive: editor.options.isSyncScoll,
+      isActive: editor.options.isSyncScroll ?? true,
     },
   });
 

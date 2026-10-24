@@ -26,21 +26,11 @@ export class Dialog {
 
   visible: boolean;
 
-  /** @deprecated 拼写错误，请使用 visible */
-  get visbible() {
-    return this.visible;
-  }
-
-  /** @deprecated 拼写错误，请使用 visible */
-  set visbible(val: boolean) {
-    this.visible = val;
-  }
-
   config: DialogProps;
 
   constructor(props?: DialogProps) {
     this.config = Object.assign({}, defaultDialogConfig, props);
-    this.visbible = false;
+    this.visible = false;
 
     this.$parent = this.config?.appendTo || document.body;
   }
@@ -133,16 +123,16 @@ export class Dialog {
       this.create();
     }
     if (!this.$el) return;
-    this.visbible = true;
+    this.visible = true;
     this.$el.style.display = "block";
   }
 
   close() {
     if (!this.$el) return;
-    this.visbible = false;
+    this.visible = false;
     this.$el.style.display = "none";
     if (this.config.destroyOnClose) {
-      this.destory();
+      this.destroy();
     }
   }
 
@@ -158,10 +148,5 @@ export class Dialog {
     if (!this.$el) return;
     this.$parent?.removeChild(this.$el);
     this.$el = null;
-  }
-
-  /** @deprecated 拼写错误，请使用 destroy() */
-  destory() {
-    this.destroy();
   }
 }
