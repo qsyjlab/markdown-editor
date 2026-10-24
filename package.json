@@ -22,5 +22,13 @@
     "@md-doc-editor/editor": "workspace:^",
     "@md-doc-editor/parser": "workspace:^",
     "@md-doc-editor/theme": "workspace:^"
+  },
+  "workspaces": [
+    "packages/*",
+    "play",
+    "build"
+  ],
+  "overrides": {
+    "@types/lodash": "4.17.23"
   }
 }
