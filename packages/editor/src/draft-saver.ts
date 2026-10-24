@@ -8,6 +8,11 @@ export interface DraftSaverOptions {
    * @default 500
    */
   delay?: number;
+  /**
+   * 初始化时是否恢复草稿（setup() 之后执行，草稿优先于初始内容）
+   * @default true
+   */
+  restore?: boolean;
 }
 
 interface DraftPayload {
@@ -65,6 +70,11 @@ export class DraftSaver {
     if (!payload || !payload.md) return false;
     this.editor.setContent(payload.md);
     return true;
+  }
+
+  /** 只读草稿文本（不写入编辑器）；无草稿返回 null */
+  peek(): string | null {
+    return this.read()?.md ?? null;
   }
 
   clear() {

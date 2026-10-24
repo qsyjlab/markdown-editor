@@ -2,15 +2,23 @@
   --md-editor-border-color: #eee;
   --md-editor-primary-color: rgba(52, 81, 178, 1);
   --md-editor-font-size: 16px;
-  
+
   // selection
   --md-editor-selection-bg: rgba(52, 81, 178, 0.15);
-  
+
   // link
   --md-editor-link-color: var(--md-editor-primary-color);
   --md-editor-link-url-color: #9ca3af;
-  
+
   --md-editor-primary-text-color: #fff;
+
+  // chrome UI（工具栏/TOC/状态栏/AI 菜单）通用色
+  --md-editor-muted-color: #959da5;
+  --md-editor-text-color: #24292f;
+  --md-editor-surface-bg: #ffffff;
+  --md-editor-surface-border: #d0d7de;
+  --md-editor-hover-bg: #f6f8fa;
+  --md-editor-disabled-color: #8c959f;
 }
 
 [md-theme="dark"] {
@@ -27,4 +35,12 @@
 
   // editor bg
   --md-editor-bg-color: #333;
+
+  // chrome UI 暗色
+  --md-editor-muted-color: #8b949e;
+  --md-editor-text-color: #cdd9e5;
+  --md-editor-surface-bg: #2d333b;
+  --md-editor-surface-border: #444c56;
+  --md-editor-hover-bg: #373e47;
+  --md-editor-disabled-color: #6e7681;
 }

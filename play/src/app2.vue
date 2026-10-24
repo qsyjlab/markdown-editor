@@ -100,6 +100,9 @@ function initMarkdownEditor() {
 
   markdownEditor.ai.setProvider(mockProvider);
 
+  // 暴露到 window 便于调试与自动化验证
+  (window as unknown as Record<string, unknown>).markdownEditor = markdownEditor;
+
   markdownEditor.on("aiStreamEnd", ({ action, aborted }) => {
     console.log(`[ai] ${action} ${aborted ? "aborted" : "done"}`);
   });

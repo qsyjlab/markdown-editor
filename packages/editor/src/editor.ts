@@ -68,8 +68,8 @@ export interface EditorOptions {
   aiSelectionMenu?: boolean;
 
   /**
-   * 草稿自动保存（localStorage，防抖）。崩溃/误关后初始化时自动恢复；
-   * setup() 中的显式 setContent 会覆盖恢复的草稿。
+   * 草稿自动保存（localStorage，防抖）。初始化时在 setup() 之后恢复草稿
+   * （草稿优先）；需要初始内容优先传 { restore: false } 或 setup 中 clearDraft()。
    */
   autoSave?: boolean | DraftSaverOptions;
 
@@ -308,6 +308,19 @@ export class MarkdownEditor {
     this.draftSaver?.saveNow();
   }
 
+  /**
+   * 存在草稿且 autoSave.restore 未关闭时恢复草稿（setup 之后调用，草稿优先）。
+   * 宿主也可在任意时机手动调用。
+   */
+  restoreDraftIfEnabled(): boolean {
+    if (!this.draftSaver) return false;
+    const restoreEnabled =
+      typeof this.options.autoSave === "object"
+        ? this.options.autoSave.restore !== false
+        : true;
+    return restoreEnabled ? this.draftSaver.restore() : false;
+  }
+
   /** 清除草稿 */
   clearDraft() {
     this.draftSaver?.clear();
@@ -451,11 +464,8 @@ export class MarkdownEditor {
       this.closeSync();
     }
 
-    // 草稿恢复先于 setup()：宿主显式 setContent 的内容优先于草稿
-    if (this.draftSaver) {
-      this.draftSaver.restore();
-      this.draftSaver.start();
-    }
+    // 草稿保存在 setup() 之后启动（恢复逻辑见 createdEditorAfter）
+    this.draftSaver?.start();
 
     createdEditorAfter(this);
   }
@@ -623,6 +633,10 @@ function createdEditorAfter(editor: MarkdownEditor) {
   editor.sidebarManager.updateHeading(editor.previewManager?.headings ?? []);
   editor.pluginManager.update();
   editor.options?.setup?.();
+
+  // 草稿优先：setup() 之后存在草稿则恢复用户上次编辑。
+  // 初始内容优先的宿主传 autoSave: { restore: false } 或在 setup 中 clearDraft()
+  editor.restoreDraftIfEnabled();
 }
 
 function mergedDefaultOptions(options: EditorOptions) {
