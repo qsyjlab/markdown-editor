@@ -114,7 +114,8 @@ export class AISelectionMenu {
           // mousedown 防止先触发编辑器 blur/选区丢失
           e.preventDefault();
           this.hide();
-          this.editor.ai.runAction(action.name);
+          // 选区动作默认以建议模式呈现（diff 预览 + 接受/拒绝）
+          this.editor.ai.runAction(action.name, { asSuggestion: true });
         });
       }
 

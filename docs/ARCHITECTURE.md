@@ -230,7 +230,29 @@ AIProvider（任意 LLM）  ──注入──▶ EditorAIManager（editor.ai）
 - **可拓展**：`editor.ai.registerAction({ name, label, mode, prompt })` 注册任意动作；`mode` 支持 `replace-selection`（润色/翻译类）与 `insert-cursor`（续写类）。
 - **流式一致性**：AI 写入与手工输入走同一条 UpdatePipeline → 块级增量渲染；未闭合围栏始终是活动块，代码生成场景同样无闪烁。
 - **历史友好**：整段流式输出合并为单个撤销步骤；abort 保留已生成内容（半成品可见，含 provider 以 AbortError 异常形式中止的场景），真实错误才自动回滚。
-- **选区浮动菜单**（`options.aiSelectionMenu`，默认开）：选中文本浮现 AI 动作条，floating-ui 定位自动翻转避让；动作列表实时取自注册表，无 provider 时不出现。
+- **选区浮动菜单**（`options.aiSelectionMenu`，默认开）：选中文本浮现 AI 动作条，floating-ui 定位自动翻转避让；动作列表实时取自注册表，无 provider 时不出现。**选区动作默认以建议模式执行**（见下）。
+
+### 6.7.1 AI 建议模式（M4：行内 diff 接受/拒绝）
+
+`runAction(name, { asSuggestion: true })` 改变执行语义：模型输出**不直接写入文档**，而是生成建议对象：
+
+```ts
+interface AISuggestion {
+  id: string;
+  action: string;
+  from: number; to: number;   // 原文替换区间（插入型 from === to）
+  originalText: string;
+  suggestedText: string;
+  diff: DiffLine[];           // 行级 diff（LCS，公共前后缀裁剪压缩规模）
+}
+```
+
+- **SuggestionBar**（`options.aiSuggestionBar`，默认开）：编辑器右上角悬浮栏，每条建议显示折叠 diff 预览（删除红 / 新增绿，collapseDiff 只保留变化区上下文）与接受/拒绝按钮；事件驱动自维护，多建议堆叠。
+- **接受** = 一次性 dispatch 替换原区间（进入撤销历史，Ctrl+Z 可回滚）；**拒绝** = 丢弃。
+- **过期检测**：接受前校验原区间文本未被编辑（`sliceDoc === originalText`），已被编辑时接受失败并发出 `aiSuggestionExpire`——避免把建议写进错位的文档位置。
+- 中止的半成品同样落为建议（有内容时）；真实错误丢弃缓冲。
+- 事件：`aiSuggestion / aiSuggestionAccept / aiSuggestionReject / aiSuggestionExpire`。
+- 选区浮动菜单动作默认走建议模式；需要旧行为（直接写入）的宿主直接调 `runAction(name)` 不带选项。
 
 ### 6.8 编辑体验（已交付）
 

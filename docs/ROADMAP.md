@@ -126,7 +126,7 @@ editor.ai.registerAction({
 | **M3.5 编辑体验** | toggleWrap 格式化、快捷键、查找替换、草稿自动保存、CI | ✅ 已交付 |
 | **架构审查** | diff 状态所有权 / 容器感知切分 / abort 语义 / 主题作用域 四项修正 | ✅ 已交付 |
 | **M-合流发版** | 合并 refactor 分支 → master，版本 v2.0.0（breaking 升 major），lerna publish | ⏳ 待用户确认发版时机 |
-| **M4 AI 深度** | 行内 diff 建议（逐块接受/拒绝）、AI 命令面板（Cmd+K）、行内生成中占位块 | 🔜 下一阶段 |
+| **M4 AI 深度** | ✅ 行内 diff 建议（SuggestionBar 接受/拒绝/过期检测，选区菜单默认建议模式）已交付；⏳ AI 命令面板（Cmd+K）、行内生成中占位块 | 🔜 剩余面板 |
 | **M5 生态与协作** | Yjs 协作、主题 token 分层与运行时注册、`@md-doc-editor/ui` 独立包、defineParserPlugin 规范 | 🔮 远期 |
 
 ### 4.1 技术债清单（随迭代消化）

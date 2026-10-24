@@ -18,6 +18,7 @@ import { createUpdatePipeline, UpdatePipeline } from "./update-pipeline";
 import { EditorEventBus, EditorEventName, EditorEventHandler } from "./event-bus";
 import { EditorAIManager } from "./ai/ai-manager";
 import { AISelectionMenu } from "./ai/selection-menu";
+import { AISuggestionBar } from "./ai/suggestion-bar";
 export type {
   AIAction,
   AIContext,
@@ -66,6 +67,13 @@ export interface EditorOptions {
    * @default true
    */
   aiSelectionMenu?: boolean;
+
+  /**
+   * AI 建议栏：选区动作默认以建议模式执行（diff 预览 + 接受/拒绝），
+   * 此开关只控制建议栏 UI；关闭后建议仍可通过 ai.getSuggestions() 读取
+   * @default true
+   */
+  aiSuggestionBar?: boolean;
 
   /**
    * 草稿自动保存（localStorage，防抖）。初始化时在 setup() 之后恢复草稿
@@ -129,6 +137,8 @@ export class MarkdownEditor {
   public readonly ai: EditorAIManager;
 
   private aiSelectionMenu: AISelectionMenu | null = null;
+
+  private aiSuggestionBar: AISuggestionBar | null = null;
 
   public clientId: string = "";
 
@@ -413,6 +423,10 @@ export class MarkdownEditor {
       this.aiSelectionMenu = new AISelectionMenu(this);
     }
 
+    if (this.options.aiSuggestionBar !== false) {
+      this.aiSuggestionBar = new AISuggestionBar(this);
+    }
+
     this.editorManager.instance?.dom.addEventListener("mousedown", () => {
       this.scrollManager?.syncScroll();
     });
@@ -548,6 +562,8 @@ export class MarkdownEditor {
     this.updatePipeline.cancel();
     this.aiSelectionMenu?.destroy();
     this.aiSelectionMenu = null;
+    this.aiSuggestionBar?.destroy();
+    this.aiSuggestionBar = null;
     this.draftSaver?.destroy();
     this.draftSaver = null;
     this.closeSync();

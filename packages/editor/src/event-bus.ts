@@ -23,6 +23,14 @@ export interface EditorEvents {
   aiStreamEnd: { action: string; aborted: boolean };
   /** AI 流式失败（错误时已回滚本次写入） */
   aiStreamError: { action: string; error: Error };
+  /** 生成一个待处理建议（asSuggestion 模式） */
+  aiSuggestion: { id: string; action: string };
+  /** 建议被接受（已写入文档，进入撤销历史） */
+  aiSuggestionAccept: { id: string };
+  /** 建议被拒绝（丢弃） */
+  aiSuggestionReject: { id: string };
+  /** 建议过期（原区间已被编辑，接受失败） */
+  aiSuggestionExpire: { id: string };
   /** 编辑器销毁前 */
   destroy: void;
 }
