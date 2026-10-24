@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Unit tests
+        run: pnpm --filter @md-doc-editor/parser test
+
+      - name: Build parser / theme / editor
+        run: |
+          pnpm --filter @md-doc-editor/parser build
+          pnpm --filter @md-doc-editor/theme build
+          pnpm --filter @md-doc-editor/editor build
+
+      - name: Publish to npm
+        run: |
+          pnpm --filter @md-doc-editor/parser publish --access public --no-git-checks
+          pnpm --filter @md-doc-editor/theme publish --access public --no-git-checks
+          pnpm --filter @md-doc-editor/editor publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
