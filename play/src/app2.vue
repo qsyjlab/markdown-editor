@@ -76,6 +76,9 @@ function initMarkdownEditor() {
   markdownEditor = new MarkdownEditor({
     container: document.getElementById("container") as HTMLElement,
     height: "88vh",
+    parserOptions: {
+      math: true,
+    },
     imagesUploadHandler: (file, success) => {
       const url = rawFileToObjectURL(file);
       success(url);

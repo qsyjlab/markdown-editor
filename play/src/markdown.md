@@ -921,3 +921,11 @@ export default defineConfig({
 ```
 
 请查看[配置参考：站点配置](../reference/site-config#markdown)来获取完整的可配置属性列表。
+
+## 数学公式（KaTeX）
+
+行内公式 $E = mc^2$，块级公式：
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+$$

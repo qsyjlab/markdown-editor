@@ -49,7 +49,9 @@
     "markdown-it-container": "^4.0.0",
     "markdown-it-task-lists": "^2.1.1",
     "nanoid": "^5.0.9",
-    "shiki": "^3.0.0"
+    "shiki": "^3.0.0",
+    "katex": "^0.16.21",
+    "@vscode/markdown-it-katex": "^1.1.1"
   },
   "gitHead": "0797255654ce8bebdb171b7cc5d63b9e225b7f99"
 }

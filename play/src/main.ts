@@ -1,5 +1,8 @@
 import { createApp } from 'vue'
 
+// KaTeX 公式样式（parserOptions.math 开启时由宿主引入）
+import 'katex/dist/katex.min.css'
+
 import EditorDemo from './app2.vue'
 import AiStreamDemo from './ai-demo.vue'
 

@@ -1,5 +1,8 @@
 import MarkdownIt from "markdown-it";
 import attrsPlugin from "markdown-it-attrs";
+import katexPlugin, {
+  type MarkdownKatexOptions,
+} from "@vscode/markdown-it-katex";
 
 import { createHighlighter, HighlighterProps } from "./highlight";
 import { BlockStore, IncrementalResult, diffBlocks, hashBlock, splitMarkdownBlocks } from "./block";
@@ -40,6 +43,12 @@ export interface MarkdownParserProps {
    * 自定义文本块配置
    */
   container?: ContainerOptions;
+
+  /**
+   * 数学公式渲染（KaTeX）。
+   * 注意：KaTeX 样式（katex/dist/katex.min.css）由宿主自行引入。
+   */
+  math?: boolean | MarkdownKatexOptions;
 
   /**
    *  codeCopyButtonTitle
@@ -113,6 +122,16 @@ export async function createMarkdownParser(
   );
 
   instance.use(attrsPlugin);
+
+  if (props?.math) {
+    instance.use(
+      katexPlugin,
+      typeof props.math === "object"
+        ? { enableFencedBlocks: true, ...props.math }
+        : { enableFencedBlocks: true }
+    );
+  }
+
   instance.use(...createAnchorPlugin());
   instance.use(headersPlugin, {
     level: anchorLevel,
