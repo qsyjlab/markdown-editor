@@ -26,6 +26,7 @@ export type {
   AIStreamMode,
 } from "./ai/provider";
 import { getOffsetTop, getScroll, scrollTo, useId } from "./utils";
+import { exportHtml, downloadHtml, type ExportHtmlOptions } from "./utils/export-html";
 
 import "./style/editor.scss";
 
@@ -252,6 +253,22 @@ export class MarkdownEditor {
   /** 结束流式写入：立即 flush 更新管线，保证预览与回调定稿 */
   finishStreaming() {
     this.updatePipeline.flush();
+  }
+
+  /**
+   * 导出当前文档为自包含 HTML 字符单文件
+   * （渲染 HTML + 页面样式快照内联，shiki 配色为行内样式自带）
+   */
+  exportHtml(options?: ExportHtmlOptions) {
+    return exportHtml(this.previewManager?.parsedHtmlText ?? "", {
+      title: "Markdown 导出",
+      ...options,
+    });
+  }
+
+  /** 导出并触发浏览器下载 */
+  downloadHtml(filename = "markdown-export") {
+    downloadHtml(filename, this.exportHtml());
   }
 
   focus() {

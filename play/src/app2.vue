@@ -3,6 +3,9 @@
     <a href="./?demo=editor">编辑器 Demo</a>
     <span>|</span>
     <a href="./?demo=ai">AI 流式渲染 Demo</a>
+    <button class="demo-export" @click="markdownEditor?.downloadHtml('markdown-export')">
+      导出 HTML
+    </button>
   </div>
   <div id="container"></div>
 </template>
@@ -105,5 +108,14 @@ function rawFileToObjectURL(file: File) {
 <style scoped>
 #container {
   padding: 20px;
+}
+
+.demo-export {
+  margin-left: auto;
+  padding: 2px 10px;
+  cursor: pointer;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  background: #f6f8fa;
 }
 </style>
