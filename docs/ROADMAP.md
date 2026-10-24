@@ -46,9 +46,9 @@
 ### 2.2 渲染能力
 | 功能 | 说明 | 优先级 |
 |---|---|---|
-| ✅ Mermaid 图表（M3 已交付） | parser 可选插件 + `hydrateMermaid`（optional peer，未安装时源码降级），块级 patch 天然增量渲染 | P1 |
+| 🆕 Mermaid 图表（M3 已交付） | parser 可选插件 + `hydrateMermaid`（optional peer，未安装时源码降级），块级 patch 天然增量渲染 | P1 |
 | ✅ 数学公式（M3 已交付） | KaTeX（`math` 选项，`@vscode/markdown-it-katex`），样式由宿主引入 | P1 |
-| 🆕 脚注/上下标/标记 | markdown-it-footnote / sup / sub / mark 插件集，可选项 | P2 |
+| ✅ 脚注/上下标/标记（已交付） | `extraMarks` 选项：脚注 `[^1]`、下标 `~x~`、上标 `^x^`、高亮 `==x==` | P2 |
 | ✅ 导出 HTML（M3 已交付） | `editor.exportHtml()/downloadHtml()`：渲染 HTML + 页面样式快照内联为单文件 | P2 |
 | 🔮 导出 PDF/图片 | 基于导出 HTML + print 样式 | P3 |
 | 🆕 ESM 按需加载语言 | Shiki 语言按需注册 API 已具备，补文档与细粒度 bundling | P2 |
@@ -56,9 +56,9 @@
 ### 2.3 工程化
 | 事项 | 说明 | 优先级 |
 |---|---|---|
-| 🔧 单元测试 | vitest：块切分/哈希/patch 纯函数先行，渲染回归快照 | P1（v2 起步） |
-| 🆕 CI | GitHub Actions：build + type-check + test | P1 |
-| 🔧 类型收紧 | 去除 `theme?: any`、`@ts-nocheck`，`noImplicitAny` 开启 | P1（v2 起步） |
+| 🔧 单元测试 | ✅ vitest 已落地（块切分/哈希/patch 纯函数 + 流式会话），`pnpm --filter @md-doc-editor/parser test` | P1 |
+| ✅ CI | GitHub Actions：pnpm install + parser 单测 + parser/theme/editor 构建 | P1 |
+| 🔧 类型收紧 | 去除 `theme?: any`、`@ts-nocheck`，`noImplicitAny` 开启 | P1（部分完成） |
 | 🆕 dts 一致性检查 | 发布前 API 面快照对比（防拼写再次入库） | P3 |
 
 ## 3. 拓展方向

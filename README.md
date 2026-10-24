@@ -28,7 +28,8 @@ cd play && pnpm dev   # http://localhost:5177
 - **块级增量渲染**：输入只重渲染变化的块，未变更代码块不重新高亮（BlockStore LRU + Shiki 双层缓存）
 - **AI 流式渲染**：`parser.createStreamingSession()` / `preview.appendStreaming(chunk)`，已完成内容 DOM 稳定、无闪烁
 - **AI 写作层**：`editor.ai` —— 厂商无关的 `AIProvider` 注入 + 内置/自定义动作（续写/润色/翻译），流式写入合并为单个撤销步骤，异常自动回滚；选区浮动菜单
-- **公式与图表**：`parserOptions.math`（KaTeX）、`parserOptions.mermaid`（optional peer，未安装时源码降级）
+- **公式与图表**：`parserOptions.math`（KaTeX）、`parserOptions.mermaid`（optional peer，未安装时源码降级）、`extraMarks`（脚注/上下标/高亮）
+- **编辑体验**：格式化快捷键（Mod-B/I/K/Shift-X，可切换包裹）、查找替换（Mod-F）、草稿自动保存（`autoSave`）、字数状态栏
 - **导出**：`editor.exportHtml()` / `downloadHtml()` 渲染 HTML + 页面样式快照内联为单文件
 - **事件零泄漏**：预览事件一次性委托绑定，统一 `destroy()` 生命周期
 - **可拓展**：`parserOptions.extend(md)` 注入自定义 markdown-it 插件；编辑器插件机制（init/toolbar/update/destroy）；类型安全事件总线
