@@ -75,7 +75,8 @@ v2 的增量解析 + 流式渲染 + 稳定 DOM 是 AI 功能的**底座**。在�
 - ✅ 内置动作：续写 / 润色 / 翻译 + `registerAction` 自定义拓展；
 - ✅ 流式写入：整段输出单撤销步骤、abort 保留半成品、异常自动回滚；
 - ✅ 工具栏 AI 下拉 + `aiStream*` 事件；
-- 🆕 选区浮动菜单（复用 floating-ui 体系）与行内"生成中"占位块。
+- ✅ 选区浮动菜单（floating-ui 定位，`options.aiSelectionMenu` 可关）；
+- 🆕 行内"生成中"占位块。
 
 ```ts
 // 宿主注入任意模型（fetch SSE / SDK 均可）

@@ -222,6 +222,7 @@ AIProvider（任意 LLM）  ──注入──▶ EditorAIManager（editor.ai）
 - **可拓展**：`editor.ai.registerAction({ name, label, mode, prompt })` 注册任意动作；`mode` 支持 `replace-selection`（润色/翻译类）与 `insert-cursor`（续写类）。
 - **流式一致性**：AI 写入与手工输入走同一条 UpdatePipeline → 块级增量渲染；未闭合围栏始终是活动块，代码生成场景同样无闪烁。
 - **历史友好**：整段流式输出合并为单个撤销步骤；abort 保留已生成内容（半成品可见），异常自动回滚。
+- **选区浮动菜单**（`options.aiSelectionMenu`，默认开）：选中文本浮现 AI 动作条，floating-ui 定位自动翻转避让；动作列表实时取自注册表，无 provider 时不出现。
 
 ## 7. 主题设计（theme）
 

@@ -17,6 +17,7 @@ import { EditorScrollManager } from "./scroll-manager";
 import { createUpdatePipeline, UpdatePipeline } from "./update-pipeline";
 import { EditorEventBus, EditorEventName, EditorEventHandler } from "./event-bus";
 import { EditorAIManager } from "./ai/ai-manager";
+import { AISelectionMenu } from "./ai/selection-menu";
 export type {
   AIAction,
   AIContext,
@@ -56,6 +57,12 @@ export interface EditorOptions {
    * @default true
    */
   statusBar?: boolean;
+
+  /**
+   * 选中文本时是否显示 AI 动作浮动菜单（需注入 AIProvider）
+   * @default true
+   */
+  aiSelectionMenu?: boolean;
 
   onFocus?: () => void;
 
@@ -111,6 +118,8 @@ export class MarkdownEditor {
 
   /** AI 写作：宿主经 setProvider 注入模型，内置/自定义动作流式写入文档 */
   public readonly ai: EditorAIManager;
+
+  private aiSelectionMenu: AISelectionMenu | null = null;
 
   public clientId: string = "";
 
@@ -318,6 +327,10 @@ export class MarkdownEditor {
 
     this.setupImageDropPaste(wrap);
 
+    if (this.options.aiSelectionMenu !== false) {
+      this.aiSelectionMenu = new AISelectionMenu(this);
+    }
+
     this.editorManager.instance?.dom.addEventListener("mousedown", () => {
       this.scrollManager?.syncScroll();
     });
@@ -447,6 +460,8 @@ export class MarkdownEditor {
   destroy() {
     this.eventBus.emit("destroy", undefined);
     this.updatePipeline.cancel();
+    this.aiSelectionMenu?.destroy();
+    this.aiSelectionMenu = null;
     this.closeSync();
     this.scrollManager?.destroy();
     this.pluginManager.destroy();

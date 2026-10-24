@@ -39,6 +39,11 @@ export class EditorAIManager {
     return this.currentAction !== null;
   }
 
+  /** 是否已注入 provider（选区浮动菜单等 UI 依据此判断展示） */
+  get hasProvider() {
+    return this.provider !== null;
+  }
+
   get current() {
     return this.currentAction;
   }
