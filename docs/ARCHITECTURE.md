@@ -254,6 +254,13 @@ interface AISuggestion {
 - 事件：`aiSuggestion / aiSuggestionAccept / aiSuggestionReject / aiSuggestionExpire`。
 - 选区浮动菜单动作默认走建议模式；需要旧行为（直接写入）的宿主直接调 `runAction(name)` 不带选项。
 
+### 6.7.2 AI 命令面板（M4：Cmd/Ctrl+K）
+
+- **交互**：编辑器聚焦时按 Mod-K（或 `aiCommandPalette` 选项控制开关），面板悬浮于光标附近，输入自然语言指令回车执行，Esc/点击外部关闭。
+- **执行链路**：指令注册为动态 `command` 动作（prompt = 指令 + 光标前后文窗口），走标准 `runAction` 直接写入模式——输出插入光标处、单撤销步骤、进统一更新管线渲染。
+- **Provider 契约**：`action === "command"` 时 `req.prompt` 为 `COMMAND_PROMPT_PREFIX + 用户指令 + 上下文`，provider 自行解析指令语义（也可完全自定义该约定）。
+- 快捷键布局：Mod-K 面板；链接插入让位为 Mod-Shift-K。
+
 ### 6.8 编辑体验（已交付）
 
 - **格式化切换**：`toggleWrap(editor, prefix)` 识别三种形态（两侧包裹符/选区自带包裹符/未包裹）智能包/解包；bold/italic/strikeout 工具栏与快捷键共用。

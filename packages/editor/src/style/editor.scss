@@ -381,6 +381,41 @@
   }
 }
 
+// AI 命令面板（Cmd/Ctrl+K）
+.md-editor-ai-palette {
+  position: fixed;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background-color: var(--md-editor-surface-bg);
+  border: 1px solid var(--md-editor-surface-border);
+  box-shadow: 0 6px 20px rgba(140, 149, 159, 0.35);
+  min-width: 320px;
+}
+
+.md-editor-ai-palette__label {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--md-editor-primary-color);
+  white-space: nowrap;
+}
+
+.md-editor-ai-palette__input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--md-editor-text-color);
+
+  &::placeholder {
+    color: var(--md-editor-disabled-color);
+  }
+}
+
 // AI 建议栏：行级 diff 预览 + 接受/拒绝
 .md-editor-suggestions {
   position: absolute;

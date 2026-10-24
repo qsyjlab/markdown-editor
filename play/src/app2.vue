@@ -6,7 +6,7 @@
     <button class="demo-export" @click="markdownEditor?.downloadHtml('markdown-export')">
       导出 HTML
     </button>
-    <span class="demo-tip">Mod-B/I 加粗斜体 · Mod-K 链接 · Mod-F 查找替换 · Mod-S 存草稿</span>
+    <span class="demo-tip">Mod-B/I 格式化 · Mod-Shift-K 链接 · Mod-K AI 面板 · Mod-F 查找 · Mod-S 存草稿</span>
   </div>
   <div id="container"></div>
 </template>

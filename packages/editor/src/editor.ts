@@ -19,6 +19,7 @@ import { EditorEventBus, EditorEventName, EditorEventHandler } from "./event-bus
 import { EditorAIManager } from "./ai/ai-manager";
 import { AISelectionMenu } from "./ai/selection-menu";
 import { AISuggestionBar } from "./ai/suggestion-bar";
+import { AICommandPalette } from "./ai/command-palette";
 export type {
   AIAction,
   AIContext,
@@ -74,6 +75,13 @@ export interface EditorOptions {
    * @default true
    */
   aiSuggestionBar?: boolean;
+
+  /**
+   * AI 命令面板（Cmd/Ctrl+K）：自然语言指令直接写入光标处。
+   * 需注入 AIProvider；关闭后 Mod-Shift-K 仍插入链接
+   * @default true
+   */
+  aiCommandPalette?: boolean;
 
   /**
    * 草稿自动保存（localStorage，防抖）。初始化时在 setup() 之后恢复草稿
@@ -140,6 +148,8 @@ export class MarkdownEditor {
 
   private aiSuggestionBar: AISuggestionBar | null = null;
 
+  private aiCommandPalette: AICommandPalette | null = null;
+
   public clientId: string = "";
 
   public layoutState = {
@@ -186,7 +196,7 @@ export class MarkdownEditor {
         { key: "Mod-i", run: () => (toggleWrap(this, "*"), true) },
         { key: "Mod-Shift-x", run: () => (toggleWrap(this, "~~"), true) },
         {
-          key: "Mod-k",
+          key: "Mod-Shift-k",
           run: () => (this.toolbarManager.runAction("link"), true),
         },
         {
@@ -427,6 +437,10 @@ export class MarkdownEditor {
       this.aiSuggestionBar = new AISuggestionBar(this);
     }
 
+    if (this.options.aiCommandPalette !== false) {
+      this.aiCommandPalette = new AICommandPalette(this);
+    }
+
     this.editorManager.instance?.dom.addEventListener("mousedown", () => {
       this.scrollManager?.syncScroll();
     });
@@ -564,6 +578,8 @@ export class MarkdownEditor {
     this.aiSelectionMenu = null;
     this.aiSuggestionBar?.destroy();
     this.aiSuggestionBar = null;
+    this.aiCommandPalette?.destroy();
+    this.aiCommandPalette = null;
     this.draftSaver?.destroy();
     this.draftSaver = null;
     this.closeSync();
