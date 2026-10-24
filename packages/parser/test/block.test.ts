@@ -59,6 +59,29 @@ describe("splitMarkdownBlocks", () => {
     expect(splitMarkdownBlocks("")).toEqual([]);
     expect(splitMarkdownBlocks("\n\n\n")).toEqual([]);
   });
+
+  it("容器内部空行不切块（::: tip ... :::）", () => {
+    const md = "::: tip\n第一段\n\n第二段\n:::\n\n后续段落";
+    expect(splitMarkdownBlocks(md)).toEqual([
+      "::: tip\n第一段\n\n第二段\n:::",
+      "后续段落",
+    ]);
+  });
+
+  it("嵌套容器整体一块", () => {
+    const md = "::: tip\n外层\n\n::: warning\n内层\n:::\n\n收尾\n:::";
+    expect(splitMarkdownBlocks(md)).toEqual([md]);
+  });
+
+  it("容器内含代码围栏（含空行）不切块", () => {
+    const md = "::: tip\n```ts\nconst a = 1;\n\nconst b = 2;\n```\n:::";
+    expect(splitMarkdownBlocks(md)).toEqual([md]);
+  });
+
+  it("代码围栏内的 ::: 不被误认为容器", () => {
+    const md = "```md\n::: tip\n内容\n:::\n```";
+    expect(splitMarkdownBlocks(md)).toEqual([md]);
+  });
 });
 
 describe("hashBlock", () => {

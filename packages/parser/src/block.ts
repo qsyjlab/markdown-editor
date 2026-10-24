@@ -12,6 +12,10 @@
 const FENCE_RE = /^ {0,3}(`{3,}|~{3,})(.*)$/;
 const LIST_ITEM_RE = /^ {0,3}(?:[-+*]|\d{1,9}[.)])(?:\s|$)/;
 const QUOTE_RE = /^ {0,3}>/;
+/** ::: name / :::: name 形式的容器开行 */
+const CONTAINER_OPEN_RE = /^ {0,3}:::+\s*\S/;
+/** 裸 ::: / :::: 容器闭行 */
+const CONTAINER_CLOSE_RE = /^ {0,3}:::+\s*$/;
 
 export interface ParsedBlock {
   index: number;
@@ -23,6 +27,8 @@ export interface IncrementalResult {
   /** 拼接后的完整 HTML（兼容整体渲染的消费方） */
   html: string;
   blocks: ParsedBlock[];
+  /** 本次文档的块指纹序列；消费方持有并在下次 parseIncremental 时传回 */
+  hashes: string[];
   /** 新块空间：替换区间 [changedFrom, changedTo)，渲染并插入这些块 */
   changedFrom: number;
   changedTo: number;
@@ -42,6 +48,7 @@ export function splitMarkdownBlocks(text: string): string[] {
   let current: string[] = [];
   let pendingBlank = false;
   let fence: string | null = null;
+  let containerDepth = 0;
 
   const flush = () => {
     if (current.length) {
@@ -51,6 +58,14 @@ export function splitMarkdownBlocks(text: string): string[] {
   };
 
   for (const line of lines) {
+    // 容器内部（含空行与代码围栏）整体不可切分，直到闭合行
+    if (containerDepth > 0) {
+      if (CONTAINER_CLOSE_RE.test(line)) containerDepth--;
+      else if (CONTAINER_OPEN_RE.test(line)) containerDepth++;
+      current.push(line);
+      continue;
+    }
+
     const fenceMatch = line.match(FENCE_RE);
     if (fenceMatch) {
       const marker = fenceMatch[1];
@@ -73,6 +88,17 @@ export function splitMarkdownBlocks(text: string): string[] {
     }
 
     if (fence) {
+      current.push(line);
+      continue;
+    }
+
+    // 容器开行：块边界，容器体内的空行不再触发切分
+    if (CONTAINER_OPEN_RE.test(line)) {
+      if (pendingBlank) {
+        flush();
+        pendingBlank = false;
+      }
+      containerDepth = 1;
       current.push(line);
       continue;
     }

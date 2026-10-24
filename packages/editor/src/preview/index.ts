@@ -43,6 +43,9 @@ export class MarkdownEditorPreview {
 
   private text = "";
 
+  /** 本预览持有的块指纹（diff 基准）。parseIncremental 无状态，由消费方持有 */
+  private prevHashes: string[] = [];
+
   constructor(options?: MarkdownEditorPreviewOptions) {
     this.options = options;
   }
@@ -107,7 +110,8 @@ export class MarkdownEditorPreview {
 
     if (!this.parser || !this.patcher) return;
 
-    const result = this.parser.parseIncremental(text);
+    const result = this.parser.parseIncremental(text, this.prevHashes);
+    this.prevHashes = result.hashes;
     this.applyResult(
       result.blocks,
       result.changedFrom,
@@ -131,6 +135,8 @@ export class MarkdownEditorPreview {
 
     const range = this.streamSession.append(chunk);
     this.text = this.streamSession.getText();
+    // 流式会话的指纹即本预览的新基准，后续 setContent 的 diff 不会错位
+    this.prevHashes = this.streamSession.getHashes();
     this.applyResult(
       this.streamSession.getBlocks(),
       range.changedFrom,
@@ -175,9 +181,10 @@ export class MarkdownEditorPreview {
 
     // mermaid 开启时渲染新增图表块（hydrateMermaid 内部只处理 pending 块）
     if (this.options?.parserOptions?.mermaid && this.contentEl) {
-      const theme = document
-        .querySelector("[md-theme]")
-        ?.getAttribute("md-theme");
+      // 主题从本预览容器向上找，避免多编辑器时取到页面上其它实例的主题
+      const theme =
+        this.$el?.closest?.("[md-theme]")?.getAttribute("md-theme") ??
+        document.querySelector("[md-theme]")?.getAttribute("md-theme");
       void hydrateMermaid(this.contentEl, {
         theme: theme === "dark" ? "dark" : "default",
       });
@@ -203,6 +210,7 @@ export class MarkdownEditorPreview {
     this.patcher?.destroy();
     this.patcher = undefined;
     this.streamSession = undefined;
+    this.prevHashes = [];
     this.parser?.destroy();
     this.parser = undefined;
     this.$el?.remove();

@@ -90,9 +90,9 @@ export interface MarkdownParser {
 
   /**
    * 块级增量解析：只渲染内容发生变化的块（LRU 缓存），
-   * 返回结果附带与上一次调用相比的变化区间，供 BlockPatcher 做局部 DOM 更新
+   * 返回变化区间与块指纹。无状态：prevHashes 由消费方持有并传回。
    */
-  parseIncremental(text: string): IncrementalResult;
+  parseIncremental(text: string, prevHashes?: string[]): IncrementalResult;
 
   /** 创建流式渲染会话（AI 逐 chunk 输出场景） */
   createStreamingSession(): StreamingRenderer;
@@ -184,20 +184,20 @@ export async function createMarkdownParser(
     props?.blockCacheSize
   );
 
-  // 上一次增量解析的块指纹，用于计算变化区间
-  let prevHashes: string[] = [];
-
   function parse(text: string) {
     return instance.render(text);
   }
 
   const destroy = () => {
     store.clear();
-    prevHashes = [];
     dispose();
   };
 
-  function parseIncremental(text: string): IncrementalResult {
+  /**
+   * 块级增量解析（无状态纯函数）：diff 基准由消费方持有并在下次调用时传回，
+   * 避免多个消费方（编辑器预览、流式会话）共享 parser 时互相污染 diff 状态。
+   */
+  function parseIncremental(text: string, prevHashes: string[] = []): IncrementalResult {
     const sources = splitMarkdownBlocks(text);
     const hashes = sources.map(hashBlock);
     const blocks = sources.map((source, index) => ({
@@ -208,10 +208,10 @@ export async function createMarkdownParser(
 
     const { changedFrom, changedTo, removedTo } = diffBlocks(prevHashes, hashes);
 
-    prevHashes = hashes;
     return {
       html: blocks.map((b) => b.html).join("\n"),
       blocks,
+      hashes,
       changedFrom,
       changedTo,
       removedTo,

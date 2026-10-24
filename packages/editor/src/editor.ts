@@ -240,13 +240,10 @@ export class MarkdownEditor {
 
   setContent(text: string) {
     this.content = text;
-    // dispatch 增量替换，保留撤销历史；docChanged 会再调度一次管线更新（块缓存命中，开销极小）
+    // dispatch 增量替换，保留撤销历史；docChanged 会调度管线更新
     this.editorManager.setContent(text);
-
-    // 立即渲染，保证编程式更新的即时性
-    this.previewManager?.setContent(text);
-    this.pluginManager.update();
-    this.sidebarManager.updateHeading(this.previewManager?.headings ?? []);
+    // 立即 flush：单一路径完成预览渲染/插件/TOC/onChange，避免与直连渲染重复执行
+    this.updatePipeline.flush();
   }
 
   /** 当前文档内容（以 CodeMirror 文档为准，避免防抖窗口内的旧值） */
@@ -623,6 +620,7 @@ export class MarkdownEditor {
 
 function createdEditorAfter(editor: MarkdownEditor) {
   editor.previewManager?.setContent(editor.content);
+  editor.sidebarManager.updateHeading(editor.previewManager?.headings ?? []);
   editor.pluginManager.update();
   editor.options?.setup?.();
 }

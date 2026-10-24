@@ -159,10 +159,21 @@ export class EditorAIManager {
         aborted: controller.signal.aborted,
       });
     } catch (error) {
-      // 错误时回滚本次已流式写入的内容，避免文档停留在半截状态
-      handle?.cancel();
       this.editor.finishStreaming();
-      this.editor.eventBus.emit("aiStreamError", { action: name, error: error as Error });
+      if (controller.signal.aborted) {
+        // 用户中止：保留已生成的半成品（真实 provider 中止通常以异常形式表现）
+        this.editor.eventBus.emit("aiStreamEnd", {
+          action: name,
+          aborted: true,
+        });
+      } else {
+        // 真实错误：回滚本次已流式写入的内容，避免文档停留在半截状态
+        handle?.cancel();
+        this.editor.eventBus.emit("aiStreamError", {
+          action: name,
+          error: error as Error,
+        });
+      }
     } finally {
       this.controller = null;
       this.currentAction = null;

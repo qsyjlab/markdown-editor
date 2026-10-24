@@ -40,6 +40,11 @@ export class StreamingRenderer {
     }));
   }
 
+  /** 当前块指纹序列（消费方据此同步自己的 diff 基准） */
+  getHashes(): string[] {
+    return [...this.hashes];
+  }
+
   getHtml(): string {
     return this.rendered.join("\n");
   }

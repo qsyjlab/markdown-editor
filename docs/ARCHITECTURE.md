@@ -100,10 +100,18 @@ AI 流式输出
 按"顶层空行"切块，但保留 markdown 结构连续性：
 
 - 围栏代码块（``` / ~~~）内部不切块（含未闭合围栏——AI 输出中间态的关键）；
+- 自定义容器（`:::`）按深度追踪，容器体内空行与代码围栏均不切块（容器跨空行是完整一块）；
 - 引用块（`>` 行）跨越空行合并；
 - 列表项跨越单个空行合并（松散列表正确性）。
 
-> 取舍：极少数结构（setext 标题跨空行等）在增量模式下与全量解析存在差异，`parse()`（全量）保留原语义，可用于要求严格一致的场景。
+> 取舍：极少数结构（setext 标题跨空行、引用式链接定义等）在增量模式下与全量解析存在差异，`parse()`（全量）保留原语义，可用于要求严格一致的场景。
+
+### 5.2 状态所有权（v2 审查修正）
+
+**diff 基准（prevHashes）归消费方所有**，parser 的 `parseIncremental(text, prevHashes)` 是无状态纯函数并返回本次 hashes：
+
+- 预览（`EditorPreviewManager`）持有自己的 prevHashes；流式会话每次 `append` 后通过 `getHashes()` 同步回预览 —— 两条写入路径（setContent / appendStreaming）共享同一 diff 基准，杜绝"流式后再全量更新时区间错位导致 DOM 重复"；
+- 多个消费方共享同一 parser 实例互不干扰。
 
 ### 5.2 块缓存（`BlockStore`）
 
@@ -221,7 +229,7 @@ AIProvider（任意 LLM）  ──注入──▶ EditorAIManager（editor.ai）
 - **厂商无关**：编辑器只依赖 `AIProvider` 接口（`AsyncIterable<string>` 流式 delta），prompt 由动作构建，provider 亦可忽略 prompt 自行组包（适配工具调用类管线）。
 - **可拓展**：`editor.ai.registerAction({ name, label, mode, prompt })` 注册任意动作；`mode` 支持 `replace-selection`（润色/翻译类）与 `insert-cursor`（续写类）。
 - **流式一致性**：AI 写入与手工输入走同一条 UpdatePipeline → 块级增量渲染；未闭合围栏始终是活动块，代码生成场景同样无闪烁。
-- **历史友好**：整段流式输出合并为单个撤销步骤；abort 保留已生成内容（半成品可见），异常自动回滚。
+- **历史友好**：整段流式输出合并为单个撤销步骤；abort 保留已生成内容（半成品可见，含 provider 以 AbortError 异常形式中止的场景），真实错误才自动回滚。
 - **选区浮动菜单**（`options.aiSelectionMenu`，默认开）：选中文本浮现 AI 动作条，floating-ui 定位自动翻转避让；动作列表实时取自注册表，无 provider 时不出现。
 
 ### 6.8 编辑体验（已交付）
