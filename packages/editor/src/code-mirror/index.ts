@@ -2,6 +2,7 @@ import { EditorView } from "codemirror";
 import {
   EditorState,
   EditorStateConfig,
+  Transaction,
   TransactionSpec,
 } from "@codemirror/state";
 import { markdown } from "@codemirror/lang-markdown";
@@ -15,6 +16,13 @@ interface CodemirrorManagerOptions {
 
   onFocus?: () => void;
   onBlur?: () => void;
+}
+
+export interface StreamEditHandle {
+  /** 追加一段流式文本（首个 append 会替换目标区间） */
+  append(text: string): void;
+  /** 撤销本次流式已写入的内容 */
+  cancel(): void;
 }
 
 export class CodemirrorManager {
@@ -119,6 +127,51 @@ export class CodemirrorManager {
     if (!this.instance) return;
 
     redo(this.instance);
+  }
+
+  /**
+   * 流式编辑句柄（AI 写入用）：
+   * 首个 append 在同一事务中替换目标区间，后续 append 以不进历史的方式追加，
+   * 整段流式输出合并为单个撤销步骤。
+   */
+  beginStreamEdit(from: number, to: number): StreamEditHandle {
+    const view = this.instance;
+    if (!view) {
+      throw new Error("[md-editor] CodeMirror is not created yet");
+    }
+
+    let pos = 0;
+    let appended = false;
+
+    const append = (text: string) => {
+      if (!text || !this.instance) return;
+      if (!appended) {
+        this.instance.dispatch({
+          changes: { from, to, insert: text },
+          selection: { anchor: from + text.length },
+        });
+        pos = from + text.length;
+        appended = true;
+        return;
+      }
+      this.instance.dispatch({
+        changes: { from: pos, to: pos, insert: text },
+        annotations: Transaction.addToHistory.of(false),
+      });
+      pos += text.length;
+    };
+
+    return {
+      append,
+      /** 回滚本次流式写入的全部内容（用于错误恢复） */
+      cancel: () => {
+        if (!appended || !this.instance) return;
+        this.instance.dispatch({
+          changes: { from, to: pos },
+          annotations: Transaction.addToHistory.of(false),
+        });
+      },
+    };
   }
 
   destroy() {

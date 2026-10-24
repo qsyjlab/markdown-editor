@@ -27,8 +27,9 @@ cd play && pnpm dev   # http://localhost:5177
 
 - **块级增量渲染**：输入只重渲染变化的块，未变更代码块不重新高亮（BlockStore LRU + Shiki 双层缓存）
 - **AI 流式渲染**：`parser.createStreamingSession()` / `preview.appendStreaming(chunk)`，已完成内容 DOM 稳定、无闪烁
+- **AI 写作层**：`editor.ai` —— 厂商无关的 `AIProvider` 注入 + 内置/自定义动作（续写/润色/翻译），流式写入合并为单个撤销步骤，异常自动回滚
 - **事件零泄漏**：预览事件一次性委托绑定，统一 `destroy()` 生命周期
-- **可拓展**：`parserOptions.extend(md)` 注入自定义 markdown-it 插件；编辑器插件机制（init/toolbar/update/destroy）
+- **可拓展**：`parserOptions.extend(md)` 注入自定义 markdown-it 插件；编辑器插件机制（init/toolbar/update/destroy）；类型安全事件总线
 
 ```ts
 import { createMarkdownParser } from "@md-doc-editor/parser";
@@ -37,6 +38,20 @@ const parser = await createMarkdownParser();
 parser.parseIncremental(text);        // 增量解析（返回变化区间）
 const session = parser.createStreamingSession();
 session.append(delta);                // AI 逐 chunk 输出
+```
+
+```ts
+// AI 写作：宿主注入任意模型（SSE / SDK / Mock 均可）
+editor.ai.setProvider({
+  async *complete({ prompt, signal }) {
+    for await (const delta of myLLMStream(prompt, signal)) yield delta;
+  },
+});
+editor.ai.runAction("continue");      // 光标处流式续写
+editor.ai.registerAction({            // 自定义动作
+  name: "summary", label: "总结", mode: "insert-cursor",
+  prompt: ({ before }) => `总结：\n${before}`,
+});
 ```
 
 ## 文档

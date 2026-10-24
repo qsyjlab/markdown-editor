@@ -15,6 +15,14 @@ export interface EditorEvents {
   themeChange: { theme: "light" | "dark" };
   /** 布局状态变化（全屏 / 仅编辑 / 仅预览 / 双栏） */
   layoutChange: { fullscreen: boolean; showPreview: boolean; showToolbar: boolean };
+  /** AI 流式动作开始 */
+  aiStreamStart: { action: string };
+  /** AI 流式增量（delta 为本次追加文本） */
+  aiStreamDelta: { action: string; delta: string };
+  /** AI 流式结束（aborted 为用户主动中止） */
+  aiStreamEnd: { action: string; aborted: boolean };
+  /** AI 流式失败（错误时已回滚本次写入） */
+  aiStreamError: { action: string; error: Error };
   /** 编辑器销毁前 */
   destroy: void;
 }

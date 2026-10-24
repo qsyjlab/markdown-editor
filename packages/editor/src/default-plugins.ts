@@ -18,6 +18,7 @@ import { syncScrollPlugin } from "./plugins/sync-scroll";
 import { toggleLayoutPlugin } from "./plugins/toggle-layout";
 import { fullscreenPlugin } from "./plugins/full-screen";
 import { historyPlugin } from "./plugins/history";
+import { aiPlugin } from "./plugins/ai";
 import { EditorPluginFn } from "./plugin";
 
 export const defaultPlugins: EditorPluginFn[] = [
@@ -38,5 +39,6 @@ export const defaultPlugins: EditorPluginFn[] = [
   toggleLayoutPlugin,
   fullscreenPlugin,
   historyPlugin,
+  aiPlugin,
   toggleThemePlugin
 ];

@@ -16,6 +16,14 @@ import { EditorPreviewManager } from './preview-manager'
 import { EditorScrollManager } from "./scroll-manager";
 import { createUpdatePipeline, UpdatePipeline } from "./update-pipeline";
 import { EditorEventBus, EditorEventName, EditorEventHandler } from "./event-bus";
+import { EditorAIManager } from "./ai/ai-manager";
+export type {
+  AIAction,
+  AIContext,
+  AICompleteRequest,
+  AIProvider,
+  AIStreamMode,
+} from "./ai/provider";
 import { getOffsetTop, getScroll, scrollTo, useId } from "./utils";
 
 import "./style/editor.scss";
@@ -98,8 +106,11 @@ export class MarkdownEditor {
 
   public updatePipeline: UpdatePipeline;
 
-  /** 事件总线：change / focus / blur / themeChange / layoutChange / destroy */
+  /** 事件总线：change / focus / blur / themeChange / layoutChange / aiStream* / destroy */
   public readonly eventBus = new EditorEventBus();
+
+  /** AI 写作：宿主经 setProvider 注入模型，内置/自定义动作流式写入文档 */
+  public readonly ai: EditorAIManager;
 
   public clientId: string = "";
 
@@ -167,6 +178,8 @@ export class MarkdownEditor {
     });
 
     this.eventBus.on("change", () => this.refreshStatusBar());
+
+    this.ai = new EditorAIManager(this);
 
     this.createEditor();
   }
@@ -540,6 +553,7 @@ function mergedDefaultOptions(options: EditorOptions) {
         "uploadImage",
       ],
       rightToolbar: [
+        "ai",
         "syncScroll",
         "onlyEditable",
         "onlyPreview",

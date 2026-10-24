@@ -70,23 +70,28 @@ v2 的增量解析 + 流式渲染 + 稳定 DOM 是 AI 功能的**底座**。在�
 **L1 流式渲染（v2 已交付）**
 - `parser.createStreamingSession()` / `preview.appendStreaming(chunk)`：AI 逐 token 输出实时渲染，只重绘活动块。
 
-**L2 AI 写作动作（下一阶段，🆕）**
-- 内置动作集：续写、润色、改写、翻译、摘要、代码解释/生成注释；
-- 统一抽象 `AIProvider` 接口（由宿主注入模型调用，编辑器不绑定任何厂商）：
+**L2 AI 写作动作（✅ 已随 M2 交付核心，见 ARCHITECTURE §6.7）**
+- ✅ `AIProvider` 抽象（宿主注入模型，AsyncIterable 流式 delta，编辑器不绑定厂商）；
+- ✅ 内置动作：续写 / 润色 / 翻译 + `registerAction` 自定义拓展；
+- ✅ 流式写入：整段输出单撤销步骤、abort 保留半成品、异常自动回滚；
+- ✅ 工具栏 AI 下拉 + `aiStream*` 事件；
+- 🆕 选区浮动菜单（复用 floating-ui 体系）与行内"生成中"占位块。
 
 ```ts
-interface AIProvider {
-  complete(req: {
-    action: string;              // "continue" | "polish" | ...
-    selection?: string;          // 选区内容
-    context: string;             // 光标前/后文（由编辑器裁剪）
-    signal?: AbortSignal;
-  }): AsyncIterable<string>;     // 流式 delta
-}
+// 宿主注入任意模型（fetch SSE / SDK 均可）
+editor.ai.setProvider({
+  async *complete({ prompt, signal }) {
+    const res = await fetch("/api/llm", { method: "POST", body: prompt, signal });
+    for await (const delta of readSSE(res)) yield delta;
+  },
+});
+editor.ai.registerAction({
+  name: "summary",
+  label: "总结",
+  mode: "insert-cursor",
+  prompt: ({ before }) => `总结以下内容：\n${before}`,
+});
 ```
-
-- 交互形态：选区浮动菜单（复用 floating-ui 的 Tooltip/Dropdown 体系）+ 行内"生成中"占位块；
-- 流式结果直接写入编辑器（走 UpdatePipeline），预览端零额外成本。
 
 **L3 AI 深度集成（远期，🔮）**
 - 行内 diff 预览：AI 修改以"建议"形式呈现，逐块接受/拒绝（块级 patch 天然支持按块着色）；

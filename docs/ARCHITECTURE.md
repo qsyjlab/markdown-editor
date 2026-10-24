@@ -193,12 +193,35 @@ session.finish();               // 收尾：强制最后一块定稿渲染
 
 ### 6.6 v2 新增 API（refactor/v2-breaking）
 
-- **事件总线**：`editor.eventBus`（`on/off/emit`），事件 `change / focus / blur / themeChange / layoutChange / destroy`，类型安全（`EditorEvents` 约束 payload）；`editor.on("change", cb)` 快捷订阅。
+- **事件总线**：`editor.eventBus`（`on/off/emit`），事件 `change / focus / blur / themeChange / layoutChange / aiStream* / destroy`，类型安全（`EditorEvents` 约束 payload）；`editor.on("change", cb)` 快捷订阅。
 - **AI 流式写入编辑器**：`editor.appendStreaming(chunk)`（CodeMirror dispatch 追加，自然进入更新管线、可撤销）+ `editor.finishStreaming()`；预览侧独立流式仍走 `previewManager.appendStreaming`。
 - **统计**：`editor.getStats()` → `{ characters, words, lines }`（CJK 按字、西文按词）。
 - **状态栏**：`options.statusBar`（默认开）工具栏右侧字数统计，随 change 事件刷新。
 - **粘贴 / 拖拽图片上传**：复用 `imagesUploadHandler`，上传后以 markdown 图片语法插入光标处。
 - **焦点**：`editor.focus() / editor.blur()`；`getContent()` 改为直接读 CodeMirror 文档（防抖窗口内不再返回旧值）。
+
+### 6.7 AI 写作层（M2 已交付）
+
+```
+宿主应用                        编辑器（editor 包）
+─────────                      ─────────────────────────────────────
+AIProvider（任意 LLM）  ──注入──▶ EditorAIManager（editor.ai）
+  complete(req):                  ├─ 动作注册表（内置 续写/润色/翻译，
+  AsyncIterable<string>           │   registerAction 拓展自定义动作）
+                                  ├─ 上下文组装（选区 ± 2000 字符窗口）
+                                  ├─ runAction：模型 delta → beginStreamEdit
+                                  │   （首 chunk 替换目标区间，后续 chunk
+                                  │     addToHistory:false，单撤销步骤）
+                                  ├─ abort() 中止；异常自动回滚本次写入
+                                  └─ 事件：aiStreamStart/Delta/End/Error
+```
+
+设计要点：
+
+- **厂商无关**：编辑器只依赖 `AIProvider` 接口（`AsyncIterable<string>` 流式 delta），prompt 由动作构建，provider 亦可忽略 prompt 自行组包（适配工具调用类管线）。
+- **可拓展**：`editor.ai.registerAction({ name, label, mode, prompt })` 注册任意动作；`mode` 支持 `replace-selection`（润色/翻译类）与 `insert-cursor`（续写类）。
+- **流式一致性**：AI 写入与手工输入走同一条 UpdatePipeline → 块级增量渲染；未闭合围栏始终是活动块，代码生成场景同样无闪烁。
+- **历史友好**：整段流式输出合并为单个撤销步骤；abort 保留已生成内容（半成品可见），异常自动回滚。
 
 ## 7. 主题设计（theme）
 
