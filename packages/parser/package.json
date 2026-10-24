@@ -51,7 +51,11 @@
     "nanoid": "^5.0.9",
     "shiki": "^3.0.0",
     "katex": "^0.16.21",
-    "@vscode/markdown-it-katex": "^1.1.1"
+    "@vscode/markdown-it-katex": "^1.1.1",
+    "markdown-it-footnote": "^4.0.0",
+    "markdown-it-sub": "^2.0.0",
+    "markdown-it-sup": "^2.0.0",
+    "markdown-it-mark": "^4.0.0"
   },
   "gitHead": "0797255654ce8bebdb171b7cc5d63b9e225b7f99",
   "peerDependencies": {

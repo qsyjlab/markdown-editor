@@ -1,5 +1,9 @@
 import MarkdownIt from "markdown-it";
 import attrsPlugin from "markdown-it-attrs";
+import footnotePlugin from "markdown-it-footnote";
+import subPlugin from "markdown-it-sub";
+import supPlugin from "markdown-it-sup";
+import markPlugin from "markdown-it-mark";
 import katexPlugin, {
   type MarkdownKatexOptions,
 } from "@vscode/markdown-it-katex";
@@ -56,6 +60,12 @@ export interface MarkdownParserProps {
    * mermaid 为 optional peer 依赖，宿主未安装时优雅降级为源码展示。
    */
   mermaid?: boolean;
+
+  /**
+   * 扩展语法：脚注（[^1]）、下标（~x~）、上标（^x^）、高亮标记（==x==）。
+   * true 时全部启用，也可按需单独开关。
+   */
+  extraMarks?: boolean | { footnote?: boolean; sub?: boolean; sup?: boolean; mark?: boolean };
 
   /**
    *  codeCopyButtonTitle
@@ -134,6 +144,17 @@ export async function createMarkdownParser(
   );
 
   instance.use(attrsPlugin);
+
+  if (props?.extraMarks) {
+    const marks =
+      typeof props.extraMarks === "object"
+        ? { footnote: true, sub: true, sup: true, mark: true, ...props.extraMarks }
+        : { footnote: true, sub: true, sup: true, mark: true };
+    if (marks.footnote) instance.use(footnotePlugin);
+    if (marks.sub) instance.use(subPlugin);
+    if (marks.sup) instance.use(supPlugin);
+    if (marks.mark) instance.use(markPlugin);
+  }
 
   if (props?.math) {
     instance.use(

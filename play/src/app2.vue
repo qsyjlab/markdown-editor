@@ -85,6 +85,7 @@ function initMarkdownEditor() {
     parserOptions: {
       math: true,
       mermaid: true,
+      extraMarks: true,
     },
     imagesUploadHandler: (file, success) => {
       const url = rawFileToObjectURL(file);
