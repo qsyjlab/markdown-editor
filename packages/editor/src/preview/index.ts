@@ -7,6 +7,7 @@ import {
   StreamingRenderer,
   MarkdownParserProps,
   ParsedBlock,
+  hydrateMermaid,
 } from "@md-doc-editor/parser";
 
 import preview from "../ui/preview-image";
@@ -171,6 +172,16 @@ export class MarkdownEditorPreview {
     this.contentVersion++;
     this._headings = this.queryAllHeadings();
     this.events?.refresh();
+
+    // mermaid 开启时渲染新增图表块（hydrateMermaid 内部只处理 pending 块）
+    if (this.options?.parserOptions?.mermaid && this.contentEl) {
+      const theme = document
+        .querySelector("[md-theme]")
+        ?.getAttribute("md-theme");
+      void hydrateMermaid(this.contentEl, {
+        theme: theme === "dark" ? "dark" : "default",
+      });
+    }
   }
 
   queryAllHeadings(): MarkdownHeading[] {

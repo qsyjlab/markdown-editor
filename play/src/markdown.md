@@ -929,3 +929,14 @@ export default defineConfig({
 $$
 \int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
 $$
+
+## Mermaid 图表
+
+```mermaid
+flowchart LR
+  A[Markdown] --> B{parser}
+  B -->|块级增量| C[预览渲染]
+  B -->|流式会话| D[AI 输出]
+  C --> E((无闪烁))
+  D --> E
+```

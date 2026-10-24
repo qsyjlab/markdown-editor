@@ -104,3 +104,24 @@
 [md-theme="dark"] .shiki span {
   color: var(--shiki-dark);
 }
+
+// mermaid 图表：居中展示；无运行时（未安装 mermaid）时以源码优雅降级
+.md-mermaid {
+  margin: 16px 0;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+
+  svg {
+    max-width: 100%;
+  }
+}
+
+.md-mermaid .md-mermaid-source {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: var(--md-code-block-bg);
+  overflow-x: auto;
+  text-align: left;
+}

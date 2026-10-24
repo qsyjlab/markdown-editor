@@ -78,6 +78,7 @@ function initMarkdownEditor() {
     height: "88vh",
     parserOptions: {
       math: true,
+      mermaid: true,
     },
     imagesUploadHandler: (file, success) => {
       const url = rawFileToObjectURL(file);

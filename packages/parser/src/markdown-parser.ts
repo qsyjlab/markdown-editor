@@ -29,6 +29,7 @@ import { ContainerOptions } from "./plugins/container";
 import { slugify } from "./plugins/utils";
 import { anchorLevel } from "./constant";
 import { createTasksPlugin } from "./plugins/tasks";
+import { mermaidPlugin } from "./plugins/mermaid";
 
 export interface MarkdownParserProps {
   languages?: HighlighterProps["languages"];
@@ -49,6 +50,12 @@ export interface MarkdownParserProps {
    * 注意：KaTeX 样式（katex/dist/katex.min.css）由宿主自行引入。
    */
   math?: boolean | MarkdownKatexOptions;
+
+  /**
+   * Mermaid 图表：```mermaid 围栏渲染为图表占位块，预览侧自动 hydrate。
+   * mermaid 为 optional peer 依赖，宿主未安装时优雅降级为源码展示。
+   */
+  mermaid?: boolean;
 
   /**
    *  codeCopyButtonTitle
@@ -104,6 +111,11 @@ export async function createMarkdownParser(
   instance.use(preWrapperPlugin, {
     codeCopyButtonTitle: "copy",
   });
+
+  // 需在 preWrapper 之后包裹 fence：mermaid 块绕过代码块包装
+  if (props?.mermaid) {
+    instance.use(mermaidPlugin);
+  }
 
   instance.use(linkPlugin);
   // 行号

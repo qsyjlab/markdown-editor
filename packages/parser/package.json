@@ -53,5 +53,13 @@
     "katex": "^0.16.21",
     "@vscode/markdown-it-katex": "^1.1.1"
   },
-  "gitHead": "0797255654ce8bebdb171b7cc5d63b9e225b7f99"
+  "gitHead": "0797255654ce8bebdb171b7cc5d63b9e225b7f99",
+  "peerDependencies": {
+    "mermaid": ">=10"
+  },
+  "peerDependenciesMeta": {
+    "mermaid": {
+      "optional": true
+    }
+  }
 }
