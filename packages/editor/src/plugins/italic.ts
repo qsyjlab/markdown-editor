@@ -1,5 +1,6 @@
 import { MarkdownEditor } from "../editor";
 import { generateSvg } from "../icon";
+import { icons } from "../icon/icons";
 import { EditorPlugin } from "../plugin";
 import { toggleWrap } from "../utils/format";
 
@@ -9,7 +10,7 @@ export function italicPlugin(editor: MarkdownEditor): EditorPlugin {
   editor.iconManager.register({
     name,
     type: "svg",
-    svg: generateSvg('<path d="M832 128H448a42.666667 42.666667 0 0 1 0-85.333333h384a42.666667 42.666667 0 0 1 0 85.333333zM576 981.333333H192a42.666667 42.666667 0 0 1 0-85.333333h384a42.666667 42.666667 0 0 1 0 85.333333z" fill="currentColor"></path><path d="M640 128h-128l-256 768h128z" fill="currentColor"></path>'),
+    svg: generateSvg(icons.italic),
   });
 
   return {

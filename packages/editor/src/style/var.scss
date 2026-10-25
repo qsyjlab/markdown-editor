@@ -3,6 +3,27 @@
   --md-editor-primary-color: rgba(52, 81, 178, 1);
   --md-editor-font-size: 16px;
 
+  // spacing scale
+  --md-editor-space-1: 4px;
+  --md-editor-space-2: 8px;
+  --md-editor-space-3: 12px;
+  --md-editor-space-4: 16px;
+
+  // radius
+  --md-editor-radius-sm: 6px;
+  --md-editor-radius-md: 8px;
+  --md-editor-radius-lg: 12px;
+
+  // shadow 三级（浮层）
+  --md-editor-shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.08);
+  --md-editor-shadow-md: 0 4px 14px rgba(140, 149, 159, 0.25);
+  --md-editor-shadow-lg: 0 6px 20px rgba(140, 149, 159, 0.35);
+
+  // 图标与工具栏
+  --md-editor-icon-size: 20px;
+  --md-editor-toolbar-height: 44px;
+  --md-editor-toolbar-btn: 32px;
+
   // selection
   --md-editor-selection-bg: rgba(52, 81, 178, 0.15);
 
@@ -43,4 +64,8 @@
   --md-editor-surface-border: #444c56;
   --md-editor-hover-bg: #373e47;
   --md-editor-disabled-color: #6e7681;
+
+  // 暗色阴影更深
+  --md-editor-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --md-editor-shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.55);
 }

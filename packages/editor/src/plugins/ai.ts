@@ -1,4 +1,6 @@
 import { MarkdownEditor } from "../editor";
+import { generateSvg } from "../icon";
+import { icons } from "../icon/icons";
 import { EditorPlugin } from "../plugin";
 
 /**
@@ -11,7 +13,7 @@ export function aiPlugin(editor: MarkdownEditor): EditorPlugin {
   editor.iconManager.register({
     name,
     type: "svg",
-    svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.7L19.6 9.6l-5.7 1.9L12 17.2l-1.9-5.7L4.4 9.6l5.7-1.9L12 2zm7 12l.95 2.85L22.8 17.8l-2.85.95L19 21.6l-.95-2.85-2.85-.95 2.85-.95L19 14zM5 14.5l.7 2.1 2.1.7-2.1.7-.7 2.1-.7-2.1-2.1-.7 2.1-.7.7-2.1z"/></svg>',
+    svg: generateSvg(icons.sparkles),
   });
 
   editor.toolbarManager?.register({

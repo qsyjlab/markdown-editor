@@ -204,9 +204,13 @@ export class EditorToolbarManager {
   }
 
   renderAll(iconManager: IconManager) {
-    // 渲染右边工具栏按钮
+    // 渲染右边工具栏按钮（"|" 项渲染为分组分隔符）
     if (this.options?.rightToolbar && this.options.rightToolbar.length > 0) {
       this.options.rightToolbar.forEach((buttonName) => {
+        if (buttonName === "|") {
+          this.renderDivider("right");
+          return;
+        }
         const button = this.buttons[buttonName];
         if (button) {
           this.render(button, iconManager, "right");
@@ -223,6 +227,10 @@ export class EditorToolbarManager {
     // 渲染左边工具栏按钮
     if (this.options?.leftToolbar && this.options.leftToolbar.length > 0) {
       this.options.leftToolbar.forEach((buttonName) => {
+        if (buttonName === "|") {
+          this.renderDivider("left");
+          return;
+        }
         const button = this.buttons[buttonName];
         if (button) {
           this.render(button, iconManager, "left");
@@ -234,6 +242,17 @@ export class EditorToolbarManager {
           this.render(button, iconManager, "left");
         }
       });
+    }
+  }
+
+  /** 分组分隔符：竖线，视觉上把 撤销重做 / 格式化 / 插入 等分组隔开 */
+  private renderDivider(to?: "left" | "right") {
+    const divider = document.createElement("span");
+    divider.classList.add("md-editor-toolbar-divider");
+    if (!to || to === "left") {
+      this.$el.querySelector(".md-editor-toolbar__left")?.appendChild(divider);
+    } else {
+      this.$el.querySelector(".md-editor-toolbar__right")?.appendChild(divider);
     }
   }
 

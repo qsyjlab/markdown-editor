@@ -1,5 +1,6 @@
 import { MarkdownEditor } from "../editor";
 import { generateSvg } from "../icon";
+import { icons } from "../icon/icons";
 import { EditorPlugin } from "../plugin";
 import { Dialog } from "../ui";
 
@@ -11,7 +12,7 @@ export function tablePlugin(editor: MarkdownEditor): EditorPlugin {
   editor.iconManager.register({
     name,
     type: "svg",
-    svg: generateSvg('<path d="M128 298.666667a128 128 0 0 1 128-128h512a128 128 0 0 1 128 128v426.666666a128 128 0 0 1-128 128H256a128 128 0 0 1-128-128V298.666667z m85.333333 426.666666a42.666667 42.666667 0 0 0 42.666667 42.666667h170.666667v-170.666667h-213.333334v128z m0-213.333333h213.333334V341.333333h-170.666667a42.666667 42.666667 0 0 0-42.666667 42.666667v128z m298.666667 213.333333h170.666667a42.666667 42.666667 0 0 0 42.666666-42.666666v-128H512v170.666666z m213.333333-256V384a42.666667 42.666667 0 0 0-42.666666-42.666667H512v170.666667h213.333333z" fill="currentColor" p-id="1751"></path>')
+    svg: generateSvg(icons.table)
   });
   const values = {
     row: "",

@@ -1,4 +1,6 @@
 import { MarkdownEditor } from "../editor";
+import { generateSvg } from "../icon";
+import { icons } from "../icon/icons";
 import { EditorPlugin } from "../plugin";
 import { toggleWrap } from "../utils/format";
 
@@ -10,7 +12,7 @@ export function strikeoutPlugin(editor: MarkdownEditor): EditorPlugin {
   editor.iconManager.register({
     name,
     type: "svg",
-    svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 13.5h-5l-1 3H4l5-13h2l5 13h-2.5l-1-3zm-4.3-2h3.6l-1.8-5.5-1.8 5.5z" fill="currentColor"/><path d="M1 11h22v2H1z" fill="currentColor"/></svg>'
+    svg: generateSvg(icons.strikethrough)
   });
 
   editor.toolbarManager?.register({

@@ -1,56 +1,54 @@
-/* 基本样式 */
+/* 下拉菜单：tokens 化，与 AI 菜单/建议栏同一浮层语言 */
 .md-editor-dropdown-popper {
   display: none;
   position: absolute;
-  padding: 4px;
-  background-color: #fff;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08),
-    0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
-  // display: inline-block;
+  padding: var(--md-editor-space-1);
+  background-color: var(--md-editor-surface-bg);
+  border: 1px solid var(--md-editor-surface-border);
+  border-radius: var(--md-editor-radius-md);
+  box-shadow: var(--md-editor-shadow-md);
   overflow: hidden;
   vertical-align: top;
   z-index: 1150;
-  // min-width: 200px;
   transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .md-editor-dropdown-menu-item {
-  padding: 6px;
+  padding: 0 var(--md-editor-space-2);
+  height: 32px;
   align-items: center;
-  color: #222f3e;
+  gap: var(--md-editor-space-2);
+  color: var(--md-editor-text-color);
   display: flex;
   user-select: none;
   cursor: pointer;
-  border-radius: 6px;
-  display: flex;
-  transition: color 0.3s, background-color 0.3s;
+  border-radius: var(--md-editor-radius-sm);
+  font-size: 13px;
+  transition: color 0.15s, background-color 0.15s;
 
   &__icon {
-    margin-right: 5px;
+    margin-right: 0;
+    display: inline-flex;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+    }
+  }
+
+  &__title {
+    flex: 1;
   }
 
   &:hover {
-    background-color: var(--md-editor-primary-color, #006ce7);
-    color: white;
+    background-color: var(--md-editor-hover-bg);
+    color: var(--md-editor-primary-color);
   }
 }
 
 [md-theme="dark"] {
   .md-editor-dropdown-popper {
-    background-color: #2d2d2d;
-    border: 1px solid #454545;
-    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.3),
-      0 3px 6px -4px rgba(0, 0, 0, 0.4), 0 9px 28px 8px rgba(0, 0, 0, 0.2);
-  }
-
-  .md-editor-dropdown-menu-item {
-    color: #e4e4e7;
-
-    &:hover {
-      background-color: var(--md-editor-primary-color, #006ce7);
-      color: #fff;
-    }
+    box-shadow: var(--md-editor-shadow-md);
   }
 }

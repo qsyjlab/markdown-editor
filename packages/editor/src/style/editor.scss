@@ -54,7 +54,7 @@
     flex: auto;
     min-height: 0;
     box-sizing: border-box;
-    background-color: white;
+    background-color: var(--md-editor-surface-bg);
 
     &.is-only-show-editable {
       .md-editor-preview {
@@ -76,42 +76,67 @@
   }
 
   &-toolbar {
-    border-bottom: 1px solid var(--md-editor-border-color);
-    padding: 5px 10px;
+    border-bottom: 1px solid var(--md-editor-surface-border);
+    padding: 0 var(--md-editor-space-2);
     flex-shrink: 0;
-    font-size: 24px;
+    min-height: var(--md-editor-toolbar-height);
     display: flex;
     justify-content: space-between;
-    background-color: white;
-    color: #3c3c43;
+    align-items: center;
+    background-color: var(--md-editor-surface-bg);
+    color: var(--md-editor-text-color);
+    box-sizing: border-box;
 
     .md-editor-dropdown {
-      height: 30px;
+      height: var(--md-editor-toolbar-btn);
     }
 
-    &__left {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
+    &__left,
     &__right {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
     }
 
-    &-item {
-      display: inline-block;
-      padding: 5px 5px;
-      cursor: pointer;
-      border-radius: 4px;
-      margin-right: 10px;
+    &__right {
+      gap: var(--md-editor-space-1);
+    }
 
-      &:hover,
+    // 分组分隔符：撤销重做 ｜ 格式化 ｜ 插入 ｜ 操作
+    &-divider {
+      align-self: center;
+      width: 1px;
+      height: 20px;
+      margin: 0 var(--md-editor-space-2);
+      background-color: var(--md-editor-surface-border);
+      flex-shrink: 0;
+    }
+
+    &-item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--md-editor-toolbar-btn);
+      height: var(--md-editor-toolbar-btn);
+      margin: 0 1px;
+      cursor: pointer;
+      border-radius: var(--md-editor-radius-sm);
+      color: var(--md-editor-text-color);
+      transition: background-color 0.15s, color 0.15s;
+
+      .md-editor-icon svg {
+        width: var(--md-editor-icon-size);
+        height: var(--md-editor-icon-size);
+        display: block;
+      }
+
+      &:hover {
+        background: var(--md-editor-hover-bg);
+      }
+
       &.is-active {
         color: var(--md-editor-primary-color);
-        background: #f0f0f0;
+        background: var(--md-editor-hover-bg);
       }
     }
   }
@@ -124,7 +149,7 @@
     height: 100%;
     // padding: 10px;
     overflow: auto;
-    background-color: #f8f9fa;
+    background-color: var(--md-editor-hover-bg);
   }
   &-preview {
     box-sizing: border-box;
@@ -132,14 +157,14 @@
     height: 100%;
     padding: 10px;
     overflow: auto;
-    background-color: white;
+    background-color: var(--md-editor-surface-bg);
     font-size: var(--md-editor-font-size);
   }
 
   &-sidebar {
     display: none;
     border-left: 1px solid var(--md-editor-border-color);
-    background-color: white;
+    background-color: var(--md-editor-surface-bg);
     &.is-active {
       flex-shrink: 0;
       display: block;
