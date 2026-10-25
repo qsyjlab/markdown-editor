@@ -175,7 +175,7 @@ export class EditorToolbarManager {
 
     // 尝试移除旧元素
     container
-      ?.querySelectorAll(`[attatch-menu-el-id="${button.name}"]`)
+      ?.querySelectorAll(`[attach-menu-el-id="${button.name}"]`)
       ?.forEach((node) => {
         node.remove();
       });
@@ -185,7 +185,7 @@ export class EditorToolbarManager {
       offset: 10,
       appendTo: container,
       createAfter(element) {
-        element.setAttribute("attatch-menu-el-id", button.name);
+        element.setAttribute("attach-menu-el-id", button.name);
       },
     });
     state.tooltip = tooltip;

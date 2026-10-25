@@ -3,7 +3,13 @@ import container from "markdown-it-container";
 import { nanoid } from "nanoid";
 import { extractTitle } from "./utils";
 
-export type RenderRule = (tokens: Token[], idx: number, options: Options, env: any, self: Renderer) => string;
+export type RenderRule = (
+  tokens: Token[],
+  idx: number,
+  options: Options,
+  env: unknown,
+  self: Renderer
+) => string;
 
 export interface ContainerOptions {
   infoLabel?: string;

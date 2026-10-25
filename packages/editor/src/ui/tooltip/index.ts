@@ -15,7 +15,7 @@ interface TooltipOptions extends ComputePositionConfig {
   offset: number;
   showArrow?: boolean;
   appendTo?: HTMLElement;
-  hideAfterDestory?: boolean;
+  hideAfterDestroy?: boolean;
   createAfter?: (element: HTMLElement) => void;
 }
 
@@ -40,7 +40,7 @@ export class Tooltip {
       offset: 10,
       lazy: true,
       showArrow: true,
-      hideAfterDestory: true,
+      hideAfterDestroy: true,
     };
 
     // 合并默认配置和传入的配置
@@ -115,7 +115,7 @@ export class Tooltip {
     if (!this.$el) return;
     this.$el.classList.remove("visible");
 
-    if (this.config?.hideAfterDestory) {
+    if (this.config?.hideAfterDestroy) {
       this.$el.remove();
       this.$el = null;
     }

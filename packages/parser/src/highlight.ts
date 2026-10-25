@@ -17,8 +17,14 @@ import {
 import presetThemes from "./preset/theme";
 import presetLangs from "./preset/lang";
 
+/** 主题：单主题名 / 单主题对象 / 亮暗双主题名 */
+export type HighlighterTheme =
+  | string
+  | HighlighterCoreOptions["themes"]
+  | { light: string; dark: string };
+
 export interface HighlighterProps {
-  theme?: any;
+  theme?: HighlighterTheme;
 
   languages?: HighlighterCoreOptions["langs"];
 
@@ -67,22 +73,30 @@ export async function createHighlighter(options?: HighlighterProps) {
       return cached;
     }
 
-    const highlighted = highlighter.codeToHtml(str, {
-      lang: lang,
-      meta: { __raw: attrs },
-      transformers: [
-        transformerNotationDiff(),
-        transformerNotationHighlight(),
-        transformerNotationWordHighlight(),
-        transformerNotationErrorLevel(),
-        transformerMetaHighlight(),
-      ],
-      // 双主题时关闭行内默认色，颜色全部走 --shiki-light/--shiki-dark CSS 变量，
-      // 亮暗切换由主题包 CSS 完成，无需 !important（docs/ARCHITECTURE.md §7）
-      ...(typeof theme === "object" && "light" in theme && "dark" in theme
-        ? { themes: theme, defaultColor: false }
-        : { theme, defaultColor: true }),
-    });
+    const transformers = [
+      transformerNotationDiff(),
+      transformerNotationHighlight(),
+      transformerNotationWordHighlight(),
+      transformerNotationErrorLevel(),
+      transformerMetaHighlight(),
+    ];
+
+    const highlighted = isDualTheme(theme)
+      ? highlighter.codeToHtml(str, {
+          lang: lang,
+          meta: { __raw: attrs },
+          transformers,
+          // 双主题时关闭行内默认色，颜色全部走 --shiki-light/--shiki-dark CSS 变量，
+          // 亮暗切换由主题包 CSS 完成，无需 !important（docs/ARCHITECTURE.md §7）
+          themes: { light: theme.light, dark: theme.dark },
+          defaultColor: false,
+        })
+      : highlighter.codeToHtml(str, {
+          lang: lang,
+          meta: { __raw: attrs },
+          transformers,
+          theme: theme as string,
+        });
 
     cache.set(cacheKey, highlighted);
     if (cache.size > HIGHLIGHT_CACHE_MAX) {
@@ -100,6 +114,18 @@ export async function createHighlighter(options?: HighlighterProps) {
       highlighter.dispose();
     },
   };
+}
+
+/** 亮暗双主题形态判定 */
+function isDualTheme(
+  theme: HighlighterTheme
+): theme is { light: string; dark: string } {
+  return (
+    typeof theme === "object" &&
+    !Array.isArray(theme) &&
+    "light" in theme &&
+    "dark" in theme
+  );
 }
 
 function getRealLang(lang: string) {

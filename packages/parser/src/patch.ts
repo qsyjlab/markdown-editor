@@ -40,7 +40,7 @@ export class BlockPatcher {
     const newGroups: Node[][] = [];
 
     for (let i = changedFrom; i < changedTo; i++) {
-      newGroups.push(this.mount(blocks[i].html, i));
+      newGroups.push(this.mount(blocks[i].html, i, blocks[i].startLine ?? 0));
     }
 
     // 先移除旧区间节点，再插入新节点（anchor 引用的旧后继节点不受影响）
@@ -88,7 +88,7 @@ export class BlockPatcher {
     this.container.textContent = "";
     const groups: Node[][] = [];
     for (const block of blocks) {
-      groups.push(this.mount(block.html, block.index));
+      groups.push(this.mount(block.html, block.index, block.startLine ?? 0));
     }
     const fragment = document.createDocumentFragment();
     for (const group of groups) {
@@ -98,8 +98,8 @@ export class BlockPatcher {
     this.nodeGroups = groups;
   }
 
-  /** 解析单块 HTML，打上块标记，返回尚未插入 DOM 的顶层节点组 */
-  private mount(html: string, index: number): Node[] {
+  /** 解析单块 HTML，打上块标记并修正 data-line 为全文档行号，返回未插入 DOM 的顶层节点组 */
+  private mount(html: string, index: number, startLine: number): Node[] {
     if (!this.template) this.template = document.createElement("template");
     this.template.innerHTML = html;
 
@@ -107,7 +107,17 @@ export class BlockPatcher {
     const nodes = Array.from(this.template.content.childNodes);
     for (const node of nodes) {
       if (node.nodeType === 1) {
-        (node as Element).setAttribute(BLOCK_ATTR, String(index));
+        const el = node as Element;
+        el.setAttribute(BLOCK_ATTR, String(index));
+        // 块级独立渲染的 data-line 是块内行号，加 startLine 还原全文档行号
+        el.querySelectorAll("[data-line]").forEach((lineEl) => {
+          const local = parseInt(lineEl.getAttribute("data-line") || "0", 10);
+          lineEl.setAttribute("data-line", String(local + startLine));
+        });
+        if (el.hasAttribute("data-line")) {
+          const local = parseInt(el.getAttribute("data-line") || "0", 10);
+          el.setAttribute("data-line", String(local + startLine));
+        }
       }
       group.push(node);
     }

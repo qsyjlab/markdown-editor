@@ -198,12 +198,14 @@ export async function createMarkdownParser(
    * 避免多个消费方（编辑器预览、流式会话）共享 parser 时互相污染 diff 状态。
    */
   function parseIncremental(text: string, prevHashes: string[] = []): IncrementalResult {
-    const sources = splitMarkdownBlocks(text);
+    const sourceBlocks = splitMarkdownBlocks(text);
+    const sources = sourceBlocks.map((b) => b.source);
     const hashes = sources.map(hashBlock);
-    const blocks = sources.map((source, index) => ({
+    const blocks = sourceBlocks.map((block, index) => ({
       index,
       hash: hashes[index],
-      html: store.renderBlock(source),
+      html: store.renderBlock(block.source),
+      startLine: block.startLine,
     }));
 
     const { changedFrom, changedTo, removedTo } = diffBlocks(prevHashes, hashes);

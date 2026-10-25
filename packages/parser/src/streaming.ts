@@ -19,6 +19,7 @@ export class StreamingRenderer {
   private sources: string[] = [];
   private hashes: string[] = [];
   private rendered: string[] = [];
+  private nextStartLines: number[] = [];
 
   constructor(private renderBlock: (source: string) => string) {}
 
@@ -37,6 +38,7 @@ export class StreamingRenderer {
       index,
       hash: this.hashes[index],
       html: this.rendered[index],
+      startLine: this.nextStartLines[index] ?? 0,
     }));
   }
 
@@ -61,9 +63,11 @@ export class StreamingRenderer {
   }
 
   private update(): StreamingChangeRange {
-    const nextSources = splitMarkdownBlocks(this.text);
+    const sourceBlocks = splitMarkdownBlocks(this.text);
+    const nextSources = sourceBlocks.map((b) => b.source);
     const nextHashes = nextSources.map(hashBlock);
     const { changedFrom, changedTo, removedTo } = diffBlocks(this.hashes, nextHashes);
+    this.nextStartLines = sourceBlocks.map((b) => b.startLine);
 
     const nextRendered: string[] = new Array(nextSources.length);
 

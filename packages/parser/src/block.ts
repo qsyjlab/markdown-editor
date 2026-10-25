@@ -21,6 +21,14 @@ export interface ParsedBlock {
   index: number;
   hash: string;
   html: string;
+  /** 块在整文档中的起始行（0-based）；data-line 偏移依据 */
+  startLine: number;
+}
+
+/** 块切分结果：源码 + 起始行 */
+export interface SourceBlock {
+  source: string;
+  startLine: number;
 }
 
 export interface IncrementalResult {
@@ -39,30 +47,41 @@ export interface IncrementalResult {
 }
 
 /**
- * 将 markdown 源码切分为顶层块。
- * 块边界 = 不处于围栏内、且不延续列表/引用结构的空行。
+ * 将 markdown 源码切分为顶层块，附带每块在整文档中的起始行（0-based）。
+ * 块边界 = 不处于围栏/容器内、且不延续列表/引用结构的空行。
+ *
+ * startLine 用于修正块级独立渲染的 data-line：
+ * sourceLinePlugin 在单块 render 时标注的行号是块内行号，
+ * DOM 挂载时需加 startLine 还原为全文档行号（滚动同步依赖）。
  */
-export function splitMarkdownBlocks(text: string): string[] {
+export function splitMarkdownBlocks(text: string): SourceBlock[] {
   const lines = text.replace(/\r\n?/g, "\n").split("\n");
-  const blocks: string[] = [];
+  const blocks: SourceBlock[] = [];
   let current: string[] = [];
+  let currentStart = 0;
+  let lineIndex = 0;
   let pendingBlank = false;
   let fence: string | null = null;
   let containerDepth = 0;
 
   const flush = () => {
     if (current.length) {
-      blocks.push(current.join("\n"));
+      blocks.push({ source: current.join("\n"), startLine: currentStart });
       current = [];
     }
   };
 
   for (const line of lines) {
+    if (current.length === 0) {
+      currentStart = lineIndex;
+    }
+
     // 容器内部（含空行与代码围栏）整体不可切分，直到闭合行
     if (containerDepth > 0) {
       if (CONTAINER_CLOSE_RE.test(line)) containerDepth--;
       else if (CONTAINER_OPEN_RE.test(line)) containerDepth++;
       current.push(line);
+      lineIndex++;
       continue;
     }
 
@@ -73,6 +92,7 @@ export function splitMarkdownBlocks(text: string): string[] {
         // 围栏开始是块边界：悬挂中的前一块必须先落盘
         if (pendingBlank) {
           flush();
+          currentStart = lineIndex;
           pendingBlank = false;
         }
         fence = marker[0].repeat(marker.length);
@@ -84,11 +104,13 @@ export function splitMarkdownBlocks(text: string): string[] {
         fence = null;
       }
       current.push(line);
+      lineIndex++;
       continue;
     }
 
     if (fence) {
       current.push(line);
+      lineIndex++;
       continue;
     }
 
@@ -96,15 +118,18 @@ export function splitMarkdownBlocks(text: string): string[] {
     if (CONTAINER_OPEN_RE.test(line)) {
       if (pendingBlank) {
         flush();
+        currentStart = lineIndex;
         pendingBlank = false;
       }
       containerDepth = 1;
       current.push(line);
+      lineIndex++;
       continue;
     }
 
     if (!line.trim()) {
       if (current.length) pendingBlank = true;
+      lineIndex++;
       continue;
     }
 
@@ -116,13 +141,16 @@ export function splitMarkdownBlocks(text: string): string[] {
       if (continues) {
         current.push("", line);
         pendingBlank = false;
+        lineIndex++;
         continue;
       }
       flush();
+      currentStart = lineIndex;
       pendingBlank = false;
     }
 
     current.push(line);
+    lineIndex++;
   }
 
   flush();

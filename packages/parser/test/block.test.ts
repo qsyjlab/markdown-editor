@@ -7,20 +7,23 @@ import {
 } from "../src/block";
 import { StreamingRenderer } from "../src/streaming";
 
+const sources = (blocks) => blocks.map((b) => b.source);
+const startLines = (blocks) => blocks.map((b) => b.startLine);
+
 describe("splitMarkdownBlocks", () => {
   it("按空行切分普通段落", () => {
     const blocks = splitMarkdownBlocks("# 标题\n\n第一段\n\n第二段");
-    expect(blocks).toEqual(["# 标题", "第一段", "第二段"]);
+    expect(sources(blocks)).toEqual(["# 标题", "第一段", "第二段"]);
   });
 
   it("连续行属于同一块", () => {
     const blocks = splitMarkdownBlocks("第一行\n第二行\n第三行");
-    expect(blocks).toEqual(["第一行\n第二行\n第三行"]);
+    expect(sources(blocks)).toEqual(["第一行\n第二行\n第三行"]);
   });
 
   it("围栏代码块内部的空行不切块", () => {
     const md = "```ts\nconst a = 1;\n\nconst b = 2;\n```\n\n后续段落";
-    expect(splitMarkdownBlocks(md)).toEqual([
+    expect(sources(splitMarkdownBlocks(md))).toEqual([
       "```ts\nconst a = 1;\n\nconst b = 2;\n```",
       "后续段落",
     ]);
@@ -28,41 +31,53 @@ describe("splitMarkdownBlocks", () => {
 
   it("未闭合围栏整体是活动块（AI 流式中间态）", () => {
     const md = "段落\n\n```ts\nconst a = 1;\n\nconst b";
-    expect(splitMarkdownBlocks(md)).toEqual(["段落", "```ts\nconst a = 1;\n\nconst b"]);
+    expect(sources(splitMarkdownBlocks(md))).toEqual(["段落", "```ts\nconst a = 1;\n\nconst b"]);
   });
 
   it("波浪线围栏同样识别", () => {
     const md = "~~~\n\n内容\n\n~~~";
-    expect(splitMarkdownBlocks(md)).toEqual(["~~~\n\n内容\n\n~~~"]);
+    expect(sources(splitMarkdownBlocks(md))).toEqual(["~~~\n\n内容\n\n~~~"]);
   });
 
   it("引用块跨空行合并", () => {
     const md = "> 第一行\n\n> 第二行";
-    expect(splitMarkdownBlocks(md)).toEqual(["> 第一行\n\n> 第二行"]);
+    expect(sources(splitMarkdownBlocks(md))).toEqual(["> 第一行\n\n> 第二行"]);
   });
 
   it("松散列表跨空行合并", () => {
     const md = "- a\n\n- b";
-    expect(splitMarkdownBlocks(md)).toEqual(["- a\n\n- b"]);
+    expect(sources(splitMarkdownBlocks(md))).toEqual(["- a\n\n- b"]);
   });
 
   it("引用与列表互不合并", () => {
     const md = "- item\n\n> quote";
-    expect(splitMarkdownBlocks(md)).toEqual(["- item", "> quote"]);
+    expect(sources(splitMarkdownBlocks(md))).toEqual(["- item", "> quote"]);
   });
 
   it("CRLF 归一化", () => {
-    expect(splitMarkdownBlocks("a\r\n\r\nb")).toEqual(["a", "b"]);
+    expect(sources(splitMarkdownBlocks("a\r\n\r\nb"))).toEqual(["a", "b"]);
   });
 
   it("空文本与纯空行返回空数组", () => {
-    expect(splitMarkdownBlocks("")).toEqual([]);
-    expect(splitMarkdownBlocks("\n\n\n")).toEqual([]);
+    expect(sources(splitMarkdownBlocks(""))).toEqual([]);
+    expect(sources(splitMarkdownBlocks("\n\n\n"))).toEqual([]);
+  });
+
+  it("startLine 记录每块在整文档中的 0-based 起始行（data-line 偏移依据）", () => {
+    const md = "# 标题\n\n第一段\n```ts\nconst a = 1;\n\nconst b = 2;\n```\n\n尾段";
+    const blocks = splitMarkdownBlocks(md);
+    // "# 标题" 从第 0 行；"第一段..." 围栏块从第 2 行；"尾段" 从第 9 行
+    expect(startLines(blocks)).toEqual([0, 2, 9]);
+    expect(sources(blocks)).toEqual([
+      "# 标题",
+      "第一段\n```ts\nconst a = 1;\n\nconst b = 2;\n```",
+      "尾段",
+    ]);
   });
 
   it("容器内部空行不切块（::: tip ... :::）", () => {
     const md = "::: tip\n第一段\n\n第二段\n:::\n\n后续段落";
-    expect(splitMarkdownBlocks(md)).toEqual([
+    expect(sources(splitMarkdownBlocks(md))).toEqual([
       "::: tip\n第一段\n\n第二段\n:::",
       "后续段落",
     ]);
@@ -70,17 +85,17 @@ describe("splitMarkdownBlocks", () => {
 
   it("嵌套容器整体一块", () => {
     const md = "::: tip\n外层\n\n::: warning\n内层\n:::\n\n收尾\n:::";
-    expect(splitMarkdownBlocks(md)).toEqual([md]);
+    expect(sources(splitMarkdownBlocks(md))).toEqual([md]);
   });
 
   it("容器内含代码围栏（含空行）不切块", () => {
     const md = "::: tip\n```ts\nconst a = 1;\n\nconst b = 2;\n```\n:::";
-    expect(splitMarkdownBlocks(md)).toEqual([md]);
+    expect(sources(splitMarkdownBlocks(md))).toEqual([md]);
   });
 
   it("代码围栏内的 ::: 不被误认为容器", () => {
     const md = "```md\n::: tip\n内容\n:::\n```";
-    expect(splitMarkdownBlocks(md)).toEqual([md]);
+    expect(sources(splitMarkdownBlocks(md))).toEqual([md]);
   });
 });
 
